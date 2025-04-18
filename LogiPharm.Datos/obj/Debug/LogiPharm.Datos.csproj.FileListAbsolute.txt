@@ -7,3 +7,12 @@ C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Datos\obj\Debug\LogiPharm.Datos.pdb
 C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Datos\bin\Debug\LogiPharm.Entidades.dll
 C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Datos\bin\Debug\LogiPharm.Entidades.pdb
 C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Datos\obj\Debug\LogiPhar.73EDB09E.Up2Date
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Datos\bin\Debug\LogiPharm.Datos.dll
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Datos\bin\Debug\LogiPharm.Datos.pdb
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Datos\bin\Debug\LogiPharm.Entidades.dll
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Datos\bin\Debug\LogiPharm.Entidades.pdb
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Datos\obj\Debug\LogiPharm.Datos.csproj.AssemblyReference.cache
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Datos\obj\Debug\LogiPharm.Datos.csproj.CoreCompileInputs.cache
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Datos\obj\Debug\LogiPhar.73EDB09E.Up2Date
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Datos\obj\Debug\LogiPharm.Datos.dll
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Datos\obj\Debug\LogiPharm.Datos.pdb

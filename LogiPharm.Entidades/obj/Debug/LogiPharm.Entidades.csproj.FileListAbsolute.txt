@@ -4,3 +4,9 @@ C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPharm.Entida
 C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPharm.Entidades.csproj.CoreCompileInputs.cache
 C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPharm.Entidades.dll
 C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPharm.Entidades.pdb
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Entidades\bin\Debug\LogiPharm.Entidades.dll
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Entidades\bin\Debug\LogiPharm.Entidades.pdb
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPharm.Entidades.csproj.AssemblyReference.cache
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPharm.Entidades.csproj.CoreCompileInputs.cache
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPharm.Entidades.dll
+C:\Users\jonag\OneDrive\Escritorio\C#\LogiPharm\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPharm.Entidades.pdb

@@ -1,4 +1,9 @@
-﻿namespace LogiPharm.Presentacion
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+
+namespace LogiPharm.Presentacion
 {
     partial class FrmLogin
     {
@@ -28,84 +33,131 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.lblTitulo = new System.Windows.Forms.Label();
             this.lblUsuario = new System.Windows.Forms.Label();
             this.lblClave = new System.Windows.Forms.Label();
             this.txtUsuario = new System.Windows.Forms.TextBox();
             this.txtClave = new System.Windows.Forms.TextBox();
             this.btnLogin = new System.Windows.Forms.Button();
+            this.btnCancelar = new System.Windows.Forms.Button();
             this.lblMensaje = new System.Windows.Forms.Label();
+            this.panelLateral = new System.Windows.Forms.Panel();
+            this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
             this.SuspendLayout();
+
+            // 
+            // Form settings
+            // 
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(540, 240);
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.Text = "Login";
+
+            // 
+            // panelLateral
+            // 
+            this.panelLateral.BackColor = System.Drawing.Color.SeaGreen;
+            this.panelLateral.Dock = DockStyle.Left;
+            this.panelLateral.Width = 200;
+
+            // 
+            // pictureBoxLogo
+            // 
+            //this.pictureBoxLogo.Image = Properties.Resources.LogoCanal; // asegúrate que el recurso esté disponible
+            this.pictureBoxLogo.SizeMode = PictureBoxSizeMode.StretchImage;
+            this.pictureBoxLogo.Location = new Point(40, 40);
+            this.pictureBoxLogo.Size = new Size(120, 120);
+            this.panelLateral.Controls.Add(this.pictureBoxLogo);
+
+            // 
+            // lblTitulo
+            // 
+            this.lblTitulo.Text = "INICIAR SESIÓN";
+            this.lblTitulo.Font = new Font("Segoe UI", 12, FontStyle.Bold);
+            this.lblTitulo.Location = new Point(220, 20);
+            this.lblTitulo.AutoSize = true;
+
             // 
             // lblUsuario
             // 
-            this.lblUsuario.AutoSize = true;
-            this.lblUsuario.Location = new System.Drawing.Point(32, 45);
-            this.lblUsuario.Name = "lblUsuario";
-            this.lblUsuario.Size = new System.Drawing.Size(46, 13);
-            this.lblUsuario.TabIndex = 0;
             this.lblUsuario.Text = "Usuario:";
-            // 
-            // lblClave
-            // 
-            this.lblClave.AutoSize = true;
-            this.lblClave.Location = new System.Drawing.Point(32, 92);
-            this.lblClave.Name = "lblClave";
-            this.lblClave.Size = new System.Drawing.Size(64, 13);
-            this.lblClave.TabIndex = 0;
-            this.lblClave.Text = "Contraseña:";
+            this.lblUsuario.Location = new Point(220, 60);
+            this.lblUsuario.Font = new Font("Segoe UI", 9);
+            this.lblUsuario.AutoSize = true;
+
             // 
             // txtUsuario
             // 
-            this.txtUsuario.Location = new System.Drawing.Point(115, 38);
-            this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.Size = new System.Drawing.Size(209, 20);
-            this.txtUsuario.TabIndex = 1;
+            this.txtUsuario.Location = new Point(220, 80);
+            this.txtUsuario.Size = new Size(280, 23);
+            this.txtUsuario.Font = new Font("Segoe UI", 10);
+
+            // 
+            // lblClave
+            // 
+            this.lblClave.Text = "Contraseña:";
+            this.lblClave.Location = new Point(220, 115);
+            this.lblClave.Font = new Font("Segoe UI", 9);
+            this.lblClave.AutoSize = true;
+
             // 
             // txtClave
             // 
-            this.txtClave.Location = new System.Drawing.Point(115, 85);
-            this.txtClave.Name = "txtClave";
-            this.txtClave.Size = new System.Drawing.Size(209, 20);
-            this.txtClave.TabIndex = 2;
+            this.txtClave.Location = new Point(220, 135);
+            this.txtClave.Size = new Size(280, 23);
+            this.txtClave.Font = new Font("Segoe UI", 10);
             this.txtClave.UseSystemPasswordChar = true;
+
             // 
             // btnLogin
             // 
-            this.btnLogin.Location = new System.Drawing.Point(115, 140);
-            this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(209, 23);
-            this.btnLogin.TabIndex = 3;
             this.btnLogin.Text = "Iniciar Sesión";
-            this.btnLogin.UseVisualStyleBackColor = true;
-            this.btnLogin.Click += new System.EventHandler(this.BtnLogin_Click);
+            this.btnLogin.BackColor = Color.SeaGreen;
+            this.btnLogin.ForeColor = Color.White;
+            this.btnLogin.FlatStyle = FlatStyle.Flat;
+            this.btnLogin.Location = new Point(220, 180);
+            this.btnLogin.Size = new Size(130, 30);
+            this.btnLogin.Click += new EventHandler(this.BtnLogin_Click);
+
+            // 
+            // btnCancelar
+            // 
+            this.btnCancelar.Text = "Cancelar";
+            this.btnCancelar.BackColor = Color.DarkRed;
+            this.btnCancelar.ForeColor = Color.White;
+            this.btnCancelar.FlatStyle = FlatStyle.Flat;
+            this.btnCancelar.Location = new Point(370, 180);
+            this.btnCancelar.Size = new Size(130, 30);
+            this.btnCancelar.Click += new EventHandler(this.BtnCancelar_Click);
+
             // 
             // lblMensaje
             // 
-            this.lblMensaje.ForeColor = System.Drawing.Color.Red;
-            this.lblMensaje.Location = new System.Drawing.Point(32, 185);
-            this.lblMensaje.Name = "lblMensaje";
-            this.lblMensaje.Size = new System.Drawing.Size(292, 21);
-            this.lblMensaje.TabIndex = 0;
-            this.lblMensaje.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblMensaje.ForeColor = Color.Red;
+            this.lblMensaje.TextAlign = ContentAlignment.MiddleCenter;
+            this.lblMensaje.Font = new Font("Segoe UI", 9);
+            this.lblMensaje.Location = new Point(220, 215);
+            this.lblMensaje.Size = new Size(280, 20);
+
             // 
-            // FrmLogin
+            // Add controls
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(366, 229);
-            this.Controls.Add(this.btnLogin);
-            this.Controls.Add(this.txtClave);
-            this.Controls.Add(this.txtUsuario);
-            this.Controls.Add(this.lblMensaje);
-            this.Controls.Add(this.lblClave);
+            this.Controls.Add(this.panelLateral);
+            this.Controls.Add(this.lblTitulo);
             this.Controls.Add(this.lblUsuario);
-            this.Name = "FrmLogin";
-            this.Text = "FrmLogin";
-            this.Load += new System.EventHandler(this.FrmLogin_Load);
+            this.Controls.Add(this.txtUsuario);
+            this.Controls.Add(this.lblClave);
+            this.Controls.Add(this.txtClave);
+            this.Controls.Add(this.btnLogin);
+            this.Controls.Add(this.btnCancelar);
+            this.Controls.Add(this.lblMensaje);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
+
 
         #endregion
 
@@ -115,5 +167,10 @@
         private System.Windows.Forms.TextBox txtClave;
         private System.Windows.Forms.Button btnLogin;
         private System.Windows.Forms.Label lblMensaje;
+        private System.Windows.Forms.Label lblTitulo;
+        private System.Windows.Forms.Button btnCancelar;
+        private System.Windows.Forms.Panel panelLateral;
+        private System.Windows.Forms.PictureBox pictureBoxLogo;
+
     }
 }
