@@ -34,6 +34,7 @@ C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Presentacion\bin\Debug\Guna.UI.dll
 C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Presentacion\bin\Debug\Guna.UI2.dll
 C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Presentacion\obj\Debug\LogiPharm.Presentacion.FrmProductos.resources
 C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Presentacion\bin\Debug\FontAwesome.Sharp.dll
+<<<<<<< Updated upstream
 C:\Users\jonag\Downloads\LogiPharm\LogiPharm\LogiPharm.Presentacion\bin\Debug\LogiPharm.Presentacion.exe.config
 C:\Users\jonag\Downloads\LogiPharm\LogiPharm\LogiPharm.Presentacion\bin\Debug\LogiPharm.Presentacion.exe
 C:\Users\jonag\Downloads\LogiPharm\LogiPharm\LogiPharm.Presentacion\bin\Debug\LogiPharm.Presentacion.pdb
@@ -53,3 +54,6 @@ C:\Users\jonag\Downloads\LogiPharm\LogiPharm\LogiPharm.Presentacion\obj\Debug\Lo
 C:\Users\jonag\Downloads\LogiPharm\LogiPharm\LogiPharm.Presentacion\obj\Debug\LogiPhar.35717C49.Up2Date
 C:\Users\jonag\Downloads\LogiPharm\LogiPharm\LogiPharm.Presentacion\obj\Debug\LogiPharm.Presentacion.exe
 C:\Users\jonag\Downloads\LogiPharm\LogiPharm\LogiPharm.Presentacion\obj\Debug\LogiPharm.Presentacion.pdb
+=======
+C:\PROYECTOS\PROYECTOS2\LogiPharm\LogiPharm.Presentacion\obj\Debug\LogiPharm.Presentacion.FrmLaboratorios.resources
+>>>>>>> Stashed changes
