@@ -18,7 +18,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmLogin));
             this.guna2Elipse1 = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.guna2ShadowForm1 = new Guna.UI2.WinForms.Guna2ShadowForm(this.components);
             this.guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
@@ -65,10 +64,10 @@
             // 
             // pictureBoxLogo
             // 
-            this.pictureBoxLogo.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxLogo.Image"))); // Asegúrate de tener un logo en tus recursos
-            this.pictureBoxLogo.Location = new System.Drawing.Point(150, 25);
+            this.pictureBoxLogo.Image = global::LogiPharm.Presentacion.Properties.Resources.logo;
+            this.pictureBoxLogo.Location = new System.Drawing.Point(110, -11);
             this.pictureBoxLogo.Name = "pictureBoxLogo";
-            this.pictureBoxLogo.Size = new System.Drawing.Size(100, 100);
+            this.pictureBoxLogo.Size = new System.Drawing.Size(173, 173);
             this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxLogo.TabIndex = 1;
             this.pictureBoxLogo.TabStop = false;
@@ -96,10 +95,8 @@
             this.txtUsuario.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtUsuario.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.txtUsuario.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtUsuario.IconLeft = ((System.Drawing.Image)(resources.GetObject("txtUsuario.IconLeft"))); // Reemplaza con tu ícono de usuario
             this.txtUsuario.Location = new System.Drawing.Point(50, 210);
             this.txtUsuario.Name = "txtUsuario";
-            this.txtUsuario.PasswordChar = '\0';
             this.txtUsuario.PlaceholderText = "Usuario";
             this.txtUsuario.SelectedText = "";
             this.txtUsuario.Size = new System.Drawing.Size(300, 40);
@@ -118,7 +115,6 @@
             this.txtClave.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtClave.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.txtClave.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtClave.IconLeft = ((System.Drawing.Image)(resources.GetObject("txtClave.IconLeft"))); // Reemplaza con tu ícono de candado
             this.txtClave.Location = new System.Drawing.Point(50, 265);
             this.txtClave.Name = "txtClave";
             this.txtClave.PasswordChar = '●';
@@ -171,7 +167,7 @@
             this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblTitulo.Location = new System.Drawing.Point(125, 165);
             this.lblTitulo.Name = "lblTitulo";
-            this.lblTitulo.Size = new System.Drawing.Size(150, 30);
+            this.lblTitulo.Size = new System.Drawing.Size(144, 30);
             this.lblTitulo.TabIndex = 5;
             this.lblTitulo.Text = "Iniciar Sesión";
             // 
