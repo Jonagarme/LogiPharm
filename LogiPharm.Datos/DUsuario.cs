@@ -1,7 +1,9 @@
-﻿using System.Data.SqlClient;
-using LogiPharm.Entidades;
+﻿using LogiPharm.Entidades;
 using System.Configuration;
 using System;
+using MySqlConnector;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace LogiPharm.Datos
 {
@@ -9,26 +11,54 @@ namespace LogiPharm.Datos
     {
         public EUsuario Login(string usuario, string clave)
         {
-            using (SqlConnection cn = new SqlConnection(ConfigurationManager.ConnectionStrings["cadena_conexion"].ConnectionString))
+            using (MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["cadena_conexion"].ConnectionString))
             {
                 cn.Open();
-                SqlCommand cmd = new SqlCommand("SELECT * FROM Usuarios WHERE Usuario = @usuario AND Clave = @clave", cn);
-                cmd.Parameters.AddWithValue("@usuario", usuario);
-                cmd.Parameters.AddWithValue("@clave", clave);
 
-                SqlDataReader dr = cmd.ExecuteReader();
-                if (dr.Read())
+                // Hashea la clave antes de enviarla a la consulta
+                string hashClave = CalcularSHA256(clave);
+
+                MySqlCommand cmd = new MySqlCommand(@"
+            SELECT u.*, r.nombre AS NombreRol
+            FROM usuarios u
+            INNER JOIN roles r ON r.id = u.idRol
+            WHERE u.nombreUsuario = @usuario 
+              AND u.contrasenaHash = @clave 
+              AND u.activo = 1 
+              AND u.anulado = 0
+        ", cn);
+
+                cmd.Parameters.AddWithValue("@usuario", usuario);
+                cmd.Parameters.AddWithValue("@clave", hashClave);  // <--- el hash, no la clave en texto
+
+                using (var dr = cmd.ExecuteReader())
                 {
-                    return new EUsuario
+                    if (dr.Read())
                     {
-                        IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
-                        Usuario = dr["Usuario"].ToString(),
-                        Clave = dr["Clave"].ToString(),
-                        Rol = dr["Rol"].ToString(),
-                        NombreCompleto = dr["NombreCompleto"].ToString()
-                    };
+                        return new EUsuario
+                        {
+                            IdUsuario = Convert.ToInt32(dr["id"]),
+                            Usuario = dr["nombreUsuario"].ToString(),
+                            Clave = dr["contrasenaHash"].ToString(),
+                            Rol = dr["NombreRol"].ToString(),
+                            NombreCompleto = dr["nombreCompleto"].ToString()
+                        };
+                    }
                 }
                 return null;
+            }
+        }
+
+
+        public static string CalcularSHA256(string texto)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(texto));
+                StringBuilder sb = new StringBuilder();
+                foreach (byte b in bytes)
+                    sb.Append(b.ToString("x2")); // hex
+                return sb.ToString();
             }
         }
     }

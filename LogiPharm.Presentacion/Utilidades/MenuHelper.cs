@@ -41,7 +41,7 @@ namespace LogiPharm.Presentacion.Utilidades
                     inicio, ventas, inventario, clientes, normativas
                 });
             }
-            else if (rolUsuario == "Cajero")
+            else if (rolUsuario == "Cajera")
             {
                 menu.Items.AddRange(new ToolStripItem[]
                 {

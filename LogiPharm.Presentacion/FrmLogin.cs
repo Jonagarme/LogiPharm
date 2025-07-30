@@ -26,7 +26,8 @@ namespace LogiPharm.Presentacion
 
             if (datos != null)
             {
-                FrmPrincipal principal = new FrmPrincipal();
+                // Pasa el rol real obtenido de la base de datos:
+                FrmPrincipal principal = new FrmPrincipal(datos.Rol);
                 principal.Show();
                 this.Hide();
             }
@@ -35,6 +36,7 @@ namespace LogiPharm.Presentacion
                 lblMensaje.Text = "Usuario o contraseña incorrectos.";
             }
         }
+
 
         private void FrmLogin_Load(object sender, EventArgs e)
         {
