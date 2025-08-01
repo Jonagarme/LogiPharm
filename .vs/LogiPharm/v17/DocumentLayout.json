@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|c:\\users\\jonag\\onedrive\\im\u00E1genes\\logipharm\\logipharm\\logipharm.presentacion\\frmprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\frmprincipal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|c:\\users\\jonag\\onedrive\\im\u00E1genes\\logipharm\\logipharm\\logipharm.presentacion\\frmpuntodeventa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\frmpuntodeventa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|c:\\users\\jonag\\onedrive\\im\u00E1genes\\logipharm\\logipharm\\logipharm.presentacion\\frmlogin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\frmlogin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{50711665-4918-493A-B531-8D999E166181}|LogiPharm.Datos\\LogiPharm.Datos.csproj|C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\logipharm.datos\\dproveedores.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50711665-4918-493A-B531-8D999E166181}|LogiPharm.Datos\\LogiPharm.Datos.csproj|solutionrelative:logipharm.datos\\dproveedores.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|c:\\users\\jonag\\onedrive\\im\u00E1genes\\logipharm\\logipharm\\logipharm.presentacion\\frmlogin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\frmlogin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\logipharm.presentacion\\frmproveedores.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\frmproveedores.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -27,40 +27,39 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "FrmPrincipal.cs",
-              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmPrincipal.cs",
-              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FrmPrincipal.cs",
-              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmPrincipal.cs",
-              "RelativeToolTip": "LogiPharm.Presentacion\\FrmPrincipal.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAiAAAAAAAAAA==",
+              "Title": "FrmPuntoDeVenta.cs",
+              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
+              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
+              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
+              "RelativeToolTip": "LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
+              "ViewState": "AgIAADMAAAAAAAAAAAAlwEoAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-30T03:03:06.333Z",
+              "WhenOpened": "2025-08-01T00:31:50.351Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "FrmLogin.cs",
-              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmLogin.cs",
-              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FrmLogin.cs",
-              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmLogin.cs",
-              "RelativeToolTip": "LogiPharm.Presentacion\\FrmLogin.cs",
-              "ViewState": "AgIAAAcAAAAAAAAAAAAvwCEAAAAQAAAAAAAAAA==",
+              "Title": "DProveedores.cs",
+              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Datos\\DProveedores.cs",
+              "RelativeDocumentMoniker": "LogiPharm.Datos\\DProveedores.cs",
+              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Datos\\DProveedores.cs",
+              "RelativeToolTip": "LogiPharm.Datos\\DProveedores.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAlwBAAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-30T02:50:39.726Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-01T00:30:48.052Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "FrmLogin.cs [Dise\u00F1o]",
-              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmLogin.cs",
-              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FrmLogin.cs",
-              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmLogin.cs [Dise\u00F1o]",
-              "RelativeToolTip": "LogiPharm.Presentacion\\FrmLogin.cs [Dise\u00F1o]",
+              "Title": "FrmProveedores.cs",
+              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmProveedores.cs",
+              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FrmProveedores.cs",
+              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmProveedores.cs",
+              "RelativeToolTip": "LogiPharm.Presentacion\\FrmProveedores.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAwB8AAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-07-30T02:33:09.225Z",
-              "EditorCaption": " [Dise\u00F1o]"
+              "WhenOpened": "2025-08-01T00:30:04.87Z"
             }
           ]
         }

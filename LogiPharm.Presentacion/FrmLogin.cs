@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using LogiPharm.Negocio;
 using LogiPharm.Entidades;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -26,7 +27,13 @@ namespace LogiPharm.Presentacion
 
             if (datos != null)
             {
-                // Pasa el rol real obtenido de la base de datos:
+                // Asignar datos a la sesión
+                SesionActual.IdUsuario = datos.IdUsuario;
+                SesionActual.NombreUsuario = datos.Usuario;
+                SesionActual.NombreCompleto = datos.NombreCompleto;
+                SesionActual.Rol = datos.Rol;
+
+                // Abrir la ventana principal
                 FrmPrincipal principal = new FrmPrincipal(datos.Rol);
                 principal.Show();
                 this.Hide();

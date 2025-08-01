@@ -5,7 +5,7 @@ using LogiPharm.Entidades;
 
 namespace LogiPharm.Datos
 {
-    public class D_Clientes
+    public class DClientes
     {
         public ECliente BuscarClientePorId(string identificacion)
         {
@@ -42,6 +42,76 @@ namespace LogiPharm.Datos
             }
             return cliente;
         }
+
+        public DataTable ListarClientes(string criterio)
+        {
+            DataTable tabla = new DataTable();
+            using (MySqlConnection cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    string query = @"
+                        SELECT id, tipoIdentificacion, identificacion, razonSocial, direccion, telefono, email
+                        FROM clientes
+                        WHERE anulado = 0 
+                          AND (identificacion LIKE @criterio OR razonSocial LIKE @criterio)
+                        ORDER BY razonSocial ASC;";
+
+                    MySqlCommand cmd = new MySqlCommand(query, cn);
+                    cmd.Parameters.AddWithValue("@criterio", $"%{criterio}%");
+
+                    MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                    da.Fill(tabla);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al listar los clientes: " + ex.Message);
+                }
+            }
+            return tabla;
+        }
+        public bool ActualizarCliente(ECliente cliente)
+        {
+            int filasAfectadas = 0;
+            using (MySqlConnection cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    string query = @"
+                        UPDATE clientes SET
+                            tipoIdentificacion = @tipoId,
+                            identificacion = @identificacion,
+                            razonSocial = @razonSocial,
+                            direccion = @direccion,
+                            telefono = @telefono,
+                            email = @email,
+                            editadoPor = @editadoPor,
+                            editadoDate = @editadoDate
+                        WHERE id = @id;";
+
+                    MySqlCommand cmd = new MySqlCommand(query, cn);
+                    cmd.Parameters.AddWithValue("@id", cliente.Id);
+                    cmd.Parameters.AddWithValue("@tipoId", cliente.TipoIdentificacion);
+                    cmd.Parameters.AddWithValue("@identificacion", cliente.Identificacion);
+                    cmd.Parameters.AddWithValue("@razonSocial", cliente.RazonSocial);
+                    cmd.Parameters.AddWithValue("@direccion", (object)cliente.Direccion ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@telefono", (object)cliente.Telefono ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@email", (object)cliente.Email ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@editadoPor", cliente.EditadoPor);
+                    cmd.Parameters.AddWithValue("@editadoDate", DateTime.Now);
+
+                    filasAfectadas = cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al actualizar el cliente: " + ex.Message);
+                }
+            }
+            return filasAfectadas > 0;
+        }
+
 
         public bool InsertarCliente(ECliente cliente)
         {

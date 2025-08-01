@@ -54,7 +54,7 @@ namespace LogiPharm.Presentacion
             // --- 3. Guardar en la Base de Datos ---
             try
             {
-                D_Clientes d_Clientes = new D_Clientes();
+                DClientes d_Clientes = new DClientes();
                 if (d_Clientes.InsertarCliente(cliente))
                 {
                     MessageBox.Show("Cliente guardado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);

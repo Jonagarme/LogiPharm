@@ -2,17 +2,16 @@
 
 namespace LogiPharm.Entidades
 {
-    public class ECliente
+    public class EProveedor
     {
         public int Id { get; set; }
-        public string TipoIdentificacion { get; set; }
-        public string Identificacion { get; set; }
+        public string Ruc { get; set; }
         public string RazonSocial { get; set; }
+        public string NombreComercial { get; set; }
         public string Direccion { get; set; }
         public string Telefono { get; set; }
         public string Email { get; set; }
-        // Propiedades de auditoría
         public int CreadoPor { get; set; }
-        public int? EditadoPor { get; set; }
+        // Puedes añadir más propiedades si las necesitas
     }
 }

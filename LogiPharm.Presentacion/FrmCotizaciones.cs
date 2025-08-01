@@ -45,7 +45,7 @@ namespace LogiPharm.Presentacion
 
                 try
                 {
-                    D_Clientes d_Clientes = new D_Clientes();
+                    DClientes d_Clientes = new DClientes();
                     ECliente cliente = d_Clientes.BuscarClientePorId(id);
 
                     if (cliente != null)

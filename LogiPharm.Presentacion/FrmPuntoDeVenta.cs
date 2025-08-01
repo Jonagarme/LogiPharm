@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -22,7 +23,7 @@ namespace LogiPharm.Presentacion
         {
             timer1.Start();
 
-            lblVendedor.Text = "dloor"; // TODO: Reemplazar con el usuario logueado
+            lblVendedor.Text = SesionActual.NombreUsuario;
             lblCaja.Text = "CAJA 001";
             lblFechaEmision.Text = DateTime.Now.ToString("dd/MM/yyyy");
 
@@ -30,6 +31,72 @@ namespace LogiPharm.Presentacion
                 dgvDetalleVenta.Rows.Add();
             dgvDetalleVenta.Columns["colPrecio"].ReadOnly = true;
         }
+
+        private void btnPagar_Click(object sender, EventArgs e)
+        {
+            AbrirVentanaPago();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F4)
+            {
+                AbrirVentanaPago();
+                return true;
+            }
+            else if (keyData == Keys.F8)
+            {
+                AbrirVentanaKardex();
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+
+        private void btnKardex_Click(object sender, EventArgs e)
+        {
+            AbrirVentanaKardex();
+        }
+
+
+        private void AbrirVentanaKardex()
+        {
+            using (FrmKardex frm = new FrmKardex())
+            {
+                frm.ShowDialog();
+            }
+        }
+
+
+        private void AbrirVentanaPago()
+        {
+            decimal totalVenta = CalcularTotalVenta(); // método auxiliar
+            using (FrmPago frmPago = new FrmPago(totalVenta))
+            {
+                if (frmPago.ShowDialog() == DialogResult.OK)
+                {
+                    MessageBox.Show("Pago realizado con éxito.", "Confirmación", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // TODO: aquí puedes guardar la venta, limpiar el formulario, imprimir, etc.
+                }
+            }
+        }
+
+        private decimal CalcularTotalVenta()
+        {
+            decimal total = 0;
+            foreach (DataGridViewRow fila in dgvDetalleVenta.Rows)
+            {
+                if (fila.Cells["colTotal"].Value != null &&
+                    decimal.TryParse(fila.Cells["colTotal"].Value.ToString(), out decimal valor))
+                {
+                    total += valor;
+                }
+            }
+            return total;
+        }
+
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -243,9 +310,50 @@ namespace LogiPharm.Presentacion
 
         private void CalcularTotalesGenerales()
         {
-            // TODO: Crear lógica para sumar las columnas de Subtotal, IVA, Descuento y Total de todas las filas
-            // y mostrarlos en los labels correspondientes.
+            decimal totalGeneral = 0;
+            decimal subtotalGeneral = 0;
+            decimal ivaGeneral = 0;
+            decimal totalDescuento = 0;
+
+            foreach (DataGridViewRow fila in dgvDetalleVenta.Rows)
+            {
+                if (fila.IsNewRow) continue;
+
+                decimal.TryParse(fila.Cells["colSubtotal"].Value?.ToString(), out decimal sub);
+                decimal.TryParse(fila.Cells["colIVA"].Value?.ToString(), out decimal iva);
+                decimal.TryParse(fila.Cells["colTotal"].Value?.ToString(), out decimal total);
+                decimal.TryParse(fila.Cells["colDscto"].Value?.ToString(), out decimal dctoPorcentaje);
+                decimal.TryParse(fila.Cells["colPFinal"].Value?.ToString(), out decimal precioFinal);
+                decimal.TryParse(fila.Cells["colCantidad"].Value?.ToString(), out decimal cantidad);
+
+                subtotalGeneral += sub;
+                ivaGeneral += iva;
+                totalGeneral += total;
+
+                // Calcular descuento monetario total
+                decimal subtotalSinDescuento = cantidad * precioFinal;
+                decimal dcto = subtotalSinDescuento * (dctoPorcentaje / 100);
+                totalDescuento += dcto;
+            }
+
+            // ✅ Corrección de asignación:
+            // Mostramos el TOTAL con IVA en "lblPrecio"
+            lblPrecio.Text = totalGeneral.ToString("N2");
+
+            // Mostramos solo el IVA real en "lblIVA"
+            lblIVA.Text = ivaGeneral.ToString("N2");
+
+            // Subtotal general sin IVA
+            lblPrecio.Text = subtotalGeneral.ToString("N2");
+
+            // Total general con IVA (por si tienes otra label como label7)
+            lblIVA.Text = ivaGeneral.ToString("N2");
+
+            // Mostrar total descuento si corresponde
+            lblTotalDescuento.Text = totalDescuento.ToString("N2");
         }
+
+
 
         // Evento para poner el ícono de eliminar en cada nueva fila
         private void dgvDetalleVenta_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
@@ -276,6 +384,7 @@ namespace LogiPharm.Presentacion
                 if (dgvDetalleVenta.Rows.Count == 0)
                     dgvDetalleVenta.Rows.Add();
             }
+            CalcularTotalesGenerales();
         }
 
         private void txtIdentificacion_KeyPress(object sender, KeyPressEventArgs e)
@@ -297,7 +406,7 @@ namespace LogiPharm.Presentacion
 
                 try
                 {
-                    D_Clientes d_Clientes = new D_Clientes();
+                    DClientes d_Clientes = new DClientes();
                     ECliente cliente = d_Clientes.BuscarClientePorId(id);
 
                     if (cliente != null)

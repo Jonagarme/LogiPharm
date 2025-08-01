@@ -140,8 +140,8 @@ namespace LogiPharm.Presentacion.Utilidades
         {
             ToolStripMenuItem compras = new ToolStripMenuItem("🛒 Compras y Proveedores");
 
-            ToolStripMenuItem proveedores = new ToolStripMenuItem("Gestión de proveedores");
-            proveedores.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmProveedores>(formulario);
+            //ToolStripMenuItem proveedores = new ToolStripMenuItem("Gestión de proveedores");
+            //proveedores.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmProveedores>(formulario);
             compras.DropDownItems.Add("Órdenes de compra");
 
             ToolStripMenuItem recepcionProductos = new ToolStripMenuItem("Recepcion de Productos");
@@ -157,7 +157,11 @@ namespace LogiPharm.Presentacion.Utilidades
             historialCompra.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmHistorialCompras>(formulario);
             compras.DropDownItems.Add(historialCompra);
 
+            //compras.DropDownItems.Add(proveedores);
+            ToolStripMenuItem proveedores = new ToolStripMenuItem("Proveedores");
+            proveedores.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmProveedores>(formulario);
             compras.DropDownItems.Add(proveedores);
+
             compras.DropDownItems.Add("Ranking");
 
             return compras;
@@ -172,6 +176,8 @@ namespace LogiPharm.Presentacion.Utilidades
             clientes.DropDownItems.Add(gestionClientes);
 
             clientes.DropDownItems.Add("Historial de compras");
+
+
             clientes.DropDownItems.Add("Créditos / puntos");
 
             return clientes;

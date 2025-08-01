@@ -46,7 +46,7 @@ namespace LogiPharm.Presentacion
             this.label23 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
+            this.lblTotalDescuento = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.guna2Panel4 = new Guna.UI2.WinForms.Guna2Panel();
             this.label15 = new System.Windows.Forms.Label();
@@ -55,7 +55,7 @@ namespace LogiPharm.Presentacion
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.guna2Panel2 = new Guna.UI2.WinForms.Guna2Panel();
-            this.label17 = new System.Windows.Forms.Label();
+            this.lblPrecio = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.guna2GroupBox1 = new Guna.UI2.WinForms.Guna2GroupBox();
             this.lblFechaEmision = new System.Windows.Forms.Label();
@@ -86,6 +86,7 @@ namespace LogiPharm.Presentacion
             this.lblFechaCompleta = new System.Windows.Forms.Label();
             this.lblFechaHora = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.lblIVA = new System.Windows.Forms.Label();
             this.panelTop.SuspendLayout();
             this.panelMain.SuspendLayout();
             this.panelToolbar.SuspendLayout();
@@ -327,6 +328,7 @@ namespace LogiPharm.Presentacion
             this.btnKardex.Text = "F8 KARDEX";
             this.btnKardex.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnKardex.UseVisualStyleBackColor = true;
+            this.btnKardex.Click += new System.EventHandler(this.btnKardex_Click);
             // 
             // btnDescuento
             // 
@@ -361,6 +363,7 @@ namespace LogiPharm.Presentacion
             this.btnPagar.Text = "F4 PAGAR";
             this.btnPagar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.btnPagar.UseVisualStyleBackColor = true;
+            this.btnPagar.Click += new System.EventHandler(this.btnPagar_Click);
             // 
             // btnFacturas
             // 
@@ -398,11 +401,12 @@ namespace LogiPharm.Presentacion
             // 
             // panelPrecios
             // 
+            this.panelPrecios.Controls.Add(this.lblIVA);
             this.panelPrecios.Controls.Add(this.label24);
             this.panelPrecios.Controls.Add(this.label23);
             this.panelPrecios.Controls.Add(this.label22);
             this.panelPrecios.Controls.Add(this.label21);
-            this.panelPrecios.Controls.Add(this.label20);
+            this.panelPrecios.Controls.Add(this.lblTotalDescuento);
             this.panelPrecios.Controls.Add(this.label19);
             this.panelPrecios.Controls.Add(this.guna2Panel4);
             this.panelPrecios.Controls.Add(this.guna2Panel3);
@@ -450,16 +454,16 @@ namespace LogiPharm.Presentacion
             this.label21.TabIndex = 5;
             this.label21.Text = "TARIFA 0%";
             // 
-            // label20
+            // lblTotalDescuento
             // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            this.label20.Location = new System.Drawing.Point(523, 13);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(33, 17);
-            this.label20.TabIndex = 4;
-            this.label20.Text = "0.00";
+            this.lblTotalDescuento.AutoSize = true;
+            this.lblTotalDescuento.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTotalDescuento.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblTotalDescuento.Location = new System.Drawing.Point(523, 13);
+            this.lblTotalDescuento.Name = "lblTotalDescuento";
+            this.lblTotalDescuento.Size = new System.Drawing.Size(33, 17);
+            this.lblTotalDescuento.TabIndex = 4;
+            this.lblTotalDescuento.Text = "0.00";
             // 
             // label19
             // 
@@ -542,23 +546,23 @@ namespace LogiPharm.Presentacion
             // 
             this.guna2Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
             this.guna2Panel2.BorderRadius = 6;
-            this.guna2Panel2.Controls.Add(this.label17);
+            this.guna2Panel2.Controls.Add(this.lblPrecio);
             this.guna2Panel2.Controls.Add(this.label18);
             this.guna2Panel2.Location = new System.Drawing.Point(8, 3);
             this.guna2Panel2.Name = "guna2Panel2";
             this.guna2Panel2.Size = new System.Drawing.Size(120, 50);
             this.guna2Panel2.TabIndex = 0;
             // 
-            // label17
+            // lblPrecio
             // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            this.label17.ForeColor = System.Drawing.Color.White;
-            this.label17.Location = new System.Drawing.Point(38, 23);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(41, 21);
-            this.label17.TabIndex = 1;
-            this.label17.Text = "0.00";
+            this.lblPrecio.AutoSize = true;
+            this.lblPrecio.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblPrecio.ForeColor = System.Drawing.Color.White;
+            this.lblPrecio.Location = new System.Drawing.Point(38, 23);
+            this.lblPrecio.Name = "lblPrecio";
+            this.lblPrecio.Size = new System.Drawing.Size(41, 21);
+            this.lblPrecio.TabIndex = 1;
+            this.lblPrecio.Text = "0.00";
             // 
             // label18
             // 
@@ -880,13 +884,11 @@ namespace LogiPharm.Presentacion
             // 
             this.lblFechaCompleta.AutoSize = true;
             this.lblFechaCompleta.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFechaCompleta.ForeColor = System.Drawing.Color.FromArgb(64, 64, 64);
-            this.lblFechaCompleta.Location = new System.Drawing.Point(200, 36); // Justo al lado derecho de lblFechaHora (ajusta según tu gusto)
+            this.lblFechaCompleta.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblFechaCompleta.Location = new System.Drawing.Point(200, 36);
             this.lblFechaCompleta.Name = "lblFechaCompleta";
-            this.lblFechaCompleta.Size = new System.Drawing.Size(250, 20); // No necesario si tienes AutoSize=true
+            this.lblFechaCompleta.Size = new System.Drawing.Size(0, 21);
             this.lblFechaCompleta.TabIndex = 2;
-            this.lblFechaCompleta.Text = ""; // El texto se actualiza en tu timer
-
             // 
             // lblFechaHora
             // 
@@ -906,6 +908,17 @@ namespace LogiPharm.Presentacion
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // lblIVA
+            // 
+            this.lblIVA.AutoSize = true;
+            this.lblIVA.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblIVA.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblIVA.Location = new System.Drawing.Point(572, 76);
+            this.lblIVA.Name = "lblIVA";
+            this.lblIVA.Size = new System.Drawing.Size(33, 17);
+            this.lblIVA.TabIndex = 9;
+            this.lblIVA.Text = "0.00";
+            // 
             // FrmPuntoDeVenta
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -915,9 +928,9 @@ namespace LogiPharm.Presentacion
             this.Controls.Add(this.panelMain);
             this.Controls.Add(this.panelTop);
             this.Controls.Add(this.panelBottom);
-            this.Load += new System.EventHandler(this.FrmPuntoDeVenta_Load);
             this.Name = "FrmPuntoDeVenta";
             this.Text = "Punto de Venta";
+            this.Load += new System.EventHandler(this.FrmPuntoDeVenta_Load);
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
             this.panelMain.ResumeLayout(false);
@@ -973,7 +986,7 @@ namespace LogiPharm.Presentacion
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Label label22;
         private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label lblTotalDescuento;
         private System.Windows.Forms.Label label19;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel4;
         private System.Windows.Forms.Label label15;
@@ -982,7 +995,7 @@ namespace LogiPharm.Presentacion
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
         private Guna.UI2.WinForms.Guna2Panel guna2Panel2;
-        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label lblPrecio;
         private System.Windows.Forms.Label label18;
         private FontAwesome.Sharp.IconButton btnIncrementar;
         private FontAwesome.Sharp.IconButton btnDocumento;
@@ -1005,5 +1018,6 @@ namespace LogiPharm.Presentacion
         private System.Windows.Forms.DataGridViewTextBoxColumn colSubtotal;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTotal;
         private System.Windows.Forms.Label lblFechaCompleta;
+        private System.Windows.Forms.Label lblIVA;
     }
 }

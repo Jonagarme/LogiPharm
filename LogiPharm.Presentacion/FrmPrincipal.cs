@@ -21,6 +21,7 @@ namespace LogiPharm.Presentacion
             var menu = Utilidades.MenuHelper.ConstruirMenu(this, _rolUsuario);
             this.MainMenuStrip = menu;
             this.Controls.Add(menu);
+            FormulariosHelper.AbrirFormulario<FrmDashboard>(this);
         }
     }
 }

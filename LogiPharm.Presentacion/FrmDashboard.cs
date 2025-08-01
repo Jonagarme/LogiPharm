@@ -36,7 +36,7 @@ namespace LogiPharm.Presentacion
                     DataRow row = dt.Rows[0];
                     lblVentasHoy.Text = Convert.ToDecimal(row["VentasHoy"]).ToString("C2"); // Formato de moneda
                     lblTotalClientes.Text = row["TotalClientes"].ToString();
-                    lblProductosStock.Text = row["ProductosStock"].ToString();
+                    lblProductosStock.Text = Convert.ToDecimal(row["ProductosStock"]).ToString("N2");
                     lblProveedores.Text = row["TotalProveedores"].ToString();
                 }
             }

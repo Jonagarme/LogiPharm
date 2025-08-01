@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CapaDatos;
+using MySqlConnector;
+using System;
 using System.Data;
 
 namespace LogiPharm.Datos
@@ -8,11 +10,25 @@ namespace LogiPharm.Datos
         public DataTable ObtenerKPIs()
         {
             DataTable dt = new DataTable();
-            dt.Columns.Add("VentasHoy", typeof(decimal));
-            dt.Columns.Add("TotalClientes", typeof(int));
-            dt.Columns.Add("ProductosStock", typeof(int));
-            dt.Columns.Add("TotalProveedores", typeof(int));
-            dt.Rows.Add(1250.75m, 89, 1796, 15);
+
+            string query = @"
+            SELECT
+              (SELECT IFNULL(SUM(total), 0) FROM facturas_venta WHERE DATE(fechaEmision) = CURDATE()) AS VentasHoy,
+                (SELECT COUNT(*) FROM clientes) AS TotalClientes,
+                (SELECT SUM(stock) FROM productos) AS ProductosStock,
+                (SELECT COUNT(*) FROM proveedores) AS TotalProveedores;
+        ";
+
+            using (var conn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                conn.Open();
+                using (var cmd = new MySqlCommand(query, conn))
+                using (var adapter = new MySqlDataAdapter(cmd))
+                {
+                    adapter.Fill(dt);
+                }
+            }
+
             return dt;
         }
 

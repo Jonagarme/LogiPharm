@@ -24,7 +24,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                D_Clientes d_Clientes = new D_Clientes();
+                DClientes d_Clientes = new DClientes();
                 DataTable dt = d_Clientes.ListarClientesActivos();
 
                 // Añadir fila de 'Todos'
