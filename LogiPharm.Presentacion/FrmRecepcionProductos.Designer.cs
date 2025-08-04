@@ -743,6 +743,7 @@
             this.btnGuardar.ForeColor = System.Drawing.Color.White;
             this.btnGuardar.Location = new System.Drawing.Point(1052, 585);
             this.btnGuardar.Name = "btnGuardar";
+            //this.btnImportar.Click += new System.EventHandler(this.btnGuardar_Click);
             this.btnGuardar.Size = new System.Drawing.Size(120, 36);
             this.btnGuardar.TabIndex = 8;
             this.btnGuardar.Text = "Guardar";
@@ -781,6 +782,7 @@
             this.btnCancelar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.btnCancelar.Location = new System.Drawing.Point(800, 585);
             this.btnCancelar.Name = "btnCancelar";
+            //this.btnImportar.Click += new System.EventHandler(this.btnCancelar_Click);
             this.btnCancelar.Size = new System.Drawing.Size(120, 36);
             this.btnCancelar.TabIndex = 10;
             this.btnCancelar.Text = "Cancelar";
