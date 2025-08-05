@@ -427,7 +427,7 @@ namespace LogiPharm.Presentacion
                                 if (frm.ShowDialog() == DialogResult.OK)
                                 {
                                     // Si se guardó, actualizamos los datos en el POS
-                                    txtCliente.Text = frm.ClienteGuardado.RazonSocial;
+                                    txtCliente.Text = frm.ClienteGuardado.Nombres;
                                     txtEmail.Text = frm.ClienteGuardado.Email;
                                 }
                             }
