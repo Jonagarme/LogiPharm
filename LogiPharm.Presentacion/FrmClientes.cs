@@ -50,10 +50,10 @@ namespace LogiPharm.Presentacion
                         dgvClientes.Columns[col].Visible = false;
                 }
 
-                dgvClientes.Columns["identificacion"].HeaderText = "Identificación";
-                dgvClientes.Columns["identificacion"].Width = 120;
-                dgvClientes.Columns["razonSocial"].HeaderText = "Nombre / Razón Social";
-                dgvClientes.Columns["razonSocial"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dgvClientes.Columns["cedula_ruc"].HeaderText = "Identificación";
+                dgvClientes.Columns["cedula_ruc"].Width = 120;
+                //dgvClientes.Columns["razonSocial"].HeaderText = "Nombre / Razón Social";
+                //dgvClientes.Columns["razonSocial"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
         }
 
@@ -65,18 +65,18 @@ namespace LogiPharm.Presentacion
 
         private void dgvClientes_SelectionChanged(object sender, EventArgs e)
         {
-            // Cuando se selecciona una fila, muestra los detalles en los campos de la derecha
             if (dgvClientes.CurrentRow != null)
             {
                 _idClienteSeleccionado = Convert.ToInt32(dgvClientes.CurrentRow.Cells["id"].Value);
-                cboTipoIdentificacion.SelectedItem = dgvClientes.CurrentRow.Cells["tipoIdentificacion"].Value.ToString();
-                txtIdentificacion.Text = dgvClientes.CurrentRow.Cells["identificacion"].Value.ToString();
-                txtRazonSocial.Text = dgvClientes.CurrentRow.Cells["razonSocial"].Value.ToString();
-                txtDireccion.Text = dgvClientes.CurrentRow.Cells["direccion"].Value.ToString();
-                txtTelefono.Text = dgvClientes.CurrentRow.Cells["telefono"].Value.ToString();
-                txtEmail.Text = dgvClientes.CurrentRow.Cells["email"].Value.ToString();
+                cboTipoIdentificacion.SelectedItem = dgvClientes.CurrentRow.Cells["tipo_identificacion"].Value?.ToString();
+                txtIdentificacion.Text = dgvClientes.CurrentRow.Cells["cedula_ruc"].Value?.ToString();
+                txtRazonSocial.Text = dgvClientes.CurrentRow.Cells["razonSocial"].Value?.ToString();
+                txtDireccion.Text = dgvClientes.CurrentRow.Cells["direccion"].Value?.ToString();
+                txtTelefono.Text = dgvClientes.CurrentRow.Cells["celular"].Value?.ToString();
+                txtEmail.Text = dgvClientes.CurrentRow.Cells["email"].Value?.ToString();
             }
         }
+
 
         private void btnNuevo_Click(object sender, EventArgs e)
         {
@@ -87,7 +87,9 @@ namespace LogiPharm.Presentacion
 
         private void btnGuardar_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtIdentificacion.Text) || string.IsNullOrWhiteSpace(txtRazonSocial.Text) || cboTipoIdentificacion.SelectedIndex == -1)
+            if (cboTipoIdentificacion.SelectedIndex == -1 ||
+                string.IsNullOrWhiteSpace(txtIdentificacion.Text) ||
+                string.IsNullOrWhiteSpace(txtRazonSocial.Text))
             {
                 MessageBox.Show("El Tipo, la Identificación y la Razón Social son campos obligatorios.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -99,7 +101,7 @@ namespace LogiPharm.Presentacion
                 {
                     Id = _idClienteSeleccionado,
                     TipoIdentificacion = cboTipoIdentificacion.SelectedItem.ToString(),
-                    Identificacion = txtIdentificacion.Text.Trim(),
+                    CedulaRuc = txtIdentificacion.Text.Trim(),
                     RazonSocial = txtRazonSocial.Text.Trim(),
                     Direccion = txtDireccion.Text.Trim(),
                     Telefono = txtTelefono.Text.Trim(),
@@ -132,6 +134,8 @@ namespace LogiPharm.Presentacion
                 MessageBox.Show(ex.Message, "Error al Guardar", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
 
         private void LimpiarCampos()
         {

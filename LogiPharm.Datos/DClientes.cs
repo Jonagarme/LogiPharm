@@ -7,7 +7,7 @@ namespace LogiPharm.Datos
 {
     public class DClientes
     {
-        public ECliente BuscarClientePorId(string identificacion)
+        public ECliente BuscarClientePorId(string cedulaRuc)
         {
             ECliente cliente = null;
             using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
@@ -15,9 +15,9 @@ namespace LogiPharm.Datos
                 try
                 {
                     cn.Open();
-                    string query = "SELECT * FROM clientes WHERE identificacion = @id AND anulado = 0 LIMIT 1";
+                    string query = "SELECT * FROM clientes WHERE cedula_ruc = @cedulaRuc AND anulado = 0 LIMIT 1";
                     var cmd = new MySqlCommand(query, cn);
-                    cmd.Parameters.AddWithValue("@id", identificacion);
+                    cmd.Parameters.AddWithValue("@cedulaRuc", cedulaRuc);
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -26,11 +26,13 @@ namespace LogiPharm.Datos
                             cliente = new ECliente
                             {
                                 Id = reader.GetInt32("id"),
-                                Identificacion = reader["identificacion"].ToString(),
+                                TipoIdentificacion = reader["tipo_identificacion"].ToString(),
                                 RazonSocial = reader["razonSocial"].ToString(),
-                                Direccion = reader["direccion"].ToString(),
-                                Telefono = reader["telefono"].ToString(),
-                                Email = reader["email"].ToString()
+                                Direccion = reader["direccion"]?.ToString(),
+                                Telefono = reader["telefono"]?.ToString(),
+                                Email = reader["email"]?.ToString(),
+                                CreadoPor = reader["creadoPor"] != DBNull.Value ? Convert.ToInt32(reader["creadoPor"]) : 1,
+                                EditadoPor = reader["editadoPor"] != DBNull.Value ? Convert.ToInt32(reader["editadoPor"]) : (int?)null
                             };
                         }
                     }
@@ -43,6 +45,7 @@ namespace LogiPharm.Datos
             return cliente;
         }
 
+
         public DataTable ListarClientes(string criterio)
         {
             DataTable tabla = new DataTable();
@@ -52,15 +55,13 @@ namespace LogiPharm.Datos
                 {
                     cn.Open();
                     string query = @"
-                        SELECT id, tipoIdentificacion, identificacion, razonSocial, direccion, telefono, email
-                        FROM clientes
-                        WHERE anulado = 0 
-                          AND (identificacion LIKE @criterio OR razonSocial LIKE @criterio)
-                        ORDER BY razonSocial ASC;";
-
+                SELECT id, tipo_identificacion, cedula_ruc, nombres, apellidos, celular, direccion,telefono, email, razonSocial
+                FROM clientes
+                WHERE anulado = 0 
+                  AND (cedula_ruc LIKE @criterio OR razonSocial LIKE @criterio)
+                ORDER BY razonSocial ASC;";
                     MySqlCommand cmd = new MySqlCommand(query, cn);
                     cmd.Parameters.AddWithValue("@criterio", $"%{criterio}%");
-
                     MySqlDataAdapter da = new MySqlDataAdapter(cmd);
                     da.Fill(tabla);
                 }
@@ -71,6 +72,8 @@ namespace LogiPharm.Datos
             }
             return tabla;
         }
+
+
         public bool ActualizarCliente(ECliente cliente)
         {
             int filasAfectadas = 0;
@@ -80,25 +83,37 @@ namespace LogiPharm.Datos
                 {
                     cn.Open();
                     string query = @"
-                        UPDATE clientes SET
-                            tipoIdentificacion = @tipoId,
-                            identificacion = @identificacion,
-                            razonSocial = @razonSocial,
-                            direccion = @direccion,
-                            telefono = @telefono,
-                            email = @email,
-                            editadoPor = @editadoPor,
-                            editadoDate = @editadoDate
-                        WHERE id = @id;";
+                UPDATE clientes SET
+                    tipo_identificacion = @tipoIdentificacion,
+                    cedula_ruc = @cedulaRuc,
+                    nombres = @nombres,
+                    apellidos = @apellidos,
+                    razonSocial = @razonSocial,
+                    direccion = @direccion,
+                    telefono = @telefono,
+                    celular = @celular,
+                    email = @email,
+                    fecha_nacimiento = @fechaNacimiento,
+                    tipo_cliente = @tipoCliente,
+                    estado = @estado,
+                    editadoPor = @editadoPor,
+                    editadoDate = @editadoDate
+                WHERE id = @id;";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
                     cmd.Parameters.AddWithValue("@id", cliente.Id);
-                    cmd.Parameters.AddWithValue("@tipoId", cliente.TipoIdentificacion);
-                    cmd.Parameters.AddWithValue("@identificacion", cliente.Identificacion);
+                    cmd.Parameters.AddWithValue("@tipoIdentificacion", cliente.TipoIdentificacion);
+                    cmd.Parameters.AddWithValue("@cedulaRuc", cliente.CedulaRuc);
+                    cmd.Parameters.AddWithValue("@nombres", (object)cliente.Nombres ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@apellidos", (object)cliente.Apellidos ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@razonSocial", cliente.RazonSocial);
                     cmd.Parameters.AddWithValue("@direccion", (object)cliente.Direccion ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@telefono", (object)cliente.Telefono ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@celular", (object)cliente.Celular ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@email", (object)cliente.Email ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@fechaNacimiento", cliente.FechaNacimiento.HasValue ? (object)cliente.FechaNacimiento.Value : DBNull.Value);
+                    cmd.Parameters.AddWithValue("@tipoCliente", (object)cliente.TipoCliente ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@estado", cliente.Estado);
                     cmd.Parameters.AddWithValue("@editadoPor", cliente.EditadoPor);
                     cmd.Parameters.AddWithValue("@editadoDate", DateTime.Now);
 
@@ -113,6 +128,7 @@ namespace LogiPharm.Datos
         }
 
 
+
         public bool InsertarCliente(ECliente cliente)
         {
             int filasAfectadas = 0;
@@ -122,16 +138,24 @@ namespace LogiPharm.Datos
                 {
                     cn.Open();
                     string query = @"
-                        INSERT INTO clientes (tipoIdentificacion, identificacion, razonSocial, direccion, telefono, email, creadoPor, creadoDate) 
-                        VALUES (@tipoId, @id, @razonSocial, @direccion, @telefono, @email, @creadoPor, @creadoDate);";
+                INSERT INTO clientes
+                    (tipo_identificacion, cedula_ruc, nombres, apellidos, razonSocial, direccion, telefono, celular, email, fecha_nacimiento, tipo_cliente, estado, creadoPor, creadoDate)
+                VALUES
+                    (@tipoIdentificacion, @cedulaRuc, @nombres, @apellidos, @razonSocial, @direccion, @telefono, @celular, @email, @fechaNacimiento, @tipoCliente, @estado, @creadoPor, @creadoDate);";
 
                     var cmd = new MySqlCommand(query, cn);
-                    cmd.Parameters.AddWithValue("@tipoId", cliente.TipoIdentificacion);
-                    cmd.Parameters.AddWithValue("@id", cliente.Identificacion);
+                    cmd.Parameters.AddWithValue("@tipoIdentificacion", cliente.TipoIdentificacion);
+                    cmd.Parameters.AddWithValue("@cedulaRuc", cliente.CedulaRuc);
+                    cmd.Parameters.AddWithValue("@nombres", (object)cliente.Nombres ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@apellidos", (object)cliente.Apellidos ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@razonSocial", cliente.RazonSocial);
                     cmd.Parameters.AddWithValue("@direccion", (object)cliente.Direccion ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@telefono", (object)cliente.Telefono ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@celular", (object)cliente.Celular ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@email", (object)cliente.Email ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@fechaNacimiento", cliente.FechaNacimiento.HasValue ? (object)cliente.FechaNacimiento.Value : DBNull.Value);
+                    cmd.Parameters.AddWithValue("@tipoCliente", (object)cliente.TipoCliente ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@estado", cliente.Estado);
                     cmd.Parameters.AddWithValue("@creadoPor", cliente.CreadoPor);
                     cmd.Parameters.AddWithValue("@creadoDate", DateTime.Now);
 
@@ -145,6 +169,7 @@ namespace LogiPharm.Datos
             return filasAfectadas > 0;
         }
 
+
         public DataTable ListarClientesActivos()
         {
             DataTable tabla = new DataTable();
@@ -153,9 +178,7 @@ namespace LogiPharm.Datos
                 try
                 {
                     cn.Open();
-                    // Seleccionamos el ID y la razón social para el ComboBox
-                    string query = "SELECT id, razonSocial FROM clientes WHERE anulado = 0 ORDER BY razonSocial ASC";
-
+                    string query = "SELECT id, razonSocial FROM clientes WHERE anulado = 0 AND estado = 1 ORDER BY razonSocial ASC";
                     MySqlDataAdapter da = new MySqlDataAdapter(query, cn);
                     da.Fill(tabla);
                 }
@@ -166,5 +189,6 @@ namespace LogiPharm.Datos
             }
             return tabla;
         }
+
     }
 }
