@@ -56,11 +56,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ECliente.cs" />
+    <Compile Include="EFacturaCompra.cs" />
+    <Compile Include="EFacturaCompraXml.cs" />
     <Compile Include="EProducto.cs" />
     <Compile Include="EProveedor.cs" />
     <Compile Include="ERol.cs" />
     <Compile Include="EUsuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VentaPayload.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

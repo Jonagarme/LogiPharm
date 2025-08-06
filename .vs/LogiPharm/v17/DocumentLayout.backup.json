@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\frmpuntodeventa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{50711665-4918-493A-B531-8D999E166181}|LogiPharm.Datos\\LogiPharm.Datos.csproj|C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\logipharm.datos\\dproveedores.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{50711665-4918-493A-B531-8D999E166181}|LogiPharm.Datos\\LogiPharm.Datos.csproj|solutionrelative:logipharm.datos\\dproveedores.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|c:\\users\\jonag\\onedrive\\im\u00E1genes\\logipharm\\logipharm\\logipharm.presentacion\\facturaticketp.rdlc||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\facturaticketp.rdlc||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\logipharm.presentacion\\frmproveedores.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\frmproveedores.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\logipharm.presentacion\\facturaticketp.rdlc||{46F6D2A1-5E86-4080-A799-01F3D0E23796}",
+      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\facturaticketp.rdlc||{46F6D2A1-5E86-4080-A799-01F3D0E23796}"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,8 +22,21 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "FacturaTicketP.rdlc [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FacturaTicketP.rdlc",
+              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FacturaTicketP.rdlc",
+              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FacturaTicketP.rdlc [Dise\u00F1o]",
+              "RelativeToolTip": "LogiPharm.Presentacion\\FacturaTicketP.rdlc [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001755|",
+              "WhenOpened": "2025-08-05T03:34:46.554Z",
+              "IsPinned": true,
+              "EditorCaption": " [Dise\u00F1o]"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -32,34 +45,23 @@
               "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
               "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
               "RelativeToolTip": "LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
-              "ViewState": "AgIAADMAAAAAAAAAAAAlwEoAAAATAAAAAAAAAA==",
+              "ViewState": "AgIAAJAAAAAAAAAAAAAMwKkAAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T00:31:50.351Z",
+              "WhenOpened": "2025-08-06T01:01:41.456Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "DProveedores.cs",
-              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Datos\\DProveedores.cs",
-              "RelativeDocumentMoniker": "LogiPharm.Datos\\DProveedores.cs",
-              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Datos\\DProveedores.cs",
-              "RelativeToolTip": "LogiPharm.Datos\\DProveedores.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAlwBAAAAAeAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T00:30:48.052Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "FrmProveedores.cs",
-              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmProveedores.cs",
-              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FrmProveedores.cs",
-              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmProveedores.cs",
-              "RelativeToolTip": "LogiPharm.Presentacion\\FrmProveedores.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAwB8AAAA2AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-01T00:30:04.87Z"
+              "Title": "FacturaTicketP.rdlc",
+              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FacturaTicketP.rdlc",
+              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FacturaTicketP.rdlc",
+              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FacturaTicketP.rdlc",
+              "RelativeToolTip": "LogiPharm.Presentacion\\FacturaTicketP.rdlc",
+              "ViewState": "AgIAAOEAAAAAAAAAAADgv2ECAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001755|",
+              "WhenOpened": "2025-08-05T04:11:48.63Z",
+              "EditorCaption": ""
             }
           ]
         }

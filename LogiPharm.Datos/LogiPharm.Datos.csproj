@@ -99,6 +99,7 @@
     <Compile Include="DKardex.cs" />
     <Compile Include="DProductos.cs" />
     <Compile Include="DProveedores.cs" />
+    <Compile Include="DRecepcionProductos.cs" />
     <Compile Include="DRoles.cs" />
     <Compile Include="DUsuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
