@@ -27,6 +27,7 @@ namespace LogiPharm.Datos
                             {
                                 Id = reader.GetInt32("id"),
                                 TipoIdentificacion = reader["tipo_identificacion"].ToString(),
+                                CedulaRuc = reader["cedula_ruc"].ToString(),
                                 RazonSocial = reader["nombres"].ToString(),
                                 Direccion = reader["direccion"]?.ToString(),
                                 Telefono = reader["telefono"]?.ToString(),
