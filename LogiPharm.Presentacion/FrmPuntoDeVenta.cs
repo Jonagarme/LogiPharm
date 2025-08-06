@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
@@ -9,6 +11,8 @@ namespace LogiPharm.Presentacion
 {
     public partial class FrmPuntoDeVenta : Form
     {
+        private ECliente _clienteSeleccionado;
+
         public FrmPuntoDeVenta()
         {
             InitializeComponent();
@@ -71,16 +75,136 @@ namespace LogiPharm.Presentacion
 
         private void AbrirVentanaPago()
         {
-            decimal totalVenta = CalcularTotalVenta(); // método auxiliar
-            using (FrmPago frmPago = new FrmPago(totalVenta))
+            // 1. Validar que haya productos en la venta
+            if (dgvDetalleVenta.Rows.Count <= 1 && dgvDetalleVenta.Rows[0].IsNewRow)
+            {
+                MessageBox.Show("No hay productos en la venta para procesar el pago.", "Venta Vacía", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (_clienteSeleccionado == null)
+            {
+                MessageBox.Show("Debe seleccionar un cliente válido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 2. Recolectar datos del cliente
+            //ECliente cliente = new ECliente
+            //{
+            //    Identificacion = txtIdentificacion.Text,
+            //    RazonSocial = txtCliente.Text,
+            //    Email = txtEmail.Text,
+            //    Direccion = cliente.Direccion
+            //};
+
+            // 3. Recolectar los detalles de los productos
+            var productos = new List<ProductoVenta>();
+            foreach (DataGridViewRow row in dgvDetalleVenta.Rows)
+            {
+                if (row.IsNewRow || row.Cells["colCodigo"].Value == null) continue;
+                productos.Add(new ProductoVenta
+                {
+                    CodigoPrincipal = row.Cells["colCodigo"].Value.ToString(),
+                    Descripcion = row.Cells["colProducto"].Value.ToString(),
+                    Cantidad = Convert.ToDecimal(row.Cells["colCantidad"].Value ?? 0),
+                    PrecioUnitario = Convert.ToDecimal(row.Cells["colPrecio"].Value ?? 0),
+                    Descuento = Convert.ToDecimal(row.Cells["colDscto"].Value ?? 0),
+                    PrecioTotalSinImpuesto = Convert.ToDecimal(row.Cells["colSubtotal"].Value ?? 0)
+                });
+            }
+
+            // 4. Calcular el total de la venta
+            decimal totalVenta = CalcularTotalVenta();
+
+            // 5. Abrir la ventana de pago UNA SOLA VEZ
+            using (FrmPago frmPago = new FrmPago(totalVenta, _clienteSeleccionado, productos))
             {
                 if (frmPago.ShowDialog() == DialogResult.OK)
                 {
-                    MessageBox.Show("Pago realizado con éxito.", "Confirmación", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Si el pago fue exitoso, continuar con la impresión
+                    MessageBox.Show("Venta procesada con éxito.", "Confirmación", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // TODO: aquí puedes guardar la venta, limpiar el formulario, imprimir, etc.
+                    if (MessageBox.Show("¿Desea imprimir la factura?", "Imprimir", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        ImprimirFactura(_clienteSeleccionado, productos, totalVenta);
+                    }
+
+                    // TODO: Aquí iría tu lógica para guardar la venta en la base de datos
+                    // y luego limpiar el POS para una nueva venta.
+                    // LimpiarFormularioVenta();
                 }
             }
+        }
+
+        private void ImprimirFactura(ECliente cliente, List<ProductoVenta> productos, decimal efectivoRecibido)
+        {
+            try
+            {
+                dsFactura ds = new dsFactura();
+                DataTable dtInfo = ds.Tables["dtFacturaInfo"];
+                DataTable dtDetalle = ds.Tables["dtFacturaDetalle"];
+
+                decimal subtotal = 0m;
+                decimal descuento = 0m;
+                decimal iva = 0m;
+                decimal cambio = 0m;
+
+                foreach (var prod in productos)
+                {
+                    subtotal += prod.PrecioTotalSinImpuesto;
+                    descuento += prod.Descuento;
+                    iva += prod.PrecioTotalSinImpuesto; // Si tienes IVA por producto
+                    dtDetalle.Rows.Add(prod.Cantidad, prod.Descripcion, prod.PrecioUnitario, prod.PrecioTotalSinImpuesto);
+                }
+                decimal total = subtotal + iva;
+
+                dtInfo.Rows.Add(
+                    "FARMACIAS LOGIPHARM",
+                    "0991234567001",
+                    "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA",
+                    "0981276460",
+                    lblNumeroFactura.Text,
+                    "12345678901234567890...",
+                    DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
+                    cliente.RazonSocial,
+                    cliente.CedulaRuc,
+                    cliente.Direccion,
+                    subtotal,
+                    descuento,
+                    iva,
+                    total,
+                    "EFECTIVO",
+                    efectivoRecibido,
+                    cambio,
+                    "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA",
+                    "0981276460",
+                    "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA"
+                );
+
+                using (FrmVisorFactura frmVisor = new FrmVisorFactura(dtInfo, dtDetalle))
+                {
+                    frmVisor.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al generar la factura para imprimir:\n" + ex.Message, "Error de Impresión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+        private void LimpiarPOS()
+        {
+            // Limpia todos los controles de cliente, productos y totales
+            txtIdentificacion.Clear();
+            txtCliente.Clear();
+            txtEmail.Clear();
+            dgvDetalleVenta.Rows.Clear();
+            dgvDetalleVenta.Rows.Add();
+            lblPrecio.Text = "0.00";
+            lblIVA.Text = "0.00";
+            lblTotalDescuento.Text = "0.00";
+            _clienteSeleccionado = null;
         }
 
         private decimal CalcularTotalVenta()
@@ -104,72 +228,7 @@ namespace LogiPharm.Presentacion
             lblFechaCompleta.Text = DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy");
         }
 
-        //private void dgvDetalleVenta_CellEndEdit(object sender, DataGridViewCellEventArgs e)
-        //{
-        //    var colName = dgvDetalleVenta.Columns[e.ColumnIndex].Name;
-
-        //    // Búsqueda por código o producto
-        //    if (colName == "colCodigo" || colName == "colProducto")
-        //    {
-        //        string textoBuscado = dgvDetalleVenta.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
-
-        //        if (!string.IsNullOrEmpty(textoBuscado))
-        //        {
-        //            try
-        //            {
-        //                DProductos d_Productos = new DProductos();
-        //                EProducto productoEncontrado = d_Productos.BuscarProductoPorCodigoONombre(textoBuscado);
-
-        //                if (productoEncontrado != null)
-        //                {
-        //                    DataGridViewRow filaActual = dgvDetalleVenta.Rows[e.RowIndex];
-        //                    filaActual.Cells["colCodigo"].Value = productoEncontrado.CodigoPrincipal;
-        //                    filaActual.Cells["colProducto"].Value = productoEncontrado.Nombre;
-        //                    filaActual.Cells["colPrecio"].Value = productoEncontrado.PrecioVenta;
-
-        //                    // Si la cantidad es nula, pon 1
-        //                    if (filaActual.Cells["colCantidad"].Value == null)
-        //                        filaActual.Cells["colCantidad"].Value = 1;
-
-        //                    filaActual.Cells["colPFinal"].Value = productoEncontrado.PrecioVenta;
-
-        //                    // Calcular total inicial (cantidad x precio)
-        //                    CalcularTotalFila(filaActual);
-
-        //                    // Mover foco a cantidad
-        //                    dgvDetalleVenta.CurrentCell = filaActual.Cells["colCantidad"];
-        //                    dgvDetalleVenta.BeginEdit(true);
-
-        //                    // Si es la última fila, añade una vacía
-        //                    if (e.RowIndex == dgvDetalleVenta.Rows.Count - 1)
-        //                        dgvDetalleVenta.Rows.Add();
-        //                }
-        //                else
-        //                {
-        //                    MessageBox.Show("Producto no encontrado.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-        //                    dgvDetalleVenta.Rows[e.RowIndex].Cells["colCodigo"].Value = "";
-        //                    dgvDetalleVenta.Rows[e.RowIndex].Cells["colProducto"].Value = "";
-        //                    dgvDetalleVenta.Rows[e.RowIndex].Cells["colPrecio"].Value = null;
-        //                    dgvDetalleVenta.Rows[e.RowIndex].Cells["colCantidad"].Value = null;
-        //                    dgvDetalleVenta.Rows[e.RowIndex].Cells["colTotal"].Value = null;
-        //                }
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                MessageBox.Show(ex.Message, "Error en Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            }
-        //        }
-        //    }
-
-        //    // Calcular total al editar cantidad o precio
-        //    if (colName == "colCantidad" || colName == "colPrecio")
-        //    {
-        //        DataGridViewRow fila = dgvDetalleVenta.Rows[e.RowIndex];
-        //        CalcularTotalFila(fila);
-        //    }
-        //}
-
+     
         private void dgvDetalleVenta_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             var colName = dgvDetalleVenta.Columns[e.ColumnIndex].Name;
@@ -412,6 +471,7 @@ namespace LogiPharm.Presentacion
                     if (cliente != null)
                     {
                         // Si el cliente existe, llenamos los datos
+                        _clienteSeleccionado = cliente;
                         txtCliente.Text = cliente.RazonSocial;
                         txtEmail.Text = cliente.Email;
                     }
@@ -427,6 +487,7 @@ namespace LogiPharm.Presentacion
                                 if (frm.ShowDialog() == DialogResult.OK)
                                 {
                                     // Si se guardó, actualizamos los datos en el POS
+                                    _clienteSeleccionado = frm.ClienteGuardado;
                                     txtCliente.Text = frm.ClienteGuardado.Nombres;
                                     txtEmail.Text = frm.ClienteGuardado.Email;
                                 }
