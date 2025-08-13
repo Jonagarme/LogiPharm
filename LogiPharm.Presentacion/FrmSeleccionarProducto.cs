@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic; // Necesario para List<EProducto>
-using System.Data;
+using System.Collections.Generic;
+using System.Drawing; // Necesario para los colores
 using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
@@ -9,21 +9,18 @@ namespace LogiPharm.Presentacion
 {
     public partial class FrmSeleccionarProducto : Form
     {
-        // Propiedad pública para devolver el producto que el usuario elija
         public EProducto ProductoSeleccionado { get; private set; }
         private string _terminoBusquedaInicial;
-
-        // NUEVO: Lista local para cuando abres desde una lista de productos (no por texto)
         private List<EProducto> _listaProductos = null;
 
-        // Constructor original por texto
+        // Constructor para búsqueda por texto
         public FrmSeleccionarProducto(string terminoBusqueda = "")
         {
             InitializeComponent();
             _terminoBusquedaInicial = terminoBusqueda;
         }
 
-        // *** CONSTRUCTOR NUEVO: Recibe una lista de productos ***
+        // Constructor para lista predefinida
         public FrmSeleccionarProducto(List<EProducto> productos)
         {
             InitializeComponent();
@@ -32,20 +29,27 @@ namespace LogiPharm.Presentacion
 
         private void FrmSeleccionarProducto_Load(object sender, EventArgs e)
         {
-            // Si se recibe una lista, se muestra directamente (no filtra por texto)
+            // Limpia los detalles al inicio
+            LimpiarDetalles();
+
             if (_listaProductos != null)
             {
-                dgvProductos.DataSource = null; // Limpia primero
+                // Carga desde la lista proporcionada
+                dgvProductos.DataSource = null;
                 dgvProductos.DataSource = _listaProductos;
-                EstilizarGrid();
-                //txtBuscar.Enabled = false;
+                txtBuscar.Enabled = false; // Deshabilitar búsqueda si se usa una lista fija
             }
             else
             {
-                // Si se pasó un término de búsqueda, lo usamos para filtrar desde el inicio
+                // Carga y filtra según el texto inicial
                 txtBuscar.Text = _terminoBusquedaInicial;
                 CargarYFiltrarProductos();
-                EstilizarGrid();
+            }
+
+            // Después de cargar, si hay filas, muestra los detalles de la primera
+            if (dgvProductos.Rows.Count > 0)
+            {
+                MostrarDetallesProducto();
             }
         }
 
@@ -54,6 +58,8 @@ namespace LogiPharm.Presentacion
             try
             {
                 DProductos d_Productos = new DProductos();
+                // **RECOMENDACIÓN:** Asegúrate de que `BuscarProductosActivos` devuelva List<EProducto>
+                // para simplificar el código y evitar conversiones manuales.
                 dgvProductos.DataSource = d_Productos.BuscarProductosActivos(txtBuscar.Text);
             }
             catch (Exception ex)
@@ -62,65 +68,66 @@ namespace LogiPharm.Presentacion
             }
         }
 
-        private void EstilizarGrid()
+        // --- MÉTODOS PARA EL NUEVO PANEL DE DETALLES ---
+
+        /// <summary>
+        /// Rellena el panel de detalles con la información del producto seleccionado en el grid.
+        /// </summary>
+        private void MostrarDetallesProducto()
         {
-            if (dgvProductos.Columns["id"] != null)
+            if (dgvProductos.CurrentRow != null && dgvProductos.CurrentRow.DataBoundItem is EProducto producto)
             {
-                dgvProductos.Columns["id"].Visible = false;
+                gbDetalles.Text = producto.Nombre;
+                lblDescripcion.Text = !string.IsNullOrEmpty(producto.Descripcion) ? producto.Descripcion : "No hay descripción disponible.";
+                txtFechaVencimiento.Text = producto.FechaVencimiento.ToString("dd/MM/yyyy");
+                lblStockValor.Text = producto.Stock.ToString("N2"); // Formato con 2 decimales
+
+                // Lógica de colores para el stock
+                if (producto.Stock <= producto.StockMinimo)
+                {
+                    panelStock.FillColor = Color.FromArgb(255, 235, 238); // Rojo claro
+                    lblStockValor.ForeColor = Color.FromArgb(192, 0, 0);   // Rojo oscuro
+                }
+                else
+                {
+                    panelStock.FillColor = Color.FromArgb(230, 245, 237); // Verde claro
+                    lblStockValor.ForeColor = Color.FromArgb(0, 100, 0);   // Verde oscuro
+                }
             }
-            if (dgvProductos.Columns["codigoPrincipal"] != null)
+            else
             {
-                dgvProductos.Columns["codigoPrincipal"].HeaderText = "Código";
-                dgvProductos.Columns["codigoPrincipal"].Width = 120;
-            }
-            if (dgvProductos.Columns["nombre"] != null)
-            {
-                dgvProductos.Columns["nombre"].HeaderText = "Nombre";
-                dgvProductos.Columns["nombre"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            }
-            if (dgvProductos.Columns["stock"] != null)
-            {
-                dgvProductos.Columns["stock"].HeaderText = "Stock";
-                dgvProductos.Columns["stock"].Width = 80;
-            }
-            if (dgvProductos.Columns["precioVenta"] != null)
-            {
-                dgvProductos.Columns["precioVenta"].HeaderText = "Precio";
-                dgvProductos.Columns["precioVenta"].Width = 90;
-                dgvProductos.Columns["precioVenta"].DefaultCellStyle.Format = "N2";
+                LimpiarDetalles();
             }
         }
 
+        /// <summary>
+        /// Limpia el panel de detalles cuando no hay ninguna selección.
+        /// </summary>
+        private void LimpiarDetalles()
+        {
+            gbDetalles.Text = "Detalles del Producto";
+            lblDescripcion.Text = "Seleccione un producto para ver sus detalles.";
+            txtFechaVencimiento.Text = "";
+            lblStockValor.Text = "-";
+            panelStock.FillColor = Color.Gainsboro;
+            lblStockValor.ForeColor = Color.Black;
+        }
 
+        // --- EVENTOS DE CONTROLES ---
 
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
-            if (_listaProductos == null) // Solo filtra si no fue abierto con lista
+            if (_listaProductos == null)
+            {
                 CargarYFiltrarProductos();
+            }
         }
 
         private void SeleccionarProducto()
         {
-            if (dgvProductos.CurrentRow != null)
+            if (dgvProductos.CurrentRow != null && dgvProductos.CurrentRow.DataBoundItem is EProducto prod)
             {
-                // Si el DataSource es una lista de EProducto (caso lista directa)
-                if (dgvProductos.CurrentRow.DataBoundItem is EProducto prod)
-                {
-                    ProductoSeleccionado = prod;
-                }
-                else
-                {
-                    // Si el DataSource es un DataTable (caso búsqueda por texto)
-                    ProductoSeleccionado = new EProducto
-                    {
-                        Id = Convert.ToInt64(dgvProductos.CurrentRow.Cells["id"].Value),
-                        CodigoPrincipal = dgvProductos.CurrentRow.Cells["codigoPrincipal"].Value.ToString(),
-                        Nombre = dgvProductos.CurrentRow.Cells["nombre"].Value.ToString(),
-                        Stock = Convert.ToDecimal(dgvProductos.CurrentRow.Cells["stock"].Value),
-                        PrecioVenta = Convert.ToDecimal(dgvProductos.CurrentRow.Cells["precioVenta"].Value)
-                    };
-                }
-
+                ProductoSeleccionado = prod;
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
@@ -129,6 +136,8 @@ namespace LogiPharm.Presentacion
                 MessageBox.Show("Por favor, seleccione un producto de la lista.", "Sin selección", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
+        // --- EVENTOS DE BOTONES Y GRID ---
 
         private void btnAceptar_Click(object sender, EventArgs e)
         {
@@ -141,6 +150,14 @@ namespace LogiPharm.Presentacion
             {
                 SeleccionarProducto();
             }
+        }
+
+        /// <summary>
+        /// Evento clave: Se dispara cada vez que cambia la fila seleccionada.
+        /// </summary>
+        private void dgvProductos_SelectionChanged(object sender, EventArgs e)
+        {
+            MostrarDetallesProducto();
         }
 
         private void btnCerrar_Click(object sender, EventArgs e)
