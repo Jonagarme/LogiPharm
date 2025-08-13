@@ -30,14 +30,14 @@ namespace LogiPharm.Presentacion
                 // Añadir fila de 'Todos'
                 DataRow dr = dt.NewRow();
                 dr["id"] = 0;
-                dr["razonSocial"] = "[TODOS LOS CLIENTES]";
+                dr["nombres"] = "[TODOS LOS CLIENTES]";
                 dt.Rows.InsertAt(dr, 0);
 
                 // MUY IMPORTANTE: Limpiar primero
                 cboCliente.DataSource = null;
                 cboCliente.Items.Clear();
 
-                cboCliente.DisplayMember = "razonSocial";
+                cboCliente.DisplayMember = "nombres";
                 cboCliente.ValueMember = "id";
                 cboCliente.DataSource = dt;
             }
