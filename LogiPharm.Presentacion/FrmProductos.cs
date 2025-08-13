@@ -14,9 +14,10 @@ namespace LogiPharm.Presentacion
         {
             InitializeComponent();
 
-            // Asignar los métodos a los eventos del menú dinámicamente
-            // Esto es necesario porque el designer que te pasé no lo hace automáticamente.
+            this.btnGuardar.Click += btnGuardar_Click;
+            this.DgvListado.CellDoubleClick += DgvListado_CellDoubleClick;
             AsignarEventosMenu();
+            this.btnCancelar.Click += BtnCancelar_Click;
         }
 
         private void AsignarEventosMenu()
@@ -35,22 +36,33 @@ namespace LogiPharm.Presentacion
             });
         }
 
+        private void BtnCancelar_Click(object sender, EventArgs e)
+        {
+            CerrarPanelEdicion();
+        }
+
+
         private void FrmProductos_Load(object sender, EventArgs e)
         {
-            // Al cargar el formulario, ocultamos el panel de detalles.
+            splitContainer1.Panel2Collapsed = true;
             CerrarPanelEdicion();
-            // Aquí también deberías cargar la lista inicial de productos en DgvListado.
-
             CargarProductos();
         }
+
 
         // --- MÉTODOS PARA CONTROLAR EL PANEL DE EDICIÓN ---
 
         private void AbrirPanelEdicion()
         {
-            // Muestra el panel de detalles (el de la derecha).
             splitContainer1.Panel2Collapsed = false;
+            // deja ~400 px a la derecha
+            int panel2Width = 420;
+            int minLeft = 400; // para que el listado no quede mínimo
+            int distancia = Math.Max(minLeft, this.Width - panel2Width);
+            splitContainer1.SplitterDistance = Math.Min(distancia, this.Width - panel2Width);
+            panelDatos.BringToFront();
         }
+
 
         private void CerrarPanelEdicion()
         {
@@ -60,18 +72,14 @@ namespace LogiPharm.Presentacion
 
         // --- EVENTOS DE LOS MENÚS Y BOTONES ---
 
-        private void iconButtonOpciones_Click(object sender, EventArgs e)
-        {
-            // Muestra el menú contextual debajo del botón de opciones.
-            contextMenuOpciones.Show(iconButtonOpciones, new Point(0, iconButtonOpciones.Height));
-        }
+        //private void iconButtonOpciones_Click(object sender, EventArgs e)
+        //{
+        //    // Muestra el menú contextual debajo del botón de opciones.
+        //    contextMenuOpciones.Show(iconButtonOpciones, new Point(0, iconButtonOpciones.Height));
+        //}
 
         private void menuNuevoProducto_Click(object sender, EventArgs e)
         {
-            // TODO: Limpiar los controles del panel de datos antes de mostrarlo
-            // ej: txtID.Clear(); txtNombre.Clear(); cboCategoria.SelectedIndex = -1;
-
-            // Abre el panel para ingresar los datos de un nuevo producto.
             AbrirPanelEdicion();
         }
 
@@ -125,24 +133,104 @@ namespace LogiPharm.Presentacion
 
         private void DgvListado_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Asegúrate de que el clic no fue en el encabezado de la columna.
-            if (e.RowIndex < 0) return;
+            if (e.RowIndex < 0) return; // Ignorar clics en el encabezado
 
-            // TODO: Reemplaza "btnEditar" con el nombre real de tu columna de botón de edición.
-            if (this.DgvListado.Columns[e.ColumnIndex].Name == "btnEditar")
+            string nombreColumna = DgvListado.Columns[e.ColumnIndex].Name;
+
+            if (nombreColumna == "colEditar")
             {
-                // 1. Obtén los datos de la fila seleccionada.
-                // string idProducto = DgvListado.Rows[e.RowIndex].Cells["ID"].Value.ToString();
-                // string nombre = DgvListado.Rows[e.RowIndex].Cells["Nombre"].Value.ToString();
+                // Llama a tu método existente para editar
+                AbrirFormularioEditarProducto();
+            }
+            else if (nombreColumna == "colEliminar")
+            {
+                // Lógica para eliminar el producto
+                if (MessageBox.Show("¿Está seguro de que desea eliminar este producto?", "Confirmar Eliminación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    try
+                    {
+                        int idProducto = Convert.ToInt32(DgvListado.Rows[e.RowIndex].Cells["ID"].Value);
+                        // TODO: Llama a tu método de la capa de datos para eliminar/desactivar el producto
+                        // DProductos d_prod = new DProductos();
+                        // bool exito = d_prod.Eliminar(idProducto);
+                        // if(exito) { CargarProductos(); }
 
-                // 2. Carga esos datos en los controles de panelDatos.
-                // txtID.Text = idProducto;
-                // ... etc ...
-
-                // 3. Muestra el panel de edición con los datos cargados.
-                AbrirPanelEdicion();
+                        MessageBox.Show($"Producto con ID {idProducto} eliminado (simulación).");
+                        CargarProductos(); // Recarga la lista para ver el cambio
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error al eliminar el producto: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
         }
+
+        // En el constructor FrmProductos() o en el evento FrmProductos_Load,
+        // añade esta línea para suscribirte al evento:
+        // this.DgvListado.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DgvListado_CellPainting);
+        // (Ya lo hice por ti en el designer, así que no es necesario añadirla manualmente)
+
+        private void DgvListado_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            // Solo actuamos en la columna 'colStatus' y no en el encabezado
+            if (e.ColumnIndex == DgvListado.Columns["colStatus"].Index && e.RowIndex >= 0)
+            {
+                e.Paint(e.CellBounds, DataGridViewPaintParts.All);
+
+                // Obtenemos el valor de la columna 'Activo' para esta fila
+                // Asegúrate de que tu consulta SQL devuelva una columna llamada 'Activo' de tipo bool/bit
+                bool esActivo = Convert.ToBoolean(DgvListado.Rows[e.RowIndex].Cells["Activo"].Value);
+
+                // Elige el color del círculo
+                Color statusColor = esActivo ? Color.MediumSeaGreen : Color.Crimson;
+
+                // Dibuja el círculo en el centro de la celda
+                int circleSize = 12;
+                int x = e.CellBounds.Left + (e.CellBounds.Width - circleSize) / 2;
+                int y = e.CellBounds.Top + (e.CellBounds.Height - circleSize) / 2;
+
+                using (SolidBrush brush = new SolidBrush(statusColor))
+                {
+                    e.Graphics.FillEllipse(brush, new Rectangle(x, y, circleSize, circleSize));
+                }
+
+                e.Handled = true;
+            }
+        }
+
+        // Añade esta línea en el constructor o en el Load si no lo hiciste en el designer:
+        // this.DgvListado.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DgvListado_CellFormatting);
+        // (Ya lo hice por ti en el designer)
+
+        private void DgvListado_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            if (DgvListado.Columns.Contains("Stock") && DgvListado.Columns.Contains("StockMinimo"))
+            {
+                var stockObj = DgvListado.Rows[e.RowIndex].Cells["Stock"].Value;
+                var miniObj = DgvListado.Rows[e.RowIndex].Cells["StockMinimo"].Value;
+
+                if (stockObj != null && miniObj != null &&
+                    decimal.TryParse(stockObj.ToString(), out var stock) &&
+                    decimal.TryParse(miniObj.ToString(), out var stockMinimo))
+                {
+                    if (stock == 0)
+                    {
+                        e.CellStyle.BackColor = Color.FromArgb(255, 235, 238);
+                        e.CellStyle.SelectionBackColor = Color.FromArgb(255, 190, 200);
+                    }
+                    else if (stock <= stockMinimo)
+                    {
+                        e.CellStyle.BackColor = Color.FromArgb(255, 250, 230);
+                        e.CellStyle.SelectionBackColor = Color.FromArgb(255, 230, 180);
+                    }
+                }
+            }
+        }
+
+
 
         private async void iconButton4_Click(object sender, EventArgs e)
         {
@@ -231,6 +319,133 @@ namespace LogiPharm.Presentacion
                                 MessageBoxIcon.Error);
             }
         }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            // --- VALIDACIONES ---
+            if (string.IsNullOrWhiteSpace(txtNombre.Text))
+            {
+                MessageBox.Show("El nombre del producto es obligatorio.", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                tabProducto.SelectedTab = tabPrincipal;
+                txtNombre.Focus();
+                return;
+            }
+            if (cboTipoProducto.SelectedValue == null)
+            {
+                MessageBox.Show("Debe seleccionar un Tipo de Producto.", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                tabProducto.SelectedTab = tabClasificacion;
+                cboTipoProducto.Focus();
+                return;
+            }
+            if (cboClaseProducto.SelectedValue == null)
+            {
+                MessageBox.Show("Debe seleccionar una Clase de Producto.", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                tabProducto.SelectedTab = tabClasificacion;
+                cboClaseProducto.Focus();
+                return;
+            }
+            if (cboCategoria.SelectedValue == null)
+            {
+                MessageBox.Show("Debe seleccionar una Categoría.", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                tabProducto.SelectedTab = tabClasificacion;
+                cboCategoria.Focus();
+                return;
+            }
+            if (cboSubcategoria.SelectedValue == null)
+            {
+                MessageBox.Show("Debe seleccionar una Subcategoría.", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                tabProducto.SelectedTab = tabClasificacion;
+                cboSubcategoria.Focus();
+                return;
+            }
+            if (cboMarca.SelectedValue == null)
+            {
+                MessageBox.Show("Debe seleccionar una Marca.", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                tabProducto.SelectedTab = tabClasificacion;
+                cboMarca.Focus();
+                return;
+            }
+
+            // --- ARMAR ENTIDAD ---
+            var nuevo = new EProducto();
+            try
+            {
+                // Principal
+                nuevo.Nombre = txtNombre.Text.Trim();
+                nuevo.CodigoPrincipal = txtCodigoPrincipal.Text.Trim();
+                nuevo.CodigoAuxiliar = txtCodigoAuxiliar.Text.Trim();
+                nuevo.Descripcion = txtDescripcion.Text.Trim();
+                nuevo.Observaciones = txtObservaciones.Text.Trim();
+                nuevo.RegistroSanitario = txtRegistroSanitario.Text.Trim();
+
+                // Clasificación (obligatorios ya validados)
+                nuevo.IdTipoProducto = Convert.ToInt32(cboTipoProducto.SelectedValue);
+                nuevo.IdClaseProducto = Convert.ToInt32(cboClaseProducto.SelectedValue);
+                nuevo.IdCategoria = Convert.ToInt32(cboCategoria.SelectedValue);
+                nuevo.IdSubcategoria = Convert.ToInt32(cboSubcategoria.SelectedValue);
+                nuevo.IdMarca = Convert.ToInt32(cboMarca.SelectedValue);
+
+                // Opcionales
+                nuevo.IdSubnivel = cboSubnivel.SelectedValue != null ? (int?)Convert.ToInt32(cboSubnivel.SelectedValue) : null;
+                nuevo.IdLaboratorio = cboLaboratorio.SelectedValue != null ? (int?)Convert.ToInt32(cboLaboratorio.SelectedValue) : null;
+                nuevo.ClasificacionABC = cboClasificacionABC.SelectedItem?.ToString();
+
+                // Inventario / Precios
+                nuevo.Stock = numStock.Value;
+                nuevo.StockMinimo = numStockMinimo.Value;
+                nuevo.StockMaximo = numStockMaximo.Value;
+                nuevo.PrecioVenta = numPrecioVenta.Value;
+
+                // Atributos
+                nuevo.EsDivisible = chkEsDivisible.Checked;
+                nuevo.EsPsicotropico = chkEsPsicotropico.Checked;
+                nuevo.RequiereCadenaFrio = chkRequiereCadenaFrio.Checked;
+                nuevo.RequiereSeguimiento = chkRequiereSeguimiento.Checked;
+                nuevo.CalculoABCManual = chkCalculoABCManual.Checked;
+
+                // Auditoría (ajusta según tu sesión/usuario actual)
+                nuevo.CreadoPor = 1;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al preparar los datos: " + ex.Message, "Datos inválidos",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // --- PERSISTENCIA ---
+            try
+            {
+                var d = new DProductos();
+                bool ok = d.InsertarProducto(nuevo);
+
+                if (ok)
+                {
+                    MessageBox.Show("¡Producto guardado exitosamente!", "Éxito",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    CerrarPanelEdicion();
+                    CargarProductos();
+                }
+                else
+                {
+                    MessageBox.Show("No se pudo guardar el producto.", "Fallo",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en base de datos: " + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
 
         // Creamos un nuevo método para cargar y mostrar los productos
         private void CargarProductos()

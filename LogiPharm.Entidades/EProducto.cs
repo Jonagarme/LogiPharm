@@ -14,10 +14,10 @@ namespace LogiPharm.Entidades
         public string RegistroSanitario { get; set; }
         public int IdTipoProducto { get; set; }
         public int IdClaseProducto { get; set; }
-        public int IdCategoria { get; set; }
-        public int IdSubcategoria { get; set; }
+        public int? IdCategoria { get; set; }
+        public int? IdSubcategoria { get; set; }
         public int? IdSubnivel { get; set; } // Permite nulos
-        public int IdMarca { get; set; }
+        public int? IdMarca { get; set; }
         public int? IdLaboratorio { get; set; } // Permite nulos
         public decimal Stock { get; set; }
         public decimal StockMinimo { get; set; }
@@ -34,5 +34,7 @@ namespace LogiPharm.Entidades
         // Campos de Auditoría (no se insertan directamente, se asignan en la capa de datos)
         public int CreadoPor { get; set; }
         public int? EditadoPor { get; set; }
+        public DateTime FechaVencimiento { get; set; } // Campo nuevo
+
     }
 }

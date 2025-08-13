@@ -23,6 +23,8 @@ namespace LogiPharm.Datos
                             nombre AS 'Nombre', 
                             stock AS 'Stock', 
                             precioVenta AS 'PVP',
+                            stockMinimo AS 'StockMinimo',
+                            activo as 'Activo',
                             id AS 'ID' 
                         FROM productos 
                         WHERE anulado = 0 
@@ -80,7 +82,7 @@ namespace LogiPharm.Datos
             {
                 cn.Open();
                 string query = @"
-            SELECT id, codigoPrincipal, nombre, precioVenta, stock
+            SELECT id, codigoPrincipal, nombre, precioVenta, stock, activo as 'Activo'
             FROM productos
             WHERE (codigoPrincipal = @texto OR codigoAuxiliar = @texto OR nombre LIKE CONCAT('%', @texto, '%'))
               AND anulado = 0 AND activo = 1
@@ -99,7 +101,8 @@ namespace LogiPharm.Datos
                             CodigoPrincipal = reader["codigoPrincipal"].ToString(),
                             Nombre = reader["nombre"].ToString(),
                             PrecioVenta = Convert.ToDecimal(reader["precioVenta"]),
-                            Stock = Convert.ToDecimal(reader["stock"])
+                            Stock = Convert.ToDecimal(reader["stock"]),
+                            Activo = Convert.ToBoolean(reader["activo"]),
                         };
                     }
                 }
@@ -167,7 +170,7 @@ namespace LogiPharm.Datos
                     cn.Open();
                     // Buscamos coincidencias en el código principal o en el nombre
                     string query = @"
-                        SELECT id, codigoPrincipal, nombre, stock, precioVenta 
+                        SELECT id, codigoPrincipal, nombre, stock, precioVenta, activo as 'Activo' 
                         FROM productos 
                         WHERE (codigoPrincipal LIKE @criterio OR nombre LIKE @criterio) 
                           AND anulado = 0 AND activo = 1 
@@ -186,7 +189,8 @@ namespace LogiPharm.Datos
                                 CodigoPrincipal = reader["codigoPrincipal"].ToString(),
                                 Nombre = reader["nombre"].ToString(),
                                 Stock = Convert.ToDecimal(reader["stock"]),
-                                PrecioVenta = Convert.ToDecimal(reader["precioVenta"])
+                                PrecioVenta = Convert.ToDecimal(reader["precioVenta"]),
+                                Activo = Convert.ToBoolean(reader["activo"]),
                             });
                         }
                     }
@@ -228,7 +232,8 @@ namespace LogiPharm.Datos
                                 CodigoPrincipal = reader["codigoPrincipal"].ToString(),
                                 Nombre = reader["nombre"].ToString(),
                                 Stock = Convert.ToDecimal(reader["stock"]),
-                                PrecioVenta = Convert.ToDecimal(reader["precioVenta"])
+                                PrecioVenta = Convert.ToDecimal(reader["precioVenta"]),
+                                Activo = Convert.ToBoolean(reader["activo"]),
                             };
                         }
                     }
@@ -320,7 +325,8 @@ namespace LogiPharm.Datos
                     nombre AS 'Nombre', 
                     stock AS 'Stock', 
                     precioVenta AS 'PVP',
-                    id AS 'ID'
+                    id AS 'ID',
+                    activo as 'Activo'
                 FROM productos
                 WHERE anulado = 0
                   AND (codigoPrincipal LIKE @criterio OR nombre LIKE @criterio)
