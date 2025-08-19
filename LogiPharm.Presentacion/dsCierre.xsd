@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="dsCierre" targetNamespace="http://tempuri.org/dsCierre.xsd" xmlns:mstns="http://tempuri.org/dsCierre.xsd" xmlns="http://tempuri.org/dsCierre.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="dsCierre" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_UserDSName="dsCierre" msprop:Generator_DataSetName="dsCierre">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="dtCierreInfo" msprop:Generator_RowEvHandlerName="dtCierreInfoRowChangeEventHandler" msprop:Generator_RowDeletedName="dtCierreInfoRowDeleted" msprop:Generator_RowDeletingName="dtCierreInfoRowDeleting" msprop:Generator_RowEvArgName="dtCierreInfoRowChangeEvent" msprop:Generator_TablePropName="dtCierreInfo" msprop:Generator_RowChangedName="dtCierreInfoRowChanged" msprop:Generator_RowChangingName="dtCierreInfoRowChanging" msprop:Generator_TableClassName="dtCierreInfoDataTable" msprop:Generator_RowClassName="dtCierreInfoRow" msprop:Generator_TableVarName="tabledtCierreInfo" msprop:Generator_UserTableName="dtCierreInfo">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="NombreComercial" msprop:Generator_ColumnPropNameInRow="NombreComercial" msprop:Generator_ColumnPropNameInTable="NombreComercialColumn" msprop:Generator_ColumnVarNameInTable="columnNombreComercial" msprop:Generator_UserColumnName="NombreComercial" type="xs:string" minOccurs="0" />
+              <xs:element name="RucEmpresa" msprop:Generator_ColumnPropNameInRow="RucEmpresa" msprop:Generator_ColumnPropNameInTable="RucEmpresaColumn" msprop:Generator_ColumnVarNameInTable="columnRucEmpresa" msprop:Generator_UserColumnName="RucEmpresa" type="xs:string" minOccurs="0" />
+              <xs:element name="DireccionSucursal" msprop:Generator_ColumnPropNameInRow="DireccionSucursal" msprop:Generator_ColumnPropNameInTable="DireccionSucursalColumn" msprop:Generator_ColumnVarNameInTable="columnDireccionSucursal" msprop:Generator_UserColumnName="DireccionSucursal" type="xs:string" minOccurs="0" />
+              <xs:element name="Caja" msprop:Generator_ColumnPropNameInRow="Caja" msprop:Generator_ColumnPropNameInTable="CajaColumn" msprop:Generator_ColumnVarNameInTable="columnCaja" msprop:Generator_UserColumnName="Caja" type="xs:string" minOccurs="0" />
+              <xs:element name="UsuarioApertura" msprop:Generator_ColumnPropNameInRow="UsuarioApertura" msprop:Generator_ColumnPropNameInTable="UsuarioAperturaColumn" msprop:Generator_ColumnVarNameInTable="columnUsuarioApertura" msprop:Generator_UserColumnName="UsuarioApertura" type="xs:string" minOccurs="0" />
+              <xs:element name="UsuarioCierre" msprop:Generator_ColumnPropNameInRow="UsuarioCierre" msprop:Generator_ColumnPropNameInTable="UsuarioCierreColumn" msprop:Generator_ColumnVarNameInTable="columnUsuarioCierre" msprop:Generator_UserColumnName="UsuarioCierre" type="xs:string" minOccurs="0" />
+              <xs:element name="FechaApertura" msprop:Generator_ColumnPropNameInRow="FechaApertura" msprop:Generator_ColumnPropNameInTable="FechaAperturaColumn" msprop:Generator_ColumnVarNameInTable="columnFechaApertura" msprop:Generator_UserColumnName="FechaApertura" type="xs:string" minOccurs="0" />
+              <xs:element name="FechaCierre" msprop:Generator_ColumnPropNameInRow="FechaCierre" msprop:Generator_ColumnPropNameInTable="FechaCierreColumn" msprop:Generator_ColumnVarNameInTable="columnFechaCierre" msprop:Generator_UserColumnName="FechaCierre" type="xs:string" minOccurs="0" />
+              <xs:element name="SaldoInicial" msprop:Generator_ColumnPropNameInRow="SaldoInicial" msprop:Generator_ColumnPropNameInTable="SaldoInicialColumn" msprop:Generator_ColumnVarNameInTable="columnSaldoInicial" msprop:Generator_UserColumnName="SaldoInicial" type="xs:string" minOccurs="0" />
+              <xs:element name="TotalIngresosSistema" msprop:Generator_ColumnPropNameInRow="TotalIngresosSistema" msprop:Generator_ColumnPropNameInTable="TotalIngresosSistemaColumn" msprop:Generator_ColumnVarNameInTable="columnTotalIngresosSistema" msprop:Generator_UserColumnName="TotalIngresosSistema" type="xs:string" minOccurs="0" />
+              <xs:element name="TotalEgresosSistema" msprop:Generator_ColumnPropNameInRow="TotalEgresosSistema" msprop:Generator_ColumnPropNameInTable="TotalEgresosSistemaColumn" msprop:Generator_ColumnVarNameInTable="columnTotalEgresosSistema" msprop:Generator_UserColumnName="TotalEgresosSistema" type="xs:string" minOccurs="0" />
+              <xs:element name="SaldoTeoricoSistema" msprop:Generator_ColumnPropNameInRow="SaldoTeoricoSistema" msprop:Generator_ColumnPropNameInTable="SaldoTeoricoSistemaColumn" msprop:Generator_ColumnVarNameInTable="columnSaldoTeoricoSistema" msprop:Generator_UserColumnName="SaldoTeoricoSistema" type="xs:string" minOccurs="0" />
+              <xs:element name="TotalContadoFisico" msprop:Generator_ColumnPropNameInRow="TotalContadoFisico" msprop:Generator_ColumnPropNameInTable="TotalContadoFisicoColumn" msprop:Generator_ColumnVarNameInTable="columnTotalContadoFisico" msprop:Generator_UserColumnName="TotalContadoFisico" type="xs:string" minOccurs="0" />
+              <xs:element name="Diferencia" msprop:Generator_ColumnPropNameInRow="Diferencia" msprop:Generator_ColumnPropNameInTable="DiferenciaColumn" msprop:Generator_ColumnVarNameInTable="columnDiferencia" msprop:Generator_UserColumnName="Diferencia" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -163,5 +163,42 @@ namespace LogiPharm.Presentacion
             }
         }
 
+        private void btnImprimir_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // 1. Crear instancia del DataSet
+                dsCierre ds = new dsCierre();
+                DataTable dt = ds.Tables["dtCierreInfo"];
+
+                // 2. Llenar la tabla con los datos del formulario
+                dt.Rows.Add(
+                    "LogiPharm S.A.",                                 // NombreComercial (ejemplo)
+                    "0991234567001",                                  // RucEmpresa (ejemplo)
+                    "GUAYAQUIL / FEBRES CORDERO",                       // DireccionSucursal (ejemplo)
+                    cboCaja.Text,                                     // Caja
+                    "admin",                                          // UsuarioApertura (obtener de la BD)
+                    SesionActual.NombreUsuario,                       // UsuarioCierre
+                                                                      // ... obtener fechaApertura de _aperturaActual
+                    DateTime.Now.ToString("g"),                       // FechaCierre
+                    decimal.Parse(lblSaldoInicial.Text, NumberStyles.Currency),
+                    decimal.Parse(lblTotalIngresos.Text, NumberStyles.Currency),
+                    decimal.Parse(lblTotalEgresos.Text, NumberStyles.Currency),
+                    decimal.Parse(lblSaldoTeorico.Text, NumberStyles.Currency),
+                    decimal.Parse(lblTotalContado.Text, NumberStyles.Currency),
+                    decimal.Parse(lblDiferencia.Text, NumberStyles.Currency)
+                );
+
+                // 3. Abrir el visor de reportes
+                using (FrmVisorCierre frmVisor = new FrmVisorCierre(dt))
+                {
+                    frmVisor.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al generar el reporte: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
