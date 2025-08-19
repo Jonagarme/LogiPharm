@@ -29,7 +29,7 @@ namespace LogiPharm.Presentacion
             this.Resize += Frm_Resize_Adaptativo;
 
             this.dgvDetalleVenta.CellEndEdit += dgvDetalleVenta_CellEndEdit;
-            this.dgvDetalleVenta.CellContentClick += dgvDetalleVenta_CellAccion;
+            this.dgvDetalleVenta.CellClick += dgvDetalleVenta_CellAccion;
             this.txtIdentificacion.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtIdentificacion_KeyDown);
             this.txtIdentificacion.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtIdentificacion_KeyPress);
             dgvDetalleVenta.EditingControlShowing += Dgv_EditingControlShowing;

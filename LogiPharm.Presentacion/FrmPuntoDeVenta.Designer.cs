@@ -81,6 +81,7 @@ namespace LogiPharm.Presentacion
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.panelBottom = new Guna.UI2.WinForms.Guna2Panel();
             this.guna2Panel1 = new Guna.UI2.WinForms.Guna2Panel();
             this.label12 = new System.Windows.Forms.Label();
@@ -88,7 +89,6 @@ namespace LogiPharm.Presentacion
             this.lblFechaCompleta = new System.Windows.Forms.Label();
             this.lblFechaHora = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.panelTop.SuspendLayout();
             this.panelMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDetalleVenta)).BeginInit();
@@ -106,7 +106,6 @@ namespace LogiPharm.Presentacion
             // panelTop
             // 
             this.panelTop.BackColor = System.Drawing.Color.White;
-            //this.panelTop.Controls.Add(this.flowLayoutPanel1);
             this.panelTop.Controls.Add(this.label3);
             this.panelTop.Controls.Add(this.txtEmail);
             this.panelTop.Controls.Add(this.label1);
@@ -219,7 +218,7 @@ namespace LogiPharm.Presentacion
             this.panelMain.Location = new System.Drawing.Point(0, 45);
             this.panelMain.Name = "panelMain";
             this.panelMain.Padding = new System.Windows.Forms.Padding(10);
-            this.panelMain.Size = new System.Drawing.Size(1200, 521);
+            this.panelMain.Size = new System.Drawing.Size(1200, 574);
             this.panelMain.TabIndex = 1;
             // 
             // dgvDetalleVenta
@@ -264,15 +263,13 @@ namespace LogiPharm.Presentacion
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvDetalleVenta.DefaultCellStyle = dataGridViewCellStyle3;
-            //.dgvDetalleVenta.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvDetalleVenta.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvDetalleVenta.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            //this.dgvDetalleVenta.Location = new System.Drawing.Point(10, 55);
+            this.dgvDetalleVenta.Location = new System.Drawing.Point(10, 50);
             this.dgvDetalleVenta.Name = "dgvDetalleVenta";
             this.dgvDetalleVenta.RowHeadersVisible = false;
             this.dgvDetalleVenta.RowTemplate.Height = 35;
-            // this.dgvDetalleVenta.Size = new System.Drawing.Size(790, 456);
-            this.dgvDetalleVenta.Dock = System.Windows.Forms.DockStyle.Fill;
-
+            this.dgvDetalleVenta.Size = new System.Drawing.Size(790, 514);
             this.dgvDetalleVenta.TabIndex = 0;
             this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
             this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -390,10 +387,10 @@ namespace LogiPharm.Presentacion
             this.panelDerecho.Controls.Add(this.panelPrecios);
             this.panelDerecho.Controls.Add(this.guna2GroupBox1);
             this.panelDerecho.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panelDerecho.Location = new System.Drawing.Point(800, 10);
+            this.panelDerecho.Location = new System.Drawing.Point(800, 50);
             this.panelDerecho.Name = "panelDerecho";
             this.panelDerecho.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-            this.panelDerecho.Size = new System.Drawing.Size(390, 501);
+            this.panelDerecho.Size = new System.Drawing.Size(390, 514);
             this.panelDerecho.TabIndex = 1;
             // 
             // panelToolbar
@@ -410,7 +407,7 @@ namespace LogiPharm.Presentacion
             this.panelToolbar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelToolbar.Location = new System.Drawing.Point(10, 317);
             this.panelToolbar.Name = "panelToolbar";
-            this.panelToolbar.Size = new System.Drawing.Size(380, 184);
+            this.panelToolbar.Size = new System.Drawing.Size(380, 197);
             this.panelToolbar.TabIndex = 5;
             // 
             // btnIncrementar
@@ -888,13 +885,22 @@ namespace LogiPharm.Presentacion
             this.label4.TabIndex = 0;
             this.label4.Text = "CONTRIBUYENTE NEGOCIO POPULAR - RÉGIMEN";
             // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 10);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1180, 40);
+            this.flowLayoutPanel1.TabIndex = 2;
+            this.flowLayoutPanel1.WrapContents = false;
+            // 
             // panelBottom
             // 
             this.panelBottom.Controls.Add(this.guna2Panel1);
             this.panelBottom.Controls.Add(this.lblFechaCompleta);
             this.panelBottom.Controls.Add(this.lblFechaHora);
             this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelBottom.Location = new System.Drawing.Point(0, 566);
+            this.panelBottom.Location = new System.Drawing.Point(0, 619);
             this.panelBottom.Name = "panelBottom";
             this.panelBottom.Size = new System.Drawing.Size(1200, 55);
             this.panelBottom.TabIndex = 3;
@@ -959,21 +965,12 @@ namespace LogiPharm.Presentacion
             this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top; // Lo ancla arriba del panel principal
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 10);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(780, 40); // Le damos una altura fija
-            this.flowLayoutPanel1.TabIndex = 2;
-            this.flowLayoutPanel1.WrapContents = false;
-            // 
             // FrmPuntoDeVenta
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(250)))), ((int)(((byte)(251)))));
-            this.ClientSize = new System.Drawing.Size(1200, 621);
+            this.ClientSize = new System.Drawing.Size(1200, 674);
             this.Controls.Add(this.panelMain);
             this.Controls.Add(this.panelTop);
             this.Controls.Add(this.panelBottom);
