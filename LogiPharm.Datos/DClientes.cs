@@ -179,7 +179,7 @@ namespace LogiPharm.Datos
                 try
                 {
                     cn.Open();
-                    string query = "SELECT id, razonSocial FROM clientes WHERE anulado = 0 AND estado = 1 ORDER BY razonSocial ASC";
+                    string query = "SELECT id, nombres FROM clientes WHERE anulado = 0 AND estado = 1 ORDER BY razonSocial ASC";
                     MySqlDataAdapter da = new MySqlDataAdapter(query, cn);
                     da.Fill(tabla);
                 }
