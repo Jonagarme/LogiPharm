@@ -1,6 +1,7 @@
 ﻿using LogiPharm.Datos;
 using LogiPharm.Entidades;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
@@ -8,10 +9,16 @@ namespace LogiPharm.Presentacion
 {
     public partial class FrmRoles : Form
     {
+        private int _rolIdSeleccionado = 0;
+
         public FrmRoles()
         {
             InitializeComponent();
             this.Load += FrmRoles_Load;
+
+            dgvRoles.SelectionChanged += DgvRoles_SelectionChanged;
+            dgvRoles.CellClick += DgvRoles_SelectionChanged;
+            dgvRoles.CellDoubleClick += DgvRoles_SelectionChanged;
         }
 
         private void FrmRoles_Load(object sender, EventArgs e)
@@ -19,6 +26,24 @@ namespace LogiPharm.Presentacion
             CargarRoles();
             CargarPermisos();
         }
+
+        private void DgvRoles_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvRoles.CurrentRow == null) return;
+            var data = dgvRoles.CurrentRow.DataBoundItem as DataRowView;
+            if (data == null) return;
+
+            // Asume que tu DataTable tiene columnas: id, nombre, descripcion
+            _rolIdSeleccionado = Convert.ToInt32(data["id"]);
+            txtNombreRol.Text = data["nombre"]?.ToString() ?? "";
+            txtDescripcion.Text = (data.Row.Table.Columns.Contains("descripcion"))
+                                    ? data["descripcion"]?.ToString() ?? ""
+                                    : "";
+
+            // Si quieres, aquí cargas y marcas los permisos del rol:
+            // CargarPermisosDelRol(_rolIdSeleccionado);
+        }
+
 
         private void CargarPermisosDePrueba()
         {
@@ -71,6 +96,7 @@ namespace LogiPharm.Presentacion
                     dgvRoles.Columns["id"].Visible = false;
                     dgvRoles.Columns["nombre"].HeaderText = "Rol";
                     dgvRoles.Columns["nombre"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    dgvRoles.Columns["descripcion"].HeaderText = "Descripcion";
                 }
 
             }

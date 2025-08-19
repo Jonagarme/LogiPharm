@@ -20,7 +20,7 @@ namespace LogiPharm.Datos
                 {
                     cn.Open();
                     // Consulta para traer solo los roles activos
-                    string query = "SELECT id, nombre FROM roles WHERE anulado = 0 ORDER BY nombre ASC";
+                    string query = "SELECT id, nombre, descripcion FROM roles WHERE anulado = 0 ORDER BY nombre ASC";
 
                     MySqlDataAdapter da = new MySqlDataAdapter(query, cn);
                     da.Fill(tabla);
@@ -41,7 +41,7 @@ namespace LogiPharm.Datos
                 try
                 {
                     cn.Open();
-                    string query = "SELECT id, nombre, descripcion FROM permisos WHERE anulado = 0 ORDER BY nombre ASC";
+                    string query = "SELECT id, nombreMenu as Nombre FROM permisos ORDER BY nombre ASC";
                     MySqlDataAdapter da = new MySqlDataAdapter(query, cn);
                     da.Fill(tabla);
                 }
