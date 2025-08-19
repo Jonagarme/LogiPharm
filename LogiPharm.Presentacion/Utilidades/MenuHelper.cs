@@ -1,5 +1,7 @@
 ﻿using System.Windows.Forms;
 using System.Drawing;
+using LogiPharm.Datos; 
+using System;
 
 namespace LogiPharm.Presentacion.Utilidades
 {
@@ -72,7 +74,7 @@ namespace LogiPharm.Presentacion.Utilidades
             ToolStripMenuItem ventas = new ToolStripMenuItem("🧾 Ventas y Recetas");
 
             ToolStripMenuItem puntoDeVenta = new ToolStripMenuItem("Punto de venta");
-            puntoDeVenta.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmPuntoDeVenta>(formulario);
+            puntoDeVenta.Click += (s, e) => AbrirPuntoDeVentaConVerificacion(formulario);
             ventas.DropDownItems.Add(puntoDeVenta);
 
             ToolStripMenuItem facturacion = new ToolStripMenuItem("Facturación");
@@ -100,6 +102,56 @@ namespace LogiPharm.Presentacion.Utilidades
 
             ventas.DropDownItems.Add("Recetas médicas");
             return ventas;
+        }
+
+        private static void AbrirPuntoDeVentaConVerificacion(Form formularioPrincipal)
+        {
+            // ✅ CAMBIO: Ahora usamos DCierreCaja para toda la lógica.
+            DCierreCaja d_Cierre = new DCierreCaja();
+
+            // ✅ CAMBIO: Usamos el ID numérico de la caja, no el texto.
+            int idCajaActual = 1; // Asumimos que la caja principal es la 1.
+
+            try
+            {
+                // 1. VERIFICAMOS SI LA CAJA YA ESTÁ ABIERTA
+                bool cajaAbierta = d_Cierre.VerificarCajaAbiertaHoy(idCajaActual);
+
+                if (cajaAbierta)
+                {
+                    // Si está abierta, abre el POS directamente
+                    FormulariosHelper.AbrirFormulario<FrmPuntoDeVenta>(formularioPrincipal);
+                }
+                else
+                {
+                    // 2. SI NO ESTÁ ABIERTA, FORZAMOS LA APERTURA
+                    MessageBox.Show("Debe realizar la apertura de caja para poder iniciar las ventas.", "Caja Cerrada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    using (FrmAperturaCaja frmApertura = new FrmAperturaCaja())
+                    {
+                        if (frmApertura.ShowDialog() == DialogResult.OK)
+                        {
+                            // 3. SI EL USUARIO ACEPTA, REGISTRAMOS Y ABRIMOS EL POS
+                            decimal montoInicial = frmApertura.MontoInicial;
+
+                            // ✅ CAMBIO: Enviamos el ID del usuario (INT), no el nombre (string).
+                            int idUsuarioActual = SesionActual.IdUsuario;
+
+                            // Llamamos al método RegistrarApertura de nuestra clase unificada
+                            d_Cierre.RegistrarApertura(montoInicial, idUsuarioActual, idCajaActual);
+
+                            MessageBox.Show($"Caja abierta con {montoInicial:C2}", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            // Abre el POS usando tu Helper
+                            FormulariosHelper.AbrirFormulario<FrmPuntoDeVenta>(formularioPrincipal);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ocurrió un error al verificar el estado de la caja: {ex.Message}", "Error de Conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private static ToolStripMenuItem ConstruirMenuInventario(Form formulario)
@@ -242,5 +294,7 @@ namespace LogiPharm.Presentacion.Utilidades
             sucursales.DropDownItems.Add("Transferencias internas");
             return sucursales;
         }
+
     }
+
 }
