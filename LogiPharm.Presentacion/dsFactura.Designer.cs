@@ -324,7 +324,7 @@ namespace LogiPharm.Presentacion {
             
             private global::System.Data.DataColumn columnNumeroFactura;
             
-            private global::System.Data.DataColumn columnAutorizacion;
+            private global::System.Data.DataColumn columnInfoAutorizacion;
             
             private global::System.Data.DataColumn columnFechaHora;
             
@@ -353,6 +353,8 @@ namespace LogiPharm.Presentacion {
             private global::System.Data.DataColumn columnTelefonoMatriz;
             
             private global::System.Data.DataColumn columnDireccionSucursal;
+            
+            private global::System.Data.DataColumn columnInfoFacturaElectronica;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -429,9 +431,9 @@ namespace LogiPharm.Presentacion {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn AutorizacionColumn {
+            public global::System.Data.DataColumn InfoAutorizacionColumn {
                 get {
-                    return this.columnAutorizacion;
+                    return this.columnInfoAutorizacion;
                 }
             }
             
@@ -549,6 +551,14 @@ namespace LogiPharm.Presentacion {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn InfoFacturaElectronicaColumn {
+                get {
+                    return this.columnInfoFacturaElectronica;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -590,7 +600,7 @@ namespace LogiPharm.Presentacion {
                         string DireccionEmpresa, 
                         string TelefonoEmpresa, 
                         string NumeroFactura, 
-                        string Autorizacion, 
+                        string InfoAutorizacion, 
                         string FechaHora, 
                         string ClienteNombre, 
                         string ClienteId, 
@@ -604,7 +614,8 @@ namespace LogiPharm.Presentacion {
                         string Cambio, 
                         string DireccionMatriz, 
                         string TelefonoMatriz, 
-                        string DireccionSucursal) {
+                        string DireccionSucursal, 
+                        string InfoFacturaElectronica) {
                 dtFacturaInfoRow rowdtFacturaInfoRow = ((dtFacturaInfoRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         NombreEmpresa,
@@ -612,7 +623,7 @@ namespace LogiPharm.Presentacion {
                         DireccionEmpresa,
                         TelefonoEmpresa,
                         NumeroFactura,
-                        Autorizacion,
+                        InfoAutorizacion,
                         FechaHora,
                         ClienteNombre,
                         ClienteId,
@@ -626,7 +637,8 @@ namespace LogiPharm.Presentacion {
                         Cambio,
                         DireccionMatriz,
                         TelefonoMatriz,
-                        DireccionSucursal};
+                        DireccionSucursal,
+                        InfoFacturaElectronica};
                 rowdtFacturaInfoRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowdtFacturaInfoRow);
                 return rowdtFacturaInfoRow;
@@ -654,7 +666,7 @@ namespace LogiPharm.Presentacion {
                 this.columnDireccionEmpresa = base.Columns["DireccionEmpresa"];
                 this.columnTelefonoEmpresa = base.Columns["TelefonoEmpresa"];
                 this.columnNumeroFactura = base.Columns["NumeroFactura"];
-                this.columnAutorizacion = base.Columns["Autorizacion"];
+                this.columnInfoAutorizacion = base.Columns["InfoAutorizacion"];
                 this.columnFechaHora = base.Columns["FechaHora"];
                 this.columnClienteNombre = base.Columns["ClienteNombre"];
                 this.columnClienteId = base.Columns["ClienteId"];
@@ -669,6 +681,7 @@ namespace LogiPharm.Presentacion {
                 this.columnDireccionMatriz = base.Columns["DireccionMatriz"];
                 this.columnTelefonoMatriz = base.Columns["TelefonoMatriz"];
                 this.columnDireccionSucursal = base.Columns["DireccionSucursal"];
+                this.columnInfoFacturaElectronica = base.Columns["InfoFacturaElectronica"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -684,8 +697,8 @@ namespace LogiPharm.Presentacion {
                 base.Columns.Add(this.columnTelefonoEmpresa);
                 this.columnNumeroFactura = new global::System.Data.DataColumn("NumeroFactura", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnNumeroFactura);
-                this.columnAutorizacion = new global::System.Data.DataColumn("Autorizacion", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnAutorizacion);
+                this.columnInfoAutorizacion = new global::System.Data.DataColumn("InfoAutorizacion", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnInfoAutorizacion);
                 this.columnFechaHora = new global::System.Data.DataColumn("FechaHora", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnFechaHora);
                 this.columnClienteNombre = new global::System.Data.DataColumn("ClienteNombre", typeof(string), null, global::System.Data.MappingType.Element);
@@ -714,6 +727,8 @@ namespace LogiPharm.Presentacion {
                 base.Columns.Add(this.columnTelefonoMatriz);
                 this.columnDireccionSucursal = new global::System.Data.DataColumn("DireccionSucursal", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnDireccionSucursal);
+                this.columnInfoFacturaElectronica = new global::System.Data.DataColumn("InfoFacturaElectronica", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnInfoFacturaElectronica);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1225,17 +1240,17 @@ namespace LogiPharm.Presentacion {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Autorizacion {
+            public string InfoAutorizacion {
                 get {
                     try {
-                        return ((string)(this[this.tabledtFacturaInfo.AutorizacionColumn]));
+                        return ((string)(this[this.tabledtFacturaInfo.InfoAutorizacionColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("El valor de la columna \'Autorizacion\' de la tabla \'dtFacturaInfo\' es DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("El valor de la columna \'InfoAutorizacion\' de la tabla \'dtFacturaInfo\' es DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tabledtFacturaInfo.AutorizacionColumn] = value;
+                    this[this.tabledtFacturaInfo.InfoAutorizacionColumn] = value;
                 }
             }
             
@@ -1466,6 +1481,23 @@ namespace LogiPharm.Presentacion {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string InfoFacturaElectronica {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtFacturaInfo.InfoFacturaElectronicaColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("El valor de la columna \'InfoFacturaElectronica\' de la tabla \'dtFacturaInfo\' es DB" +
+                                "Null.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtFacturaInfo.InfoFacturaElectronicaColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public bool IsNombreEmpresaNull() {
                 return this.IsNull(this.tabledtFacturaInfo.NombreEmpresaColumn);
             }
@@ -1526,14 +1558,14 @@ namespace LogiPharm.Presentacion {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsAutorizacionNull() {
-                return this.IsNull(this.tabledtFacturaInfo.AutorizacionColumn);
+            public bool IsInfoAutorizacionNull() {
+                return this.IsNull(this.tabledtFacturaInfo.InfoAutorizacionColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetAutorizacionNull() {
-                this[this.tabledtFacturaInfo.AutorizacionColumn] = global::System.Convert.DBNull;
+            public void SetInfoAutorizacionNull() {
+                this[this.tabledtFacturaInfo.InfoAutorizacionColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1702,6 +1734,18 @@ namespace LogiPharm.Presentacion {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetDireccionSucursalNull() {
                 this[this.tabledtFacturaInfo.DireccionSucursalColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsInfoFacturaElectronicaNull() {
+                return this.IsNull(this.tabledtFacturaInfo.InfoFacturaElectronicaColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetInfoFacturaElectronicaNull() {
+                this[this.tabledtFacturaInfo.InfoFacturaElectronicaColumn] = global::System.Convert.DBNull;
             }
         }
         

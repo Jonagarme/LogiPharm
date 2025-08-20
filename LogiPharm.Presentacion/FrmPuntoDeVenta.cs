@@ -505,37 +505,36 @@ namespace LogiPharm.Presentacion
 
         private void AbrirVentanaPago()
         {
-            // 1. Validar que haya productos en la venta
-            if (dgvDetalleVenta.Rows.Count <= 1 && dgvDetalleVenta.Rows[0].IsNewRow)
+            // Validar que haya productos sin tocar Rows[0] si Count = 0
+            bool sinProductos =
+                dgvDetalleVenta.Rows.Count == 0 ||
+                (dgvDetalleVenta.Rows.Count == 1 && dgvDetalleVenta.Rows[0].IsNewRow);
+
+            if (sinProductos)
             {
-                MessageBox.Show("No hay productos en la venta para procesar el pago.", "Venta Vacía", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("No hay productos en la venta para procesar el pago.", "Venta Vacía",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (_clienteSeleccionado == null)
             {
-                MessageBox.Show("Debe seleccionar un cliente válido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe seleccionar un cliente válido.", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // 2. Recolectar datos del cliente
-            //ECliente cliente = new ECliente
-            //{
-            //    Identificacion = txtIdentificacion.Text,
-            //    RazonSocial = txtCliente.Text,
-            //    Email = txtEmail.Text,
-            //    Direccion = cliente.Direccion
-            //};
-
-            // 3. Recolectar los detalles de los productos
+            // Recolectar productos del grid
             var productos = new List<ProductoVenta>();
             foreach (DataGridViewRow row in dgvDetalleVenta.Rows)
             {
-                if (row.IsNewRow || row.Cells["colCodigo"].Value == null) continue;
+                if (row.IsNewRow) continue;
+                if (row.Cells["colCodigo"].Value == null) continue;
+
                 productos.Add(new ProductoVenta
                 {
-                    CodigoPrincipal = row.Cells["colCodigo"].Value.ToString(),
-                    Descripcion = row.Cells["colProducto"].Value.ToString(),
+                    CodigoPrincipal = Convert.ToString(row.Cells["colCodigo"].Value),
+                    Descripcion = Convert.ToString(row.Cells["colProducto"].Value),
                     Cantidad = Convert.ToDecimal(row.Cells["colCantidad"].Value ?? 0),
                     PrecioUnitario = Convert.ToDecimal(row.Cells["colPrecio"].Value ?? 0),
                     Descuento = Convert.ToDecimal(row.Cells["colDscto"].Value ?? 0),
@@ -543,30 +542,50 @@ namespace LogiPharm.Presentacion
                 });
             }
 
-            // 4. Calcular el total de la venta
+            if (productos.Count == 0)
+            {
+                MessageBox.Show("No hay líneas válidas para cobrar.", "Venta Vacía",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             decimal totalVenta = CalcularTotalVenta();
 
-            // 5. Abrir la ventana de pago UNA SOLA VEZ
-            using (FrmPago frmPago = new FrmPago(totalVenta, _clienteSeleccionado, productos))
+            using (var frmPago = new FrmPago(totalVenta, _clienteSeleccionado, productos))
             {
                 if (frmPago.ShowDialog() == DialogResult.OK)
                 {
-                    // Si el pago fue exitoso, continuar con la impresión
-                    MessageBox.Show("Venta procesada con éxito.", "Confirmación", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Venta procesada con éxito.", "Confirmación",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    if (MessageBox.Show("¿Desea imprimir la factura?", "Imprimir", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    if (MessageBox.Show("¿Desea imprimir la factura?", "Imprimir",
+                                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
-                        ImprimirFactura(_clienteSeleccionado, productos, totalVenta);
+                        ImprimirFactura(
+                            _clienteSeleccionado,
+                            productos,
+                            frmPago.EfectivoRecibido,   // efectivo recibido real
+                            frmPago.SecuencialUsado,    // Nº factura (secuencial)
+                            frmPago.ClaveAcceso,        // Clave de acceso (va al final)
+                            frmPago.NumeroAutorizacion  // Autorización SRI
+                        );
                     }
 
-                    // TODO: Aquí iría tu lógica para guardar la venta en la base de datos
-                    // y luego limpiar el POS para una nueva venta.
-                    // LimpiarFormularioVenta();
+                    // LimpiarFormularioVenta(); // si aplica
                 }
             }
         }
 
-        private void ImprimirFactura(ECliente cliente, List<ProductoVenta> productos, decimal efectivoRecibido)
+
+
+        private void ImprimirFactura(
+             ECliente cliente,
+             List<ProductoVenta> productos,
+             decimal efectivoRecibido,
+             string numeroFactura,
+             string claveAcceso,
+             string numeroAutorizacion
+         )
         {
             try
             {
@@ -575,67 +594,74 @@ namespace LogiPharm.Presentacion
                 DataTable dtDetalle = ds.Tables["dtFacturaDetalle"];
 
                 decimal subtotal = 0m;
-                decimal descuento = 0m;
-                decimal iva = 0m;
-                decimal cambio = 0m;
+                decimal descuentoTotal = 0m;
+
+                const decimal IVA_RATE = 0.15m;
 
                 foreach (var prod in productos)
                 {
-                    subtotal += prod.PrecioTotalSinImpuesto;
-                    descuento += prod.Descuento;
-                    iva += prod.PrecioTotalSinImpuesto; // Si tienes IVA por producto
-                    dtDetalle.Rows.Add(prod.Cantidad, prod.Descripcion, prod.PrecioUnitario, prod.PrecioTotalSinImpuesto);
-                }
-                decimal total = subtotal + iva;
+                    subtotal += prod.PrecioTotalSinImpuesto;  // base sin IVA
+                    descuentoTotal += prod.Descuento;         // si aquí guardas valor (no %)
 
+                    dtDetalle.Rows.Add(
+                        prod.Cantidad,
+                        prod.Descripcion,
+                        prod.PrecioUnitario,
+                        prod.PrecioTotalSinImpuesto
+                    );
+                }
+
+                decimal iva = Math.Round(subtotal * IVA_RATE, 2, MidpointRounding.AwayFromZero);
+                decimal total = subtotal + iva;
+                decimal cambio = Math.Round(efectivoRecibido - total, 2, MidpointRounding.AwayFromZero);
+
+                // Datos fijos (ajusta si tienes otros)
+                string nombreEmpresa = "FARMACIAS LOGIPHARM";
+                string rucEmpresa = "0991234567001";
+                string direccionEmpresa = "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA";
+                string telefonoEmpresa = "0981276460";
+                string direccionMatriz = "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA";
+                string telefonoMatriz = "0981276460";
+                string direccionSucursal = "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA";
+
+                // ⚠️ ORDEN EXACTO de columnas de dtFacturaInfo
                 dtInfo.Rows.Add(
-                    "FARMACIAS LOGIPHARM",
-                    "0991234567001",
-                    "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA",
-                    "0981276460",
-                    lblNumeroFactura.Text,
-                    "12345678901234567890...",
-                    DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
-                    cliente.RazonSocial,
-                    cliente.CedulaRuc,
-                    cliente.Direccion,
-                    subtotal,
-                    descuento,
-                    iva,
-                    total,
-                    "EFECTIVO",
-                    efectivoRecibido,
-                    cambio,
-                    "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA",
-                    "0981276460",
-                    "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA"
+                    nombreEmpresa,                      // NombreEmpresa
+                    rucEmpresa,                         // RucEmpresa
+                    direccionEmpresa,                   // DireccionEmpresa
+                    telefonoEmpresa,                    // TelefonoEmpresa
+                    numeroFactura,                      // NumeroFactura
+                    numeroAutorizacion,                 // Autorizacion  (debajo de "Autorización SRI")
+                    DateTime.Now.ToString("dd/MM/yyyy HH:mm"), // FechaHora
+                    cliente?.RazonSocial ?? "CONSUMIDOR FINAL", // ClienteNombre
+                    cliente?.CedulaRuc ?? "9999999999999", // ClienteId
+                    cliente?.Direccion ?? "S/D",        // ClienteDireccion
+                    subtotal,                           // Subtotal
+                    descuentoTotal,                     // Descuento
+                    iva,                                // IVA
+                    total,                              // Total
+                    "EFECTIVO",                         // FormaPago
+                    efectivoRecibido,                   // EfectivoRecibido
+                    cambio,                             // Cambio
+                    direccionMatriz,                    // DireccionMatriz
+                    telefonoMatriz,                     // TelefonoMatriz
+                    direccionSucursal,                  // DireccionSucursal
+                    claveAcceso                         // ClaveAcceso   (debajo de "Clave de Acceso")
                 );
 
-                using (FrmVisorFactura frmVisor = new FrmVisorFactura(dtInfo, dtDetalle))
+                using (var frmVisor = new FrmVisorFactura(dtInfo, dtDetalle))
                 {
                     frmVisor.ShowDialog();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al generar la factura para imprimir:\n" + ex.Message, "Error de Impresión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al generar la factura para imprimir:\n" + ex.Message,
+                                "Error de Impresión", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
 
-        private void LimpiarPOS()
-        {
-            // Limpia todos los controles de cliente, productos y totales
-            txtIdentificacion.Clear();
-            txtCliente.Clear();
-            txtEmail.Clear();
-            dgvDetalleVenta.Rows.Clear();
-            dgvDetalleVenta.Rows.Add();
-            lblPrecio.Text = "0.00";
-            lblIVA.Text = "0.00";
-            lblTotalDescuento.Text = "0.00";
-            _clienteSeleccionado = null;
-        }
 
         private decimal CalcularTotalVenta()
         {
