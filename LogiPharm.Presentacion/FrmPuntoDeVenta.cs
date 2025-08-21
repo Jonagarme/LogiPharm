@@ -533,6 +533,8 @@ namespace LogiPharm.Presentacion
 
                 productos.Add(new ProductoVenta
                 {
+                    Id = Convert.ToInt32(row.Tag),
+
                     CodigoPrincipal = Convert.ToString(row.Cells["colCodigo"].Value),
                     Descripcion = Convert.ToString(row.Cells["colProducto"].Value),
                     Cantidad = Convert.ToDecimal(row.Cells["colCantidad"].Value ?? 0),
@@ -585,24 +587,33 @@ namespace LogiPharm.Presentacion
              string numeroFactura,
              string claveAcceso,
              string numeroAutorizacion
-         )
+        )
         {
             try
             {
+                // ✅ 1. OBTENER LOS DATOS DE LA EMPRESA
+                DEmpresa d_empresa = new DEmpresa();
+                EEmpresa empresa = d_empresa.ObtenerDatosEmpresa();
+
+                if (empresa == null)
+                {
+                    MessageBox.Show("No se pueden imprimir facturas sin los datos de la empresa configurados.", "Error de Configuración", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
                 dsFactura ds = new dsFactura();
                 DataTable dtInfo = ds.Tables["dtFacturaInfo"];
                 DataTable dtDetalle = ds.Tables["dtFacturaDetalle"];
 
+                // --- (La lógica para calcular totales y llenar el detalle no cambia) ---
                 decimal subtotal = 0m;
                 decimal descuentoTotal = 0m;
-
                 const decimal IVA_RATE = 0.15m;
 
                 foreach (var prod in productos)
                 {
-                    subtotal += prod.PrecioTotalSinImpuesto;  // base sin IVA
-                    descuentoTotal += prod.Descuento;         // si aquí guardas valor (no %)
-
+                    subtotal += prod.PrecioTotalSinImpuesto;
+                    descuentoTotal += prod.Descuento;
                     dtDetalle.Rows.Add(
                         prod.Cantidad,
                         prod.Descripcion,
@@ -611,42 +622,33 @@ namespace LogiPharm.Presentacion
                     );
                 }
 
-                decimal iva = Math.Round(subtotal * IVA_RATE, 2, MidpointRounding.AwayFromZero);
+                decimal iva = Math.Round(subtotal * IVA_RATE, 2);
                 decimal total = subtotal + iva;
-                decimal cambio = Math.Round(efectivoRecibido - total, 2, MidpointRounding.AwayFromZero);
+                decimal cambio = Math.Round(efectivoRecibido - total, 2);
 
-                // Datos fijos (ajusta si tienes otros)
-                string nombreEmpresa = "FARMACIAS LOGIPHARM";
-                string rucEmpresa = "0991234567001";
-                string direccionEmpresa = "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA";
-                string telefonoEmpresa = "0981276460";
-                string direccionMatriz = "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA";
-                string telefonoMatriz = "0981276460";
-                string direccionSucursal = "GUAYAQUIL / FEBRES CORDERO / ORIENTE S/N Y 38 AVA";
-
-                // ⚠️ ORDEN EXACTO de columnas de dtFacturaInfo
+                // ✅ 2. LLENAR EL DATATABLE CON LOS DATOS DE LA EMPRESA
                 dtInfo.Rows.Add(
-                    nombreEmpresa,                      // NombreEmpresa
-                    rucEmpresa,                         // RucEmpresa
-                    direccionEmpresa,                   // DireccionEmpresa
-                    telefonoEmpresa,                    // TelefonoEmpresa
-                    numeroFactura,                      // NumeroFactura
-                    numeroAutorizacion,                 // Autorizacion  (debajo de "Autorización SRI")
-                    DateTime.Now.ToString("dd/MM/yyyy HH:mm"), // FechaHora
-                    cliente?.RazonSocial ?? "CONSUMIDOR FINAL", // ClienteNombre
-                    cliente?.CedulaRuc ?? "9999999999999", // ClienteId
-                    cliente?.Direccion ?? "S/D",        // ClienteDireccion
-                    subtotal,                           // Subtotal
-                    descuentoTotal,                     // Descuento
-                    iva,                                // IVA
-                    total,                              // Total
-                    "EFECTIVO",                         // FormaPago
-                    efectivoRecibido,                   // EfectivoRecibido
-                    cambio,                             // Cambio
-                    direccionMatriz,                    // DireccionMatriz
-                    telefonoMatriz,                     // TelefonoMatriz
-                    direccionSucursal,                  // DireccionSucursal
-                    claveAcceso                         // ClaveAcceso   (debajo de "Clave de Acceso")
+                    empresa.NombreComercial,                          // NombreComercial
+                    empresa.Ruc,                                      // RucEmpresa
+                    empresa.DireccionMatriz,                          // DireccionEmpresa (usamos la matriz como principal)
+                    empresa.Telefono,                                 // TelefonoEmpresa
+                    numeroFactura,                                    // NumeroFactura
+                    numeroAutorizacion,                               // Autorizacion
+                    DateTime.Now.ToString("dd/MM/yyyy HH:mm"),        // FechaHora
+                    cliente?.RazonSocial ?? "CONSUMIDOR FINAL",       // ClienteNombre
+                    cliente?.CedulaRuc ?? "9999999999999",          // ClienteId
+                    cliente?.Direccion ?? "S/D",                      // ClienteDireccion
+                    subtotal,                                         // Subtotal
+                    descuentoTotal,                                   // Descuento
+                    iva,                                              // IVA
+                    total,                                            // Total
+                    "EFECTIVO",                                       // FormaPago
+                    efectivoRecibido,                                 // EfectivoRecibido
+                    cambio,                                           // Cambio
+                    empresa.DireccionMatriz,                          // DireccionMatriz
+                    empresa.Telefono,                                 // TelefonoMatriz
+                    empresa.DireccionMatriz,                          // DireccionSucursal (o un campo específico si lo tienes)
+                    claveAcceso                                       // ClaveAcceso
                 );
 
                 using (var frmVisor = new FrmVisorFactura(dtInfo, dtDetalle))
@@ -746,30 +748,26 @@ namespace LogiPharm.Presentacion
             }
         }
 
-
         private void AsignarDatosAFila(EProducto producto, int rowIndex)
         {
-            // 💎 MEJORA CLAVE: Lógica para manejar productos duplicados.
+            // Lógica para manejar productos duplicados
             for (int i = 0; i < dgvDetalleVenta.Rows.Count; i++)
             {
-                // No comparamos con la fila que estamos editando ni con la fila nueva
                 if (i == rowIndex || dgvDetalleVenta.Rows[i].IsNewRow) continue;
 
                 var codigoExistente = dgvDetalleVenta.Rows[i].Cells["colCodigo"].Value?.ToString();
                 if (codigoExistente == producto.CodigoPrincipal)
                 {
-                    // El producto ya existe, incrementamos la cantidad
                     var celdaCantidad = dgvDetalleVenta.Rows[i].Cells["colCantidad"];
                     decimal.TryParse(celdaCantidad.Value?.ToString(), out decimal cantidadActual);
                     celdaCantidad.Value = cantidadActual + 1;
 
-                    // Recalculamos esa fila
-                    CalcularTotalesFila(dgvDetalleVenta.Rows[i]);
+                    // ❌ Se elimina la línea 'filaActual.Tag' de aquí porque era incorrecta.
 
-                    // Limpiamos la fila de entrada actual y la dejamos lista para el siguiente producto.
+                    CalcularTotalesFila(dgvDetalleVenta.Rows[i]);
                     LimpiarFila(rowIndex);
                     PonerFocoEnNuevaFila();
-                    return; // Salimos de la función para no agregar una nueva línea
+                    return;
                 }
             }
 
@@ -777,12 +775,17 @@ namespace LogiPharm.Presentacion
             DataGridViewRow filaActual = dgvDetalleVenta.Rows[rowIndex];
 
             dgvDetalleVenta.CellEndEdit -= dgvDetalleVenta_CellEndEdit;
+
+            // ✅ Se añade la línea aquí, que es el lugar correcto para "marcar" la nueva fila.
+            filaActual.Tag = producto.Id;
+
             filaActual.Cells["colCodigo"].Value = producto.CodigoPrincipal;
             filaActual.Cells["colProducto"].Value = producto.Nombre;
             filaActual.Cells["colPrecio"].Value = producto.PrecioVenta;
             filaActual.Cells["colCantidad"].Value = 1;
             filaActual.Cells["colPFinal"].Value = producto.PrecioVenta;
             filaActual.Cells["colDscto"].Value = 0;
+
             dgvDetalleVenta.CellEndEdit += dgvDetalleVenta_CellEndEdit;
 
             CalcularTotalesFila(filaActual);

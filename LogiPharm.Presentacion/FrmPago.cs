@@ -73,80 +73,90 @@ namespace LogiPharm.Presentacion
             }
         }
 
-        private static string GenerarSecuencial()
-        {
-            // Toma los últimos 9 dígitos de un timestamp + aleatorio para evitar colisiones
-            var random = new Random();
-            int aleatorio = random.Next(1, 999); // número entre 001 y 999
-            string baseNumero = DateTime.Now.ToString("yyyyMMdd") + aleatorio.ToString("D3"); // ej: 20250819123
-                                                                                              // Nos quedamos con los últimos 9 dígitos
-            return baseNumero.Substring(baseNumero.Length - 9);
-        }
-
         private async void btnCobrarImprimir_Click(object sender, EventArgs e)
         {
             // --- (Tus validaciones de monto no cambian) ---
-            if (!decimal.TryParse(txtEfectivoRecibido.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out decimal efectivoRecibido))
+            if (!decimal.TryParse(txtEfectivoRecibido.Text, out decimal efectivoRecibido) || efectivoRecibido < _totalAPagar)
             {
-                MessageBox.Show("Por favor, ingrese un monto válido.", "Monto Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            if (efectivoRecibido < _totalAPagar)
-            {
-                MessageBox.Show("El monto recibido es menor al total a pagar.", "Monto Insuficiente", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Monto recibido es inválido o insuficiente.", "Error de Monto", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            // Habilitamos un indicador de carga para que el usuario sepa que se está procesando
             this.Cursor = Cursors.WaitCursor;
             btnCobrarImprimir.Enabled = false;
 
             try
             {
-                // ⚙️ Parámetros de emisor
-                string empresaRuc = "0915912604001";
+                // ✅ 1. LEER LOS DATOS DE LA EMPRESA DESDE LA BASE DE DATOS
+                DEmpresa d_empresa = new DEmpresa();
+                EEmpresa empresa = d_empresa.ObtenerDatosEmpresa();
+
+                if (empresa == null)
+                {
+                    MessageBox.Show("No se encontraron los datos de configuración de la empresa.", "Error de Configuración", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return; // Detenemos el proceso si no hay datos de la empresa
+                }
+
+                // ✨ Se reemplazan los datos fijos por los de la base de datos
+                string empresaRuc = empresa.Ruc;
                 int ambiente = 1; // 1=pruebas, 2=producción
-                string estab = "001";
-                string ptoEmi = "001";
-                string dirMatriz = "AV. AMAZONAS Y NACIONES UNIDAS";
-                string dirEstablecimiento = "AV. 6 DE DICIEMBRE Y PORTUGAL";
-                string rimpe = "CONTRIBUYENTE RÉGIMEN RIMPE";
-                bool obligadoContabilidad = true;
+                string estab = "001"; 
+                string ptoEmi = "001"; 
+                string dirMatriz = empresa.DireccionMatriz;
+                string dirEstablecimiento = empresa.DireccionMatriz; 
+                string rimpe = empresa.ContribuyenteEspecial ?? "CONTRIBUYENTE RÉGIMEN GENERAL"; 
+                bool obligadoContabilidad = empresa.ObligadoContabilidad;
 
+                // --- (El resto de tu lógica para obtener el secuencial no cambia) ---
                 var datosSecuencial = new LogiPharm.Datos.DGenerarSecuancial();
-
-                // ✅ 1. OBTENER EL NÚMERO DE FACTURA COMPLETO DESDE LA BASE DE DATOS
                 string numeroFacturaCompleto = datosSecuencial.ObtenerSiguienteSecuencial(estab, ptoEmi);
-
-                // ✅ 2. EXTRAER SOLO LA PARTE DEL SECUENCIAL (los 9 dígitos)
-                // El método devuelve "001-001-000000123", y el builder solo necesita la última parte.
                 string secuencial = numeroFacturaCompleto.Split('-')[2];
 
-                // 🧱 Construir payload
+                // 🧱 Construir payload con los datos dinámicos
                 var factura = FacturaBuilder.BuildFactura(
-                    empresaRuc,
-                    ambiente,
-                    estab,
-                    ptoEmi,
-                    secuencial, // Se pasa solo el secuencial
-                    dirMatriz,
-                    dirEstablecimiento,
-                    rimpe,
-                    obligadoContabilidad,
-                    _cliente,
-                    _productos
+                      empresaRuc,
+                      ambiente,
+                      estab,
+                      ptoEmi,
+                      secuencial,
+                      dirMatriz,
+                      dirEstablecimiento,
+                      rimpe,
+                      obligadoContabilidad,
+                      _cliente,
+                      _productos
                 );
 
                 // 🚀 Enviar a la API y leer respuesta
                 var r = await EnviarFacturaAPI(factura);
+                this.NumeroAutorizacion = r.numeroAutorizacion ?? "";
 
-                // Guardar en propiedades públicas
+                try
+                {
+                    DCierreCaja d_cierre = new DCierreCaja();
+                    // Asume que tienes una forma de obtener el ID de la caja actual (ej: "1")
+                    var apertura = d_cierre.ObtenerDatosAperturaAbierta(1);
+                    if (apertura == null) throw new Exception("No se pudo encontrar la sesión de caja abierta.");
+
+                    int idCierreCaja = Convert.ToInt32(apertura["id"]);
+                    int idUsuario = SesionActual.IdUsuario; // De tu clase de sesión
+
+                    DFacturaVenta d_factura = new DFacturaVenta();
+                    d_factura.GuardarFactura(_cliente, _productos, numeroFacturaCompleto, idCierreCaja, idUsuario, this.NumeroAutorizacion);
+                }
+                catch (Exception dbEx)
+                {
+                    // Si la API funcionó pero la base de datos local falló, es un problema crítico
+                    MessageBox.Show("¡ATENCIÓN! La factura fue autorizada por el SRI, pero falló al guardarse en la base de datos local.\n\nError: " + dbEx.Message, "Error Crítico de Guardado", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Aquí NO cerramos el formulario, para que el usuario pueda intentar de nuevo o tomar nota.
+                    return;
+                }
+
+                // --- (El resto de tu código para guardar el resultado no cambia) ---
                 this.ClaveAcceso = r.claveAcceso ?? "";
                 this.NumeroAutorizacion = r.numeroAutorizacion ?? "";
                 this.EstadoAutorizacion = r.estadoFinal ?? "";
                 this.FechaAutorizacionIso = r.fechaAutorizacion ?? "";
-
-                // ✅ 3. GUARDAR EL NÚMERO DE FACTURA COMPLETO
                 this.SecuencialUsado = numeroFacturaCompleto;
                 this.EfectivoRecibido = efectivoRecibido;
 
@@ -159,7 +169,6 @@ namespace LogiPharm.Presentacion
             }
             finally
             {
-                // Se asegura de que el cursor y el botón vuelvan a la normalidad, incluso si hay un error
                 this.Cursor = Cursors.Default;
                 btnCobrarImprimir.Enabled = true;
             }

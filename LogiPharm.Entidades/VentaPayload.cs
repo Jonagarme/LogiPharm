@@ -71,6 +71,7 @@ namespace LogiPharm.Entidades
     // === Modelo que ya usas en el POS para recolectar del grid ===
     public class ProductoVenta
     {
+        public int Id { get; set; }
         public string CodigoPrincipal { get; set; }
         public string Descripcion { get; set; }
         public decimal Cantidad { get; set; }
