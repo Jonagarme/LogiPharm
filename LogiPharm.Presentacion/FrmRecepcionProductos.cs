@@ -9,6 +9,8 @@ using System.Globalization;
 using LogiPharm.Datos;
 using System.Collections.Generic;
 using System.Windows.Media.TextFormatting;
+using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace LogiPharm.Presentacion
 {
@@ -284,9 +286,61 @@ namespace LogiPharm.Presentacion
             }
         }
 
-        private void btnConsultar_Click(object sender, EventArgs e)
+        private async void btnConsultar_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Esta función es para cargar datos de prueba. Use el botón 'Importar' para cargar una factura real.", "Aviso");
+            try
+            {
+                string claveAcceso = txtClaveAcceso.Text.Trim();
+
+                if (claveAcceso.Length != 49)
+                {
+                    MessageBox.Show("Debe ingresar una clave de acceso válida de 49 dígitos.",
+                                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                using (var http = new HttpClient())
+                {
+                    // Ajusta la URL base de tu API
+                    string url = $"http://localhost:5001/api/consulta_sri/{claveAcceso}";
+                    var resp = await http.GetAsync(url);
+
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show($"Error al consultar la API: {resp.StatusCode}",
+                                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    string json = await resp.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject<ConsultaSriResponse>(json);
+
+                    if (data == null || string.IsNullOrWhiteSpace(data.ComprobanteXml))
+                    {
+                        MessageBox.Show("La respuesta de la API no contiene el XML del comprobante.",
+                                        "Sin datos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // 🔸 data.ComprobanteXml es el XML de la <factura> (no viene envuelto en <comprobante> con CDATA)
+                    // Por lo tanto, podemos parsearlo directamente con tu helper.
+                    // Si tu XmlHelper.ParseFactura esperaba el InnerText de <comprobante>,
+                    // de todos modos esta llamada funciona si acepta una raíz <factura>.
+                    EFacturaCompraXml factura = XmlHelper.ParseFactura(data.ComprobanteXml);
+
+                    // Rellena la UI con los datos obtenidos
+                    LlenarFormularioConDatosXML(factura);
+
+                    MessageBox.Show("Factura cargada desde el SRI con éxito.",
+                                    "Consulta Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error en la consulta:\n" + ex.Message,
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
     }
 }
