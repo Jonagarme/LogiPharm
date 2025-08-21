@@ -25,7 +25,7 @@ namespace LogiPharm.Presentacion.Utilidades
             ToolStripMenuItem finanzas = ConstruirMenuFinanzas();
             ToolStripMenuItem normativas = ConstruirMenuNormativas();
             ToolStripMenuItem seguridad = ConstruirMenuSeguridad(formulario);
-            ToolStripMenuItem configuracion = ConstruirMenuConfiguracion();
+            ToolStripMenuItem configuracion = ConstruirMenuConfiguracion(formulario);
             ToolStripMenuItem sucursales = ConstruirMenuSucursales();
 
             // Agregar menús según el rol
@@ -276,10 +276,14 @@ namespace LogiPharm.Presentacion.Utilidades
             return seguridad;
         }
 
-        private static ToolStripMenuItem ConstruirMenuConfiguracion()
+        private static ToolStripMenuItem ConstruirMenuConfiguracion(Form formulario)
         {
             ToolStripMenuItem configuracion = new ToolStripMenuItem("⚙️ Configuración");
-            configuracion.DropDownItems.Add("Empresa");
+
+            ToolStripMenuItem empresa = new ToolStripMenuItem("Empresa");
+            empresa.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmEmpresa>(formulario);
+            configuracion.DropDownItems.Add(empresa);
+
             configuracion.DropDownItems.Add("Impuestos");
             configuracion.DropDownItems.Add("Secuencias");
             configuracion.DropDownItems.Add("Firma electrónica");
