@@ -228,21 +228,27 @@
             // 
             this.dgvKardex.AllowUserToAddRows = false;
             this.dgvKardex.AllowUserToDeleteRows = false;
+            this.dgvKardex.AllowUserToResizeRows = false;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
             this.dgvKardex.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvKardex.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dgvKardex.AutoGenerateColumns = false; // <-- Importante
+            this.dgvKardex.AutoGenerateColumns = false;
+            this.dgvKardex.BackgroundColor = System.Drawing.Color.White;
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvKardex.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
-            this.dgvKardex.ColumnHeadersHeight = 25;
+            this.dgvKardex.ColumnHeadersHeight = 35;
             this.dgvKardex.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
             this.dgvKardex.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colFecha,
@@ -264,7 +270,7 @@
             this.dgvKardex.Name = "dgvKardex";
             this.dgvKardex.ReadOnly = true;
             this.dgvKardex.RowHeadersVisible = false;
-            this.dgvKardex.RowTemplate.Height = 24;
+            this.dgvKardex.RowTemplate.Height = 30;
             this.dgvKardex.Size = new System.Drawing.Size(1054, 386);
             this.dgvKardex.TabIndex = 1;
             this.dgvKardex.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
@@ -275,13 +281,13 @@
             this.dgvKardex.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dgvKardex.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
             this.dgvKardex.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            this.dgvKardex.ThemeStyle.HeaderStyle.Height = 25;
+            this.dgvKardex.ThemeStyle.HeaderStyle.Height = 35;
             this.dgvKardex.ThemeStyle.ReadOnly = true;
             this.dgvKardex.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
             this.dgvKardex.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.dgvKardex.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dgvKardex.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            this.dgvKardex.ThemeStyle.RowsStyle.Height = 24;
+            this.dgvKardex.ThemeStyle.RowsStyle.Height = 30;
             this.dgvKardex.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
             this.dgvKardex.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
             // 
@@ -421,6 +427,7 @@
             this.Controls.Add(this.panelContenido);
             this.Controls.Add(this.panelFiltros);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Load += new System.EventHandler(this.FrmKardex_Load);
             this.Name = "FrmKardex";
             this.Text = "Kardex por Producto";
             this.panelFiltros.ResumeLayout(false);

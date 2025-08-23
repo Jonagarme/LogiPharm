@@ -15,12 +15,28 @@ namespace LogiPharm.Presentacion
             InitializeComponent();
         }
 
+        // FrmKardex.cs (en el Load o en el constructor después de InitializeComponent)
         private void FrmKardex_Load(object sender, EventArgs e)
         {
-            // Configurar estado inicial
             cboBodega.SelectedIndex = 0;
-            groupInfoProducto.Visible = false; // Ocultar hasta que se seleccione un producto
+            groupInfoProducto.Visible = false;
+
+            // Rango por defecto: desde el 1er día del mes hasta hoy
+            dtpFechaInicio.Value = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            dtpFechaFin.Value = DateTime.Today;
+
+            // Importantísimo:
+            dgvKardex.AutoGenerateColumns = false;
+
+            // Mapear columnas (hazlo una sola vez)
+            dgvKardex.Columns["colFecha"].DataPropertyName = "Fecha";
+            dgvKardex.Columns["colTipoMovimiento"].DataPropertyName = "TipoMovimiento";
+            dgvKardex.Columns["colDetalle"].DataPropertyName = "Detalle";
+            dgvKardex.Columns["colIngresos"].DataPropertyName = "Ingreso";
+            dgvKardex.Columns["colEgresos"].DataPropertyName = "Egreso";
+            dgvKardex.Columns["colSaldo"].DataPropertyName = "Saldo";
         }
+
 
         private void txtProducto_KeyDown(object sender, KeyEventArgs e)
         {
@@ -122,23 +138,21 @@ namespace LogiPharm.Presentacion
 
         private void EstilizarGrid()
         {
-            if (dgvKardex.Columns.Count > 0)
-            {
-                // Ajustar anchos y alineaciones
-                dgvKardex.Columns["colFecha"].Width = 120;
-                dgvKardex.Columns["colTipoMovimiento"].Width = 150;
-                dgvKardex.Columns["colDetalle"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            // Anchos / formatos
+            dgvKardex.Columns["colFecha"].Width = 120;
+            dgvKardex.Columns["colTipoMovimiento"].Width = 150;
+            dgvKardex.Columns["colDetalle"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
 
-                string[] columnasNumericas = { "colIngresos", "colEgresos", "colSaldo" };
-                foreach (var colName in columnasNumericas)
-                {
-                    var col = dgvKardex.Columns[colName];
-                    col.Width = 100;
-                    col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                    col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
-                    col.DefaultCellStyle.Format = "N2";
-                }
+            string[] columnasNumericas = { "colIngresos", "colEgresos", "colSaldo" };
+            foreach (var colName in columnasNumericas)
+            {
+                var col = dgvKardex.Columns[colName];
+                col.Width = 100;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight;
+                col.DefaultCellStyle.Format = "N2";
             }
         }
+
     }
 }

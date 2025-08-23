@@ -74,6 +74,39 @@ namespace LogiPharm.Datos
                                 cmdDetalle.Parameters.AddWithValue("@productoNombre", prod.Descripcion);
                                 cmdDetalle.ExecuteNonQuery();
                             }
+
+                            string sqlSaldo = "SELECT stock FROM productos WHERE id = @idProducto;";
+                            decimal saldoActual;
+                            using (var cmdSaldo = new MySqlCommand(sqlSaldo, cn, tran))
+                            {
+                                cmdSaldo.Parameters.AddWithValue("@idProducto", prod.Id);
+                                saldoActual = Convert.ToDecimal(cmdSaldo.ExecuteScalar());
+                            }
+
+                            decimal nuevoSaldo = saldoActual - prod.Cantidad;
+
+                            // ✨ 2. INSERTAR EL MOVIMIENTO EN EL KARDEX
+                            string sqlKardex = @"INSERT INTO kardex_movimientos 
+                                        (idProducto, tipoMovimiento, detalle, egreso, saldo)
+                                        VALUES 
+                                        (@idProducto, 'VENTA', @detalle, @egreso, @saldo);";
+                            using (var cmdKardex = new MySqlCommand(sqlKardex, cn, tran))
+                            {
+                                cmdKardex.Parameters.AddWithValue("@idProducto", prod.Id);
+                                cmdKardex.Parameters.AddWithValue("@detalle", $"Factura Venta N° {numeroFactura}");
+                                cmdKardex.Parameters.AddWithValue("@egreso", prod.Cantidad);
+                                cmdKardex.Parameters.AddWithValue("@saldo", nuevoSaldo);
+                                cmdKardex.ExecuteNonQuery();
+                            }
+
+                            // ✨ 3. ACTUALIZAR EL STOCK EN LA TABLA DE PRODUCTOS
+                            string sqlUpdateStock = "UPDATE productos SET stock = @nuevoStock WHERE id = @idProducto;";
+                            using (var cmdUpdateStock = new MySqlCommand(sqlUpdateStock, cn, tran))
+                            {
+                                cmdUpdateStock.Parameters.AddWithValue("@nuevoStock", nuevoSaldo);
+                                cmdUpdateStock.Parameters.AddWithValue("@idProducto", prod.Id);
+                                cmdUpdateStock.ExecuteNonQuery();
+                            }
                         }
 
                         // --- 4. Si todo salió bien, confirma la transacción ---

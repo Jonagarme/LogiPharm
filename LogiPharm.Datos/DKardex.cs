@@ -1,4 +1,7 @@
-﻿using System;
+﻿// DKardex.cs
+using CapaDatos;
+using MySqlConnector;
+using System;
 using System.Data;
 
 namespace LogiPharm.Datos
@@ -7,22 +10,39 @@ namespace LogiPharm.Datos
     {
         public DataTable ObtenerMovimientos(int idProducto, DateTime fechaInicio, DateTime fechaFin)
         {
-            DataTable tabla = new DataTable();
-            tabla.Columns.Add("Fecha", typeof(DateTime));
-            tabla.Columns.Add("TipoMovimiento", typeof(string));
-            tabla.Columns.Add("Detalle", typeof(string));
-            tabla.Columns.Add("Ingreso", typeof(decimal));
-            tabla.Columns.Add("Egreso", typeof(decimal));
-            tabla.Columns.Add("Saldo", typeof(decimal));
+            using (var cn = new MySqlConnection(Conexion.cadena))
+            {
+                string sql = @"
+                    SELECT
+                        fecha   AS Fecha,
+                        tipoMovimiento AS TipoMovimiento,
+                        detalle AS Detalle,
+                        ingreso AS Ingreso,
+                        egreso  AS Egreso,
+                        saldo   AS Saldo
+                    FROM kardex_movimientos
+                    WHERE idProducto = @idProducto
+                      AND fecha >= @inicio
+                      AND fecha <  @finMasUnDia
+                    ORDER BY fecha ASC;";
 
-            // Añadir filas de ejemplo
-            tabla.Rows.Add(DateTime.Now.AddDays(-10), "COMPRA", "Factura FC-001-001-12345", 100.00, 0.00, 100.00);
-            tabla.Rows.Add(DateTime.Now.AddDays(-8), "VENTA", "Factura FV-001-001-487", 0.00, 10.00, 90.00);
-            tabla.Rows.Add(DateTime.Now.AddDays(-5), "AJUSTE INGRESO", "Ajuste #000001", 5.00, 0.00, 95.00);
-            tabla.Rows.Add(DateTime.Now.AddDays(-2), "VENTA", "Factura FV-001-001-499", 0.00, 20.00, 75.00);
-            tabla.Rows.Add(DateTime.Now.AddDays(-1), "AJUSTE EGRESO", "Ajuste #000002 por producto dañado", 0.00, 1.00, 74.00);
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    // rango [00:00:00 de inicio, 00:00:00 del día siguiente a fin)
+                    var inicio = fechaInicio.Date;
+                    var finMasUno = fechaFin.Date.AddDays(1);
 
-            return tabla;
+                    cmd.Parameters.Add("@idProducto", MySqlDbType.Int32).Value = idProducto;
+                    cmd.Parameters.Add("@inicio", MySqlDbType.DateTime).Value = inicio;
+                    cmd.Parameters.Add("@finMasUnDia", MySqlDbType.DateTime).Value = finMasUno;
+
+                    var dt = new DataTable();
+                    using (var da = new MySqlDataAdapter(cmd))
+                        da.Fill(dt);
+
+                    return dt;
+                }
+            }
         }
     }
 }
