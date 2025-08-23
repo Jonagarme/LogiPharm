@@ -33,30 +33,87 @@ namespace LogiPharm.Datos
         }
 
         // Simula la obtención de ventas de los últimos 30 días.
+        // === Ventas por día últimos 30 días (devuelve TODOS los días, incluso los que no tienen ventas) ===
         public DataTable ObtenerVentasUltimoMes()
         {
-            DataTable dt = new DataTable();
+            // 1) Traemos lo que exista en BD
+            var dtRaw = new DataTable();
+            string sql = @"
+                SELECT DATE(fv.fechaEmision) AS Fecha, IFNULL(SUM(fv.total),0) AS TotalVentas
+                  FROM facturas_venta fv
+                 WHERE fv.anulado = 0
+                   AND DATE(fv.fechaEmision) BETWEEN @desde AND @hasta
+              GROUP BY DATE(fv.fechaEmision)
+              ORDER BY Fecha;
+            ";
+
+            DateTime hasta = DateTime.Today;
+            DateTime desde = hasta.AddDays(-29); // 30 días incluyendo hoy
+
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            using (var cmd = new MySqlCommand(sql, cn))
+            using (var da = new MySqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("@desde", desde.Date);
+                cmd.Parameters.AddWithValue("@hasta", hasta.Date);
+                cn.Open();
+                da.Fill(dtRaw);
+            }
+
+            // 2) Construimos una serie completa de 30 días (rellenando con 0 donde no haya ventas)
+            var dt = new DataTable();
             dt.Columns.Add("Fecha", typeof(DateTime));
             dt.Columns.Add("TotalVentas", typeof(decimal));
-            Random rand = new Random();
-            for (int i = 30; i >= 1; i--)
+
+            var mapas = new System.Collections.Generic.Dictionary<DateTime, decimal>();
+            foreach (DataRow r in dtRaw.Rows)
             {
-                dt.Rows.Add(DateTime.Now.AddDays(-i), rand.Next(500, 2000));
+                var f = Convert.ToDateTime(r["Fecha"]).Date;
+                var t = Convert.ToDecimal(r["TotalVentas"]);
+                mapas[f] = t;
             }
+
+            for (var d = desde.Date; d <= hasta.Date; d = d.AddDays(1))
+            {
+                decimal total = mapas.TryGetValue(d, out var t) ? t : 0m;
+                dt.Rows.Add(d, total);
+            }
+
             return dt;
         }
 
-        // Simula la obtención del top 5 de productos más vendidos.
+        // === Top 5 productos por unidades vendidas (últimos 30 días) ===
         public DataTable ObtenerTopProductos()
         {
-            DataTable dt = new DataTable();
-            dt.Columns.Add("Producto", typeof(string));
-            dt.Columns.Add("TotalVendido", typeof(int));
-            dt.Rows.Add("PARACETAMOL 500MG", 150);
-            dt.Rows.Add("COMPLEJO B JARABE", 120);
-            dt.Rows.Add("VITAMINA C 500MG", 95);
-            dt.Rows.Add("METFORMINA 850MG", 80);
-            dt.Rows.Add("IBUPROFENO 400MG", 75);
+            var dt = new DataTable();
+
+            string sql = @"
+                SELECT 
+                    COALESCE(NULLIF(d.productoNombre,''), p.nombre) AS Producto,
+                    SUM(d.cantidad)                                 AS TotalVendido
+                  FROM facturas_venta_detalle d
+                  JOIN facturas_venta fv ON fv.id = d.idFacturaVenta
+                  LEFT JOIN productos p ON p.id = d.idProducto
+                 WHERE fv.anulado = 0
+                   AND DATE(fv.fechaEmision) BETWEEN @desde AND @hasta
+              GROUP BY Producto
+              ORDER BY TotalVendido DESC
+                 LIMIT 5;
+            ";
+
+            DateTime hasta = DateTime.Today;
+            DateTime desde = hasta.AddDays(-29);
+
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            using (var cmd = new MySqlCommand(sql, cn))
+            using (var da = new MySqlDataAdapter(cmd))
+            {
+                cmd.Parameters.AddWithValue("@desde", desde.Date);
+                cmd.Parameters.AddWithValue("@hasta", hasta.Date);
+                cn.Open();
+                da.Fill(dt);
+            }
+
             return dt;
         }
     }
