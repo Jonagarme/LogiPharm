@@ -6,6 +6,7 @@
         public static string NombreUsuario { get; set; }
         public static string NombreCompleto { get; set; }
         public static string Rol { get; set; }
+        public static bool Activa => IdUsuario > 0;
 
         public static void Limpiar()
         {

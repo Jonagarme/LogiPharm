@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 using LogiPharm.Negocio;
 using LogiPharm.Entidades;
@@ -13,8 +12,6 @@ namespace LogiPharm.Presentacion
         {
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
-            //this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            //this.MaximizeBox = false;
             this.Text = "Inicio de Sesión - LogiPharm";
         }
 
@@ -27,14 +24,14 @@ namespace LogiPharm.Presentacion
 
             if (datos != null)
             {
-                // Asignar datos a la sesión
+                // Guardar sesión en memoria
                 SesionActual.IdUsuario = datos.IdUsuario;
                 SesionActual.NombreUsuario = datos.Usuario;
                 SesionActual.NombreCompleto = datos.NombreCompleto;
                 SesionActual.Rol = datos.Rol;
 
-                // Abrir la ventana principal
-                FrmPrincipal principal = new FrmPrincipal(datos.Rol);
+                // Abrir principal y ocultar login (NO se cierra para poder reusarlo al cerrar sesión)
+                var principal = new FrmPrincipal(datos.Rol);
                 principal.Show();
                 this.Hide();
             }
@@ -44,16 +41,18 @@ namespace LogiPharm.Presentacion
             }
         }
 
-
-        private void FrmLogin_Load(object sender, EventArgs e)
+        // (Opcional) Método para limpiar los campos cuando se vuelve a mostrar el login
+        public void LimpiarCampos()
         {
-
+            txtUsuario.Clear();
+            txtClave.Clear();
+            lblMensaje.Text = string.Empty;
+            txtUsuario.Focus();
         }
 
         private void BtnCancelar_Click(object sender, EventArgs e)
         {
-            this.Close(); // o Application.Exit();
+            Application.Exit();
         }
-
     }
 }

@@ -2,6 +2,7 @@
 using System.Drawing;
 using LogiPharm.Datos; 
 using System;
+using System.Linq;
 
 namespace LogiPharm.Presentacion.Utilidades
 {
@@ -17,7 +18,7 @@ namespace LogiPharm.Presentacion.Utilidades
             };
 
             // Menús disponibles
-            ToolStripMenuItem inicio = ConstruirMenuInicio();
+            ToolStripMenuItem inicio = ConstruirMenuInicio(formulario);
             ToolStripMenuItem ventas = ConstruirMenuVentas(formulario);
             ToolStripMenuItem inventario = ConstruirMenuInventario(formulario);
             ToolStripMenuItem compras = ConstruirMenuCompras(formulario);
@@ -61,12 +62,51 @@ namespace LogiPharm.Presentacion.Utilidades
 
         // Métodos privados para construir submenús
 
-        private static ToolStripMenuItem ConstruirMenuInicio()
+        private static ToolStripMenuItem ConstruirMenuInicio(Form formulario)
         {
-            ToolStripMenuItem inicio = new ToolStripMenuItem("🏠 Inicio");
-            inicio.DropDownItems.Add("Dashboard");
-            inicio.DropDownItems.Add("Notificaciones");
+            var inicio = new ToolStripMenuItem("🏠 Inicio");
+
+            var mDashboard = new ToolStripMenuItem("Dashboard");
+            mDashboard.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmDashboard>(formulario);
+
+            var mNotif = new ToolStripMenuItem("Notificaciones");
+            // si tienes formulario de notificaciones, agregar el Click aquí
+
+            var mCerrar = new ToolStripMenuItem("Cerrar Sesión");
+            mCerrar.ShortcutKeys = Keys.Control | Keys.L;
+            mCerrar.Click += (s, e) => CerrarSesion(formulario);  // ⬅️ handler real
+
+            inicio.DropDownItems.Add(mDashboard);
+            inicio.DropDownItems.Add(mNotif);
+            inicio.DropDownItems.Add(new ToolStripSeparator());
+            inicio.DropDownItems.Add(mCerrar);
+
             return inicio;
+        }
+
+
+
+
+        private static void CerrarSesion(Form formulario)
+        {
+            var r = MessageBox.Show("¿Deseas cerrar sesión?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (r != DialogResult.Yes) return;
+
+            // Cierra formularios hijos si el principal es MDI
+            foreach (var child in formulario.MdiChildren) child.Close();
+
+            // Limpia la sesión en memoria
+            SesionActual.Limpiar();
+
+            // Busca un login abierto/oculto o crea uno nuevo
+            var frmLogin = Application.OpenForms.OfType<FrmLogin>().FirstOrDefault();
+            if (frmLogin == null) frmLogin = new FrmLogin();
+
+            frmLogin.Show();
+            frmLogin.BringToFront();
+
+            // Cierra el formulario principal actual
+            formulario.Close();
         }
 
         private static ToolStripMenuItem ConstruirMenuVentas(Form formulario)
