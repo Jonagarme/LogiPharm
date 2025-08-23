@@ -47,6 +47,64 @@ namespace LogiPharm.Datos
             }
         }
 
+        public (DataRow Encabezado, DataTable Detalle) ObtenerFacturaDesdeDb(int idFactura)
+        {
+            using (var cn = new MySqlConnection(Conexion.cadena))
+            {
+                cn.Open();
+
+                // ===== ENCABEZADO =====
+                var sqlHeader = @"
+                SELECT 
+                    fv.id,
+                    fv.numeroFactura                  AS NumeroDocumento,
+                    fv.fechaEmision                  AS FechaEmision,
+                    fv.estado                        AS EstadoVenta,
+                    fv.numeroAutorizacion            AS Autorizacion,      -- si es NULL => sin autorización SRI
+                    fv.subtotal                      AS SubtotalFactura,
+                    fv.descuento                     AS DescuentoFactura,
+                    fv.iva                            AS IvaFactura,
+                    fv.total                          AS TotalFactura,
+
+                    c.cedula_ruc                     AS Identificacion,
+                    COALESCE(NULLIF(c.razonSocial,''), TRIM(CONCAT(IFNULL(c.nombres,''),' ',IFNULL(c.apellidos,'')))) AS RazonSocial,
+                    c.direccion                      AS Direccion,
+                    COALESCE(NULLIF(c.telefono,''), c.celular)              AS Telefono
+                FROM facturas_venta fv
+                JOIN clientes c ON c.id = fv.idCliente
+                WHERE fv.id = @id;";
+
+                var dtHeader = new DataTable();
+                using (var da = new MySqlDataAdapter(sqlHeader, cn))
+                {
+                    da.SelectCommand.Parameters.AddWithValue("@id", idFactura);
+                    da.Fill(dtHeader);
+                }
+
+                // ===== DETALLE =====
+                var sqlDetalle = @"
+                SELECT 
+                    p.codigoPrincipal  AS Codigo,
+                    p.nombre           AS Descripcion,
+                    d.cantidad         AS Cantidad,
+                    d.precioUnitario   AS PrecioUnitario,
+                    d.descuentoValor   AS Descuento,
+                    d.ivaValor         AS Iva,
+                    (d.total - d.ivaValor) AS Subtotal   -- subtotal sin IVA
+                FROM facturas_venta_detalle d
+                JOIN productos p ON p.id = d.idProducto
+                WHERE d.idFacturaVenta = @id;";
+
+                var dtDet = new DataTable();
+                using (var da2 = new MySqlDataAdapter(sqlDetalle, cn))
+                {
+                    da2.SelectCommand.Parameters.AddWithValue("@id", idFactura);
+                    da2.Fill(dtDet);
+                }
+
+                return (dtHeader.Rows.Count > 0 ? dtHeader.Rows[0] : null, dtDet);
+            }
+        }
 
         // ✨ NUEVO MÉTODO: Llama a tu API para obtener el detalle de una factura
         public async Task<RespuestaConsultaApi> ObtenerDetalleDesdeApi(string claveAcceso)

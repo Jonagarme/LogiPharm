@@ -77,9 +77,85 @@ namespace LogiPharm.Presentacion
             }
         }
 
-
-
         private async void dgvListaFacturas_SelectionChanged(object sender, EventArgs e)
+        {
+            if (_cargandoDetalle) return;
+            if (dgvListaFacturas.CurrentRow == null)
+            {
+                LimpiarDetalle();
+                return;
+            }
+
+            var drv = dgvListaFacturas.CurrentRow.DataBoundItem as DataRowView;
+            if (drv == null)
+            {
+                LimpiarDetalle();
+                return;
+            }
+
+            // Tomamos el Id oculto del listado
+            int idFactura = Convert.ToInt32(drv["Id"]);
+
+            try
+            {
+                _cargandoDetalle = true;
+                this.Cursor = Cursors.WaitCursor;
+
+                var d = new DFacturacion();
+                var res = d.ObtenerFacturaDesdeDb(idFactura);
+
+                if (res.Encabezado == null)
+                {
+                    LimpiarDetalle();
+                    MostrarEstadoError("ERROR");   // opcional
+                    return;
+                }
+
+                // ===== Encabezado =====
+                lblNumeroFactura.Text = Convert.ToString(res.Encabezado["NumeroDocumento"] ?? "...");
+                lblFecha.Text = res.Encabezado["FechaEmision"] is DateTime fe
+                                            ? fe.ToString("dd/MM/yyyy")
+                                            : Convert.ToString(res.Encabezado["FechaEmision"] ?? "...");
+                lblCliente.Text = Convert.ToString(res.Encabezado["RazonSocial"] ?? "...");
+                lblCedula.Text = Convert.ToString(res.Encabezado["Identificacion"] ?? "...");
+                lblDireccion.Text = Convert.ToString(res.Encabezado["Direccion"] ?? "...");
+                lblTelefono.Text = Convert.ToString(res.Encabezado["Telefono"] ?? "...");
+                lblAutorizacion.Text = Convert.ToString(res.Encabezado["Autorizacion"] ?? "...");
+
+                // Estado SRI según si tiene o no autorización
+                var autorizacion = Convert.ToString(res.Encabezado["Autorizacion"]);
+                if (string.IsNullOrWhiteSpace(autorizacion))
+                    MostrarEstadoError("ERROR");           // rojo
+                else
+                    MostrarEstadoAutorizado();             // verde
+
+                // (opcional) otros labels:
+                // lblTipoDoc.Text = "FACTURA"; lblAmbiente.Text = "..."; etc.
+
+                // ===== Detalle =====
+                // Tus columnas ya están configuradas con estos DataPropertyName:
+                // Codigo, Descripcion, Cantidad, PrecioUnitario, Descuento, Iva, Subtotal
+                dgvDetalleFactura.AutoGenerateColumns = false;
+                dgvDetalleFactura.DataSource = null;
+                dgvDetalleFactura.Rows.Clear();
+                dgvDetalleFactura.DataSource = res.Detalle;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error al cargar detalle", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MostrarEstadoError("ERROR");
+                LimpiarDetalle(mantenerEstado: true);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+                _cargandoDetalle = false;
+            }
+        }
+
+
+
+        private async void dgvListaFacturas_SelectionChanged1(object sender, EventArgs e)
         {
             if (_cargandoDetalle) return;
             if (dgvListaFacturas.CurrentRow == null)
