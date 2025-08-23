@@ -1,79 +1,75 @@
-﻿using MySqlConnector;
+﻿using CapaDatos;
+using LogiPharm.Entidades;
+using MySqlConnector;
+using Newtonsoft.Json;
 using System;
 using System.Data;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace LogiPharm.Datos
 {
     public class DFacturacion
     {
-        // Método para listar las facturas según los filtros
-        public DataTable ListarFacturas(DateTime fechaInicio, DateTime fechaFin)
+        // Método para listar las facturas desde tu base de datos
+        public DataTable ListarFacturas(DateTime fechaInicio, DateTime fechaFin, string textoBusqueda)
         {
-            // Por ahora, este método devuelve datos de ejemplo.
-            // TODO: Reemplazar con una consulta real a tu tabla de facturas.
-            DataTable tabla = new DataTable();
-            tabla.Columns.Add("No.Doc", typeof(int));
-            tabla.Columns.Add("Preimpreso", typeof(string));
-            tabla.Columns.Add("Check", typeof(bool));
-            tabla.Columns.Add("Ride", typeof(string)); // Podría ser un booleano o un string con la URL
+            using (var cn = new MySqlConnection(Conexion.cadena))
+            {
+                string sql = @"
+                SELECT 
+                    fv.id AS Id,
+                    fv.numeroFactura AS Factura,         -- << AÑADIDO
+                    fv.numeroAutorizacion AS Autorizacion,
+                    c.nombres AS Cliente,
+                    fv.total AS Total,
+                    fv.estado AS Estado,
+                    fv.numeroAutorizacion AS ClaveAcceso
+                FROM facturas_venta fv
+                JOIN clientes c ON fv.idCliente = c.id
+                WHERE 
+                    DATE(fv.fechaEmision) BETWEEN @fechaInicio AND @fechaFin
+                    AND (c.nombres LIKE @busqueda 
+                         OR fv.numeroFactura LIKE @busqueda 
+                         OR fv.numeroAutorizacion LIKE @busqueda)
+                ORDER BY fv.fechaEmision DESC;";
 
-            // Añadir filas de ejemplo
-            tabla.Rows.Add(804, "002011000000487", false, "PDF");
-            tabla.Rows.Add(803, "002011000000486", true, "PDF");
-            tabla.Rows.Add(802, "002011000000485", false, "PDF");
-            tabla.Rows.Add(801, "002011000000484", false, "PDF");
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@fechaInicio", fechaInicio.Date);
+                    cmd.Parameters.AddWithValue("@fechaFin", fechaFin.Date);
+                    cmd.Parameters.AddWithValue("@busqueda", $"%{textoBusqueda}%");
 
-            return tabla;
+                    var dt = new DataTable();
+                    new MySqlDataAdapter(cmd).Fill(dt);
+                    return dt;
+                }
+            }
         }
 
-        // Método para obtener el detalle completo de UNA factura
-        public DataSet ObtenerDetalleFactura(int idDocumento)
+
+        // ✨ NUEVO MÉTODO: Llama a tu API para obtener el detalle de una factura
+        public async Task<RespuestaConsultaApi> ObtenerDetalleDesdeApi(string claveAcceso)
         {
-            // Este método devuelve un DataSet con dos tablas:
-            // 1. Info de la factura (para los campos de texto)
-            // 2. Detalle de productos (para la grilla anidada)
+            if (string.IsNullOrEmpty(claveAcceso))
+            {
+                throw new ArgumentException("La clave de acceso no puede estar vacía.");
+            }
 
-            DataSet ds = new DataSet();
+            string apiUrl = $"http://127.0.0.1:5001/api/consulta_sri/{claveAcceso}";
 
-            // --- Tabla 1: Datos de la Factura ---
-            DataTable tblFactura = new DataTable("FacturaInfo");
-            tblFactura.Columns.Add("NumeroFactura", typeof(string));
-            tblFactura.Columns.Add("NoInterno", typeof(string));
-            tblFactura.Columns.Add("FechaAutorizacion", typeof(string));
-            tblFactura.Columns.Add("SriEstado", typeof(string));
-            tblFactura.Columns.Add("Cedula", typeof(string));
-            tblFactura.Columns.Add("Cliente", typeof(string));
-            tblFactura.Columns.Add("Telefono", typeof(string));
-            tblFactura.Columns.Add("Direccion", typeof(string));
-            tblFactura.Columns.Add("Fecha", typeof(string));
-            tblFactura.Columns.Add("Ambiente", typeof(string));
-            tblFactura.Columns.Add("TipoDocumento", typeof(string));
-            tblFactura.Columns.Add("Cajero", typeof(string));
-            tblFactura.Columns.Add("Caja", typeof(string));
-            tblFactura.Columns.Add("Autorizacion", typeof(string));
-            tblFactura.Rows.Add("002-011-000000487", "804", "2025-04-25T17:54:02-05:00", "AUTORIZADO",
-                               "0933742426001", "JHIRE EZEQUIEL S.A.S", "0998821625", "ANTEPARA Y PRIMERA DE MAYO",
-                               "25/04/2025 17:54:03", "PRODUCCIÓN", "FACTURA", "dloor", "CAJA001",
-                               "2504202501131027159600120020110000004871234567811");
-            ds.Tables.Add(tblFactura);
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(apiUrl);
+                string jsonResponse = await response.Content.ReadAsStringAsync();
 
-            // --- Tabla 2: Detalle de Productos ---
-            DataTable tblDetalle = new DataTable("FacturaDetalle");
-            tblDetalle.Columns.Add("Codigo", typeof(string));
-            tblDetalle.Columns.Add("Producto", typeof(string));
-            tblDetalle.Columns.Add("Cant", typeof(int));
-            tblDetalle.Columns.Add("Precio", typeof(decimal));
-            tblDetalle.Columns.Add("PFinal", typeof(decimal));
-            tblDetalle.Columns.Add("Dscto", typeof(decimal));
-            tblDetalle.Columns.Add("IVA", typeof(decimal));
-            tblDetalle.Columns.Add("Subtotal", typeof(decimal));
-            tblDetalle.Columns.Add("Total", typeof(decimal));
-            tblDetalle.Rows.Add("7861097200475", "CEMIN 500MG/5ML CJX10 AMPOLLAS IM-IV", 20, 0.490, 0.480, 0.000, 0.000, 9.60, 9.60);
-            tblDetalle.Rows.Add("8904159404011", "PARACETAMOL 500MG CJX100 TAB - ECUAQ", 100, 0.050, 0.050, 0.000, 0.000, 5.00, 5.00);
-            tblDetalle.Rows.Add("7862104590336", "COMPLEJO B JARABE FCO X100ML - LABOVIDA", 15, 1.500, 1.500, 0.000, 0.000, 22.50, 22.50);
-            ds.Tables.Add(tblDetalle);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Error al consultar la API: {response.ReasonPhrase}\n{jsonResponse}");
+                }
 
-            return ds;
+                return JsonConvert.DeserializeObject<RespuestaConsultaApi>(jsonResponse);
+            }
         }
     }
 }
