@@ -43,10 +43,15 @@ namespace LogiPharm.Presentacion
             var cliente = new ECliente
             {
                 Identificacion = txtIdentificacion.Text.Trim(),
+                CedulaRuc = txtIdentificacion.Text.Trim(),
+                Nombres = txtNombres.Text.Trim(),
+                Apellidos = txtApellidos.Text.Trim(),
                 RazonSocial = $"{txtNombres.Text.Trim()} {txtApellidos.Text.Trim()}".Trim(),
                 Direccion = txtDireccion.Text.Trim(),
                 Telefono = txtCelular.Text.Trim(),
+                Celular = txtCelular.Text.Trim(),
                 Email = txtCorreo.Text.Trim(),
+                TipoCliente = cboTipoPersona.ValueMember,
                 TipoIdentificacion = ObtenerTipoIdSeleccionado(),
                 CreadoPor = 1 // TODO: Reemplazar con el ID del usuario que ha iniciado sesión
             };
