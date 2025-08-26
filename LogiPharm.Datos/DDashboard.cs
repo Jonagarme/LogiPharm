@@ -15,7 +15,7 @@ namespace LogiPharm.Datos
             SELECT
               (SELECT IFNULL(SUM(total), 0) FROM facturas_venta WHERE DATE(fechaEmision) = CURDATE()) AS VentasHoy,
                 (SELECT COUNT(*) FROM clientes) AS TotalClientes,
-                (SELECT SUM(stock) FROM productos) AS ProductosStock,
+                (SELECT SUM(id) FROM productos) AS ProductosStock,
                 (SELECT COUNT(*) FROM proveedores) AS TotalProveedores;
         ";
 
