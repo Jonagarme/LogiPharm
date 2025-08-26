@@ -3,6 +3,7 @@ using System.Drawing;
 using LogiPharm.Datos; 
 using System;
 using System.Linq;
+using System.Configuration;
 
 namespace LogiPharm.Presentacion.Utilidades
 {
@@ -23,7 +24,7 @@ namespace LogiPharm.Presentacion.Utilidades
             ToolStripMenuItem inventario = ConstruirMenuInventario(formulario);
             ToolStripMenuItem compras = ConstruirMenuCompras(formulario);
             ToolStripMenuItem clientes = ConstruirMenuClientes(formulario);
-            ToolStripMenuItem finanzas = ConstruirMenuFinanzas();
+            ToolStripMenuItem finanzas = ConstruirMenuFinanzas(formulario);
             ToolStripMenuItem normativas = ConstruirMenuNormativas();
             ToolStripMenuItem seguridad = ConstruirMenuSeguridad(formulario);
             ToolStripMenuItem configuracion = ConstruirMenuConfiguracion(formulario);
@@ -275,13 +276,18 @@ namespace LogiPharm.Presentacion.Utilidades
             return clientes;
         }
 
-        private static ToolStripMenuItem ConstruirMenuFinanzas()
+        private static ToolStripMenuItem ConstruirMenuFinanzas(Form formulario)
         {
             ToolStripMenuItem finanzas = new ToolStripMenuItem("📊 Finanzas y Reportes");
             finanzas.DropDownItems.Add("CxC / CxP");
             finanzas.DropDownItems.Add("Libro diario / mayor");
             finanzas.DropDownItems.Add("Conciliaciones");
-            finanzas.DropDownItems.Add("Reporte de ventas");
+            //finanzas.DropDownItems.Add("Reporte de ventas");
+
+            ToolStripMenuItem Reporteventas = new ToolStripMenuItem("Reporte de ventas");
+            Reporteventas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmReporteVentas>(formulario);
+            finanzas.DropDownItems.Add(Reporteventas);
+
             finanzas.DropDownItems.Add("Reporte de inventario");
             finanzas.DropDownItems.Add("Reporte de compras");
             finanzas.DropDownItems.Add("Reportes financieros");
