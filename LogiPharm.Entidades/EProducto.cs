@@ -35,6 +35,8 @@ namespace LogiPharm.Entidades
         public int CreadoPor { get; set; }
         public int? EditadoPor { get; set; }
         public DateTime FechaVencimiento { get; set; } // Campo nuevo
-
+        public decimal CostoUnidad { get; set; }
+        public decimal CostoCaja { get; set; }
+        public decimal PvpUnidad { get; set; }  // opcional
     }
 }

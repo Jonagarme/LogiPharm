@@ -2,12 +2,27 @@
 using System;
 using System.Data;
 using LogiPharm.Entidades;
-using System.Collections.Generic; // Importamos la clase EProducto que creamos antes
+using System.Collections.Generic;
 
 namespace LogiPharm.Datos
 {
     public class DProductos
     {
+        // ======================
+        // Helpers de lectura DB
+        // ======================
+        private static string GetStringSafe(MySqlDataReader dr, string col)
+            => dr[col] == DBNull.Value ? null : dr[col].ToString();
+
+        private static int? GetInt32Nullable(MySqlDataReader dr, string col)
+            => dr[col] == DBNull.Value ? (int?)null : Convert.ToInt32(dr[col]);
+
+        private static decimal GetDecimalSafe(MySqlDataReader dr, string col)
+            => dr[col] == DBNull.Value ? 0m : Convert.ToDecimal(dr[col]);
+
+        private static bool GetBoolSafe(MySqlDataReader dr, string col)
+            => dr[col] == DBNull.Value ? false : Convert.ToBoolean(dr[col]);
+
         // --- MÉTODO PARA LISTAR PRODUCTOS ---
         public DataTable ListarProductos()
         {
@@ -82,11 +97,11 @@ namespace LogiPharm.Datos
             {
                 cn.Open();
                 string query = @"
-            SELECT id, codigoPrincipal, nombre, precioVenta, stock, activo as 'Activo'
-            FROM productos
-            WHERE (codigoPrincipal = @texto OR codigoAuxiliar = @texto OR nombre LIKE CONCAT('%', @texto, '%'))
-              AND anulado = 0 AND activo = 1
-            LIMIT 1;";
+                    SELECT id, codigoPrincipal, nombre, precioVenta, stock, activo as 'activo'
+                    FROM productos
+                    WHERE (codigoPrincipal = @texto OR codigoAuxiliar = @texto OR nombre LIKE CONCAT('%', @texto, '%'))
+                      AND anulado = 0 AND activo = 1
+                    LIMIT 1;";
 
                 MySqlCommand cmd = new MySqlCommand(query, cn);
                 cmd.Parameters.AddWithValue("@texto", texto);
@@ -127,31 +142,35 @@ namespace LogiPharm.Datos
                             prod = new EProducto
                             {
                                 Id = dr.GetInt64("id"),
-                                Nombre = dr["nombre"].ToString(),
-                                CodigoPrincipal = dr["codigoPrincipal"].ToString(),
-                                CodigoAuxiliar = dr["codigoAuxiliar"] == DBNull.Value ? null : dr["codigoAuxiliar"].ToString(),
-                                Descripcion = dr["descripcion"] == DBNull.Value ? null : dr["descripcion"].ToString(),
-                                Observaciones = dr["observaciones"] == DBNull.Value ? null : dr["observaciones"].ToString(),
-                                RegistroSanitario = dr["registroSanitario"] == DBNull.Value ? null : dr["registroSanitario"].ToString(),
+                                Nombre = GetStringSafe(dr, "nombre"),
+                                CodigoPrincipal = GetStringSafe(dr, "codigoPrincipal"),
+                                CodigoAuxiliar = GetStringSafe(dr, "codigoAuxiliar"),
+                                Descripcion = GetStringSafe(dr, "descripcion"),
+                                Observaciones = GetStringSafe(dr, "observaciones"),
+                                RegistroSanitario = GetStringSafe(dr, "registroSanitario"),
                                 IdTipoProducto = Convert.ToInt32(dr["idTipoProducto"]),
                                 IdClaseProducto = Convert.ToInt32(dr["idClaseProducto"]),
                                 IdCategoria = Convert.ToInt32(dr["idCategoria"]),
                                 IdSubcategoria = Convert.ToInt32(dr["idSubcategoria"]),
-                                IdSubnivel = dr["idSubnivel"] == DBNull.Value ? (int?)null : Convert.ToInt32(dr["idSubnivel"]),
+                                IdSubnivel = GetInt32Nullable(dr, "idSubnivel"),
                                 IdMarca = Convert.ToInt32(dr["idMarca"]),
-                                IdLaboratorio = dr["idLaboratorio"] == DBNull.Value ? (int?)null : Convert.ToInt32(dr["idLaboratorio"]),
-                                Stock = Convert.ToDecimal(dr["stock"]),
-                                StockMinimo = Convert.ToDecimal(dr["stockMinimo"]),
-                                StockMaximo = Convert.ToDecimal(dr["stockMaximo"]),
-                                PrecioVenta = Convert.ToDecimal(dr["precioVenta"]),
-                                EsDivisible = Convert.ToBoolean(dr["esDivisible"]),
-                                EsPsicotropico = Convert.ToBoolean(dr["esPsicotropico"]),
-                                RequiereCadenaFrio = Convert.ToBoolean(dr["requiereCadenaFrio"]),
-                                RequiereSeguimiento = Convert.ToBoolean(dr["requiereSeguimiento"]),
-                                CalculoABCManual = Convert.ToBoolean(dr["calculoABCManual"]),
-                                ClasificacionABC = dr["clasificacionABC"] == DBNull.Value ? null : dr["clasificacionABC"].ToString(),
-                                Activo = Convert.ToBoolean(dr["activo"])
-                                // Si quieres mapear otros campos, agrégalos aquí
+                                IdLaboratorio = GetInt32Nullable(dr, "idLaboratorio"),
+                                Stock = GetDecimalSafe(dr, "stock"),
+                                StockMinimo = GetDecimalSafe(dr, "stockMinimo"),
+                                StockMaximo = GetDecimalSafe(dr, "stockMaximo"),
+                                // ===== NUEVOS CAMPOS DE PRECIOS/COSTOS =====
+                                CostoUnidad = GetDecimalSafe(dr, "costoUnidad"),
+                                CostoCaja = GetDecimalSafe(dr, "costoCaja"),
+                                PvpUnidad = GetDecimalSafe(dr, "pvpUnidad"),
+                                PrecioVenta = GetDecimalSafe(dr, "precioVenta"),
+                                // ===========================================
+                                EsDivisible = GetBoolSafe(dr, "esDivisible"),
+                                EsPsicotropico = GetBoolSafe(dr, "esPsicotropico"),
+                                RequiereCadenaFrio = GetBoolSafe(dr, "requiereCadenaFrio"),
+                                RequiereSeguimiento = GetBoolSafe(dr, "requiereSeguimiento"),
+                                CalculoABCManual = GetBoolSafe(dr, "calculoABCManual"),
+                                ClasificacionABC = GetStringSafe(dr, "clasificacionABC"),
+                                Activo = GetBoolSafe(dr, "activo")
                             };
                         }
                     }
@@ -168,9 +187,8 @@ namespace LogiPharm.Datos
                 try
                 {
                     cn.Open();
-                    // Buscamos coincidencias en el código principal o en el nombre
                     string query = @"
-                        SELECT id, codigoPrincipal, nombre, stock, precioVenta, activo as 'Activo' 
+                        SELECT id, codigoPrincipal, nombre, stock, precioVenta, activo as 'activo' 
                         FROM productos 
                         WHERE (codigoPrincipal LIKE @criterio OR nombre LIKE @criterio) 
                           AND anulado = 0 AND activo = 1 
@@ -203,37 +221,41 @@ namespace LogiPharm.Datos
             return lista;
         }
 
-
-
         public EProducto BuscarProductoPorCodigoONombre(string texto)
         {
             EProducto producto = null;
-
             using (MySqlConnection cn = new MySqlConnection(CapaDatos.Conexion.cadena))
             {
                 try
                 {
                     cn.Open();
-                    // Busca por código principal, auxiliar o nombre (LIKE para coincidencias parciales en nombre)
-                    string query = @"SELECT * FROM productos 
-                             WHERE (codigoPrincipal = @texto OR codigoAuxiliar = @texto OR nombre LIKE CONCAT('%', @texto, '%')) 
-                             AND anulado = 0 AND activo = 1 LIMIT 1;";
+                    string query = @"
+                        SELECT *
+                        FROM productos 
+                        WHERE (codigoPrincipal = @texto OR codigoAuxiliar = @texto OR nombre LIKE CONCAT('%', @texto, '%')) 
+                          AND anulado = 0 AND activo = 1
+                        LIMIT 1;";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
                     cmd.Parameters.AddWithValue("@texto", texto);
 
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    using (MySqlDataReader dr = cmd.ExecuteReader())
                     {
-                        if (reader.Read())
+                        if (dr.Read())
                         {
                             producto = new EProducto
                             {
-                                Id = Convert.ToInt64(reader["id"]),
-                                CodigoPrincipal = reader["codigoPrincipal"].ToString(),
-                                Nombre = reader["nombre"].ToString(),
-                                Stock = Convert.ToDecimal(reader["stock"]),
-                                PrecioVenta = Convert.ToDecimal(reader["precioVenta"]),
-                                Activo = Convert.ToBoolean(reader["activo"]),
+                                Id = Convert.ToInt64(dr["id"]),
+                                CodigoPrincipal = dr["codigoPrincipal"].ToString(),
+                                Nombre = dr["nombre"].ToString(),
+                                Stock = GetDecimalSafe(dr, "stock"),
+                                // ======= devolvemos también costos/precios =======
+                                CostoUnidad = GetDecimalSafe(dr, "costoUnidad"),
+                                CostoCaja = GetDecimalSafe(dr, "costoCaja"),
+                                PvpUnidad = GetDecimalSafe(dr, "pvpUnidad"),
+                                PrecioVenta = GetDecimalSafe(dr, "precioVenta"),
+                                // =================================================
+                                Activo = GetBoolSafe(dr, "activo"),
                             };
                         }
                     }
@@ -246,8 +268,7 @@ namespace LogiPharm.Datos
             return producto;
         }
 
-
-        // --- MÉTODO PARA INSERTAR UN NUEVO PRODUCTO ---
+        // --- INSERTAR ---
         public bool InsertarProducto(EProducto producto)
         {
             int filasAfectadas = 0;
@@ -260,18 +281,21 @@ namespace LogiPharm.Datos
                         INSERT INTO productos (
                             nombre, codigoPrincipal, codigoAuxiliar, descripcion, observaciones, registroSanitario,
                             idTipoProducto, idClaseProducto, idCategoria, idSubcategoria, idSubnivel, idMarca, idLaboratorio,
-                            stock, stockMinimo, stockMaximo, precioVenta, esDivisible, esPsicotropico, requiereCadenaFrio,
-                            requiereSeguimiento, calculoABCManual, clasificacionABC, activo, creadoPor, creadoDate
+                            stock, stockMinimo, stockMaximo,
+                            costoUnidad, costoCaja, pvpUnidad, precioVenta,
+                            esDivisible, esPsicotropico, requiereCadenaFrio, requiereSeguimiento, calculoABCManual,
+                            clasificacionABC, activo, creadoPor, creadoDate
                         ) VALUES (
                             @nombre, @codigoPrincipal, @codigoAuxiliar, @descripcion, @observaciones, @registroSanitario,
                             @idTipoProducto, @idClaseProducto, @idCategoria, @idSubcategoria, @idSubnivel, @idMarca, @idLaboratorio,
-                            @stock, @stockMinimo, @stockMaximo, @precioVenta, @esDivisible, @esPsicotropico, @requiereCadenaFrio,
-                            @requiereSeguimiento, @calculoABCManual, @clasificacionABC, @activo, @creadoPor, @creadoDate
+                            @stock, @stockMinimo, @stockMaximo,
+                            @costoUnidad, @costoCaja, @pvpUnidad, @precioVenta,
+                            @esDivisible, @esPsicotropico, @requiereCadenaFrio, @requiereSeguimiento, @calculoABCManual,
+                            @clasificacionABC, @activo, @creadoPor, @creadoDate
                         );";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
 
-                    // Asignar valores a los parámetros desde el objeto 'producto'
                     cmd.Parameters.AddWithValue("@nombre", producto.Nombre);
                     cmd.Parameters.AddWithValue("@codigoPrincipal", producto.CodigoPrincipal);
                     cmd.Parameters.AddWithValue("@codigoAuxiliar", (object)producto.CodigoAuxiliar ?? DBNull.Value);
@@ -288,7 +312,13 @@ namespace LogiPharm.Datos
                     cmd.Parameters.AddWithValue("@stock", producto.Stock);
                     cmd.Parameters.AddWithValue("@stockMinimo", producto.StockMinimo);
                     cmd.Parameters.AddWithValue("@stockMaximo", producto.StockMaximo);
+
+                    // ===== nuevos =====
+                    cmd.Parameters.AddWithValue("@costoUnidad", producto.CostoUnidad);
+                    cmd.Parameters.AddWithValue("@costoCaja", producto.CostoCaja);
+                    cmd.Parameters.AddWithValue("@pvpUnidad", producto.PvpUnidad);
                     cmd.Parameters.AddWithValue("@precioVenta", producto.PrecioVenta);
+
                     cmd.Parameters.AddWithValue("@esDivisible", producto.EsDivisible);
                     cmd.Parameters.AddWithValue("@esPsicotropico", producto.EsPsicotropico);
                     cmd.Parameters.AddWithValue("@requiereCadenaFrio", producto.RequiereCadenaFrio);
@@ -297,7 +327,7 @@ namespace LogiPharm.Datos
                     cmd.Parameters.AddWithValue("@clasificacionABC", (object)producto.ClasificacionABC ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@activo", producto.Activo);
 
-                    // Campos de auditoría
+                    // auditoría
                     cmd.Parameters.AddWithValue("@creadoPor", producto.CreadoPor);
                     cmd.Parameters.AddWithValue("@creadoDate", DateTime.Now);
 
@@ -320,17 +350,17 @@ namespace LogiPharm.Datos
                 {
                     cn.Open();
                     string query = @"
-                SELECT 
-                    codigoPrincipal AS 'Código', 
-                    nombre AS 'Nombre', 
-                    stock AS 'Stock', 
-                    precioVenta AS 'PVP',
-                    id AS 'ID',
-                    activo as 'Activo'
-                FROM productos
-                WHERE anulado = 0
-                  AND (codigoPrincipal LIKE @criterio OR nombre LIKE @criterio)
-                ORDER BY nombre ASC;";
+                        SELECT 
+                            codigoPrincipal AS 'Código', 
+                            nombre AS 'Nombre', 
+                            stock AS 'Stock', 
+                            precioVenta AS 'PVP',
+                            id AS 'ID',
+                            activo as 'Activo'
+                        FROM productos
+                        WHERE anulado = 0
+                          AND (codigoPrincipal LIKE @criterio OR nombre LIKE @criterio)
+                        ORDER BY nombre ASC;";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
                     cmd.Parameters.AddWithValue("@criterio", $"%{criterio}%");
@@ -346,9 +376,7 @@ namespace LogiPharm.Datos
             return tabla;
         }
 
-
-
-        // --- MÉTODO PARA ACTUALIZAR UN PRODUCTO EXISTENTE ---
+        // --- UPDATE GENERAL ---
         public bool ActualizarProducto(EProducto producto)
         {
             int filasAfectadas = 0;
@@ -375,7 +403,12 @@ namespace LogiPharm.Datos
                             stock = @stock,
                             stockMinimo = @stockMinimo,
                             stockMaximo = @stockMaximo,
+                            -- ===== nuevos =====
+                            costoUnidad = @costoUnidad,
+                            costoCaja   = @costoCaja,
+                            pvpUnidad   = @pvpUnidad,
                             precioVenta = @precioVenta,
+                            -- ===================
                             esDivisible = @esDivisible,
                             esPsicotropico = @esPsicotropico,
                             requiereCadenaFrio = @requiereCadenaFrio,
@@ -389,7 +422,6 @@ namespace LogiPharm.Datos
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
 
-                    // Asignar valores a los parámetros
                     cmd.Parameters.AddWithValue("@id", producto.Id);
                     cmd.Parameters.AddWithValue("@nombre", producto.Nombre);
                     cmd.Parameters.AddWithValue("@codigoPrincipal", producto.CodigoPrincipal);
@@ -407,7 +439,13 @@ namespace LogiPharm.Datos
                     cmd.Parameters.AddWithValue("@stock", producto.Stock);
                     cmd.Parameters.AddWithValue("@stockMinimo", producto.StockMinimo);
                     cmd.Parameters.AddWithValue("@stockMaximo", producto.StockMaximo);
+
+                    // nuevos
+                    cmd.Parameters.AddWithValue("@costoUnidad", producto.CostoUnidad);
+                    cmd.Parameters.AddWithValue("@costoCaja", producto.CostoCaja);
+                    cmd.Parameters.AddWithValue("@pvpUnidad", producto.PvpUnidad);
                     cmd.Parameters.AddWithValue("@precioVenta", producto.PrecioVenta);
+
                     cmd.Parameters.AddWithValue("@esDivisible", producto.EsDivisible);
                     cmd.Parameters.AddWithValue("@esPsicotropico", producto.EsPsicotropico);
                     cmd.Parameters.AddWithValue("@requiereCadenaFrio", producto.RequiereCadenaFrio);
@@ -416,7 +454,6 @@ namespace LogiPharm.Datos
                     cmd.Parameters.AddWithValue("@clasificacionABC", (object)producto.ClasificacionABC ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@activo", producto.Activo);
 
-                    // Campos de auditoría
                     cmd.Parameters.AddWithValue("@editadoPor", producto.EditadoPor);
                     cmd.Parameters.AddWithValue("@editadoDate", DateTime.Now);
 
@@ -429,5 +466,75 @@ namespace LogiPharm.Datos
             }
             return filasAfectadas > 0;
         }
+
+        // --- UPDATE de CostoCaja + PVP (pantalla PRECIOS)
+        public bool ActualizarPrecios(int idProducto, decimal costoCaja, decimal pvp /*, opc: costoUnidad, pvpUnidad*/)
+        {
+            using (MySqlConnection cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                cn.Open();
+                string sql = @"
+                    UPDATE productos
+                    SET costoCaja   = @costoCaja,
+                        precioVenta = @pvp
+                    WHERE id = @id;";
+
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@costoCaja", costoCaja);
+                    cmd.Parameters.AddWithValue("@pvp", pvp);
+                    cmd.Parameters.AddWithValue("@id", idProducto);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public bool ActualizarPreciosAutoPorId(long idProducto, decimal pvp)
+        {
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                cn.Open();
+                // calcula todo en SQL con ROUND a 4 decimales
+                const string sql = @"
+            UPDATE productos
+            SET
+                precioVenta = @pvp,
+                pvpUnidad   = @pvp,
+                costoUnidad = ROUND(@pvp * 0.7, 4),
+                costoCaja   = ROUND(stock * (@pvp * 0.7), 4)
+            WHERE id = @id;";
+
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@pvp", pvp);
+                    cmd.Parameters.AddWithValue("@id", idProducto);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        // Variante si quieres usar el código principal en lugar del ID.
+        public bool ActualizarPreciosAutoPorCodigo(string codigoPrincipal, decimal pvp)
+        {
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                cn.Open();
+                const string sql = @"
+            UPDATE productos
+            SET
+                precioVenta = @pvp,
+                pvpUnidad   = @pvp,
+                costoUnidad = ROUND(@pvp * 0.7, 4),
+                costoCaja   = ROUND(stock * (@pvp * 0.7), 4)
+            WHERE codigoPrincipal = @codigo;";
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@pvp", pvp);
+                    cmd.Parameters.AddWithValue("@codigo", codigoPrincipal);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
     }
 }
