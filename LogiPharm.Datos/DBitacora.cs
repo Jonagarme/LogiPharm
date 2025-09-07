@@ -6,46 +6,71 @@ namespace LogiPharm.Datos
 {
     public class DBitacora
     {
-        // Este método simula la obtención de los registros de la bitácora.
-        // TODO: Reemplazar con una consulta SQL real a tu tabla de bitácora.
         public DataTable ConsultarBitacora(DateTime fechaInicio, DateTime fechaFin, string usuario, string accion)
         {
-            DataTable tabla = new DataTable();
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            using (var cmd = new MySqlCommand("sp_consultar_auditoria", cn))
+            using (var da = new MySqlDataAdapter(cmd))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
 
-            // --- INICIO DE SIMULACIÓN CON DATOS DE PRUEBA ---
-            tabla.Columns.Add("Fecha", typeof(DateTime));
-            tabla.Columns.Add("Usuario", typeof(string));
-            tabla.Columns.Add("Modulo", typeof(string));
-            tabla.Columns.Add("Accion", typeof(string));
-            tabla.Columns.Add("Detalle", typeof(string));
+                // Normalizar filtros (coinciden con el SP)
+                string usr = string.IsNullOrWhiteSpace(usuario) || usuario == "[TODOS]" ? "TODOS" : usuario;
+                string acc = string.IsNullOrWhiteSpace(accion) || accion.ToUpper() == "TODAS" ? "TODAS" : accion;
 
-            // Añadir filas de ejemplo
-            tabla.Rows.Add(DateTime.Now.AddHours(-5), "admin", "Seguridad", "INICIO DE SESIÓN", "Inicio de sesión exitoso.");
-            tabla.Rows.Add(DateTime.Now.AddHours(-4), "cajero01", "Ventas", "CREACIÓN", "Se creó la factura de venta Nro. 001-001-12345.");
-            tabla.Rows.Add(DateTime.Now.AddHours(-3), "admin", "Inventario", "MODIFICACIÓN", "Se actualizó el producto 'PARACETAMOL 500MG'. Stock anterior: 100, Stock nuevo: 98.");
-            tabla.Rows.Add(DateTime.Now.AddHours(-2), "farmaceutico", "Compras", "CREACIÓN", "Se ingresó la factura de compra Nro. FC-2025-589 del proveedor DIFARE.");
-            tabla.Rows.Add(DateTime.Now.AddHours(-1), "admin", "Seguridad", "ANULACIÓN", "Se anuló el rol 'Vendedor Nocturno'.");
-            tabla.Rows.Add(DateTime.Now, "cajero01", "Caja", "CIERRE", "Se realizó el cierre de la CAJA001 con una diferencia de $1.50.");
+                cmd.Parameters.AddWithValue("@pFechaDesde", fechaInicio);
+                cmd.Parameters.AddWithValue("@pFechaHasta", fechaFin);
+                cmd.Parameters.AddWithValue("@pUsuario", usr);
+                cmd.Parameters.AddWithValue("@pAccion", acc);
 
-            // Aquí iría la lógica de filtrado real en la consulta SQL
-            // Por ahora, devolvemos todos los datos de prueba.
-
-            return tabla;
+                var tabla = new DataTable();
+                cn.Open();
+                da.Fill(tabla);
+                return tabla;
+            }
         }
 
-        // Método para obtener la lista de usuarios para el filtro
         public DataTable ListarUsuariosParaFiltro()
         {
-            DataTable tabla = new DataTable();
-            tabla.Columns.Add("id", typeof(int));
-            tabla.Columns.Add("nombreUsuario", typeof(string));
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            using (var cmd = new MySqlCommand("sp_listar_usuarios_auditoria", cn))
+            using (var da = new MySqlDataAdapter(cmd))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                var tabla = new DataTable();
+                cn.Open();
+                da.Fill(tabla);
 
-            tabla.Rows.Add(0, "[TODOS]");
-            tabla.Rows.Add(1, "admin");
-            tabla.Rows.Add(2, "cajero01");
-            tabla.Rows.Add(3, "farmaceutico");
+                // Insertar opción [TODOS] al inicio
+                var fila = tabla.NewRow();
+                fila["id"] = 0;
+                fila["nombreUsuario"] = "[TODOS]";
+                tabla.Rows.InsertAt(fila, 0);
+                return tabla;
+            }
+        }
 
-            return tabla;
+        // Opcional: Registrar un evento en auditoría
+        public void Registrar(int idUsuario, string usuario, string modulo, string accion, string entidad = null, long? idEntidad = null, string descripcion = null, string ip = null, string host = null, string origen = "UI", string extra = null)
+        {
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            using (var cmd = new MySqlCommand("sp_registrar_auditoria", cn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@pIdUsuario", idUsuario);
+                cmd.Parameters.AddWithValue("@pUsuario", usuario ?? string.Empty);
+                cmd.Parameters.AddWithValue("@pModulo", modulo ?? string.Empty);
+                cmd.Parameters.AddWithValue("@pAccion", accion ?? string.Empty);
+                cmd.Parameters.AddWithValue("@pEntidad", (object)entidad ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@pIdEntidad", (object)idEntidad ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@pDescripcion", (object)descripcion ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@pIp", (object)ip ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@pHost", (object)host ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@pOrigen", (object)origen ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@pExtra", (object)extra ?? DBNull.Value);
+                cn.Open();
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }
