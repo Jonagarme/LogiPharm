@@ -11,6 +11,14 @@ namespace LogiPharm.Presentacion
 {
     public partial class FrmProductos : Form
     {
+        // Estado para carga incremental
+        private DataTable _tablaProductos;
+        private int _pageSize = 50;
+        private int _offset = 0;
+        private bool _isLoading = false;
+        private bool _allLoaded = false;
+        private string _criterioActual = null; // null = listado normal; texto = búsqueda
+
         public FrmProductos()
         {
             InitializeComponent();
@@ -22,6 +30,7 @@ namespace LogiPharm.Presentacion
             DgvListado.CellMouseEnter += DgvListado_CellMouseEnter;
             DgvListado.CellFormatting += DgvListado_CellFormatting;   // <-- importante
             DgvListado.DataError += (s, e) => { e.ThrowException = false; };
+            DgvListado.Scroll += DgvListado_Scroll; // <-- carga incremental
 
             AsignarEventosMenu();
 
@@ -49,11 +58,13 @@ namespace LogiPharm.Presentacion
 
         private void BtnCancelar_Click(object sender, EventArgs e) => CerrarPanelEdicion();
 
-        private void FrmProductos_Load(object sender, EventArgs e)
+        private async void FrmProductos_Load(object sender, EventArgs e)
         {
             splitContainer1.Panel2Collapsed = true;
             CerrarPanelEdicion();
-            CargarProductos();
+
+            // Inicial: listado normal sin filtros con carga incremental
+            await ResetearListadoAsync(null);
 
             // Auditoría: VISUALIZAR listado
             try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, "Abrir listado de productos", null, Environment.MachineName, "UI"); } catch { }
@@ -130,7 +141,8 @@ namespace LogiPharm.Presentacion
                         // Auditoría: ELIMINAR (simulada)
                         try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "ELIMINAR", "productos", idProducto, "Eliminación de producto (simulada)", null, Environment.MachineName, "UI"); } catch { }
 
-                        CargarProductos();
+                        // Refrescar listado desde el inicio
+                        _ = ResetearListadoAsync(_criterioActual);
                     }
                     catch (Exception ex)
                     {
@@ -209,40 +221,34 @@ namespace LogiPharm.Presentacion
             }
         }
 
+        // --- Scroll: cargar más ---
+        private async void DgvListado_Scroll(object sender, ScrollEventArgs e)
+        {
+            if (e.ScrollOrientation != ScrollOrientation.VerticalScroll) return;
+            await TryLoadMoreAsync();
+        }
+
+        private async Task TryLoadMoreAsync()
+        {
+            if (_isLoading || _allLoaded || DgvListado.RowCount == 0) return;
+
+            int first = DgvListado.FirstDisplayedScrollingRowIndex;
+            if (first < 0) return;
+            int visible = DgvListado.DisplayedRowCount(false);
+            int bottomIndex = first + visible;
+            if (bottomIndex >= DgvListado.RowCount - 2) // cerca del final
+            {
+                await CargarPaginaAsync();
+            }
+        }
 
         // --- Botón "Listar/Refrescar" ---
         private async void iconButton4_Click(object sender, EventArgs e)
         {
-            FrmLoading loadingForm = new FrmLoading();
-            try
-            {
-                loadingForm.Show(this);
-                await Task.Delay(50);
+            await ResetearListadoAsync(_criterioActual);
 
-                DProductos d_Productos = new DProductos();
-                DataTable dt = await Task.Run(() => d_Productos.ListarProductos());
-
-                DgvListado.DataSource = dt;
-                DgvListado.RowHeadersVisible = false;
-
-                if (DgvListado.Columns["ID"] != null)
-                    DgvListado.Columns["ID"].Visible = false;
-
-                EnsureActionColumns();
-
-                lblTotal.Text = "Total de Registros: " + DgvListado.Rows.Count.ToString();
-
-                // Auditoría: VISUALIZAR (refrescar list)
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, "Refrescar listado de productos", null, Environment.MachineName, "UI"); } catch { }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error al cargar productos", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                loadingForm.Close();
-            }
+            // Auditoría: VISUALIZAR (refrescar list)
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, "Refrescar listado de productos", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void DgvListado_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -250,7 +256,6 @@ namespace LogiPharm.Presentacion
             if (e.RowIndex < 0) return;
 
             var colName = DgvListado.Columns[e.ColumnIndex].Name;
-            // Evita doble apertura si el doble clic fue en las columnas de acción
             if (colName == "colEditar" || colName == "colEliminar" || colName == "colStatus")
                 return;
 
@@ -259,7 +264,7 @@ namespace LogiPharm.Presentacion
 
         private void iconButton2_Click(object sender, EventArgs e) => AbrirFormularioEditarProducto();
 
-        private void AbrirFormularioEditarProducto()
+        private async void AbrirFormularioEditarProducto()
         {
             if (DgvListado.CurrentRow == null)
             {
@@ -280,7 +285,7 @@ namespace LogiPharm.Presentacion
                     DialogResult resultado = frm.ShowDialog();
                     if (resultado == DialogResult.OK)
                     {
-                        CargarProductos();
+                        await ResetearListadoAsync(_criterioActual);
                         MessageBox.Show("Producto actualizado. Refrescando lista...");
 
                         // Auditoría: EDITAR
@@ -387,7 +392,7 @@ namespace LogiPharm.Presentacion
                     MessageBox.Show("¡Producto guardado exitosamente!", "Éxito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     CerrarPanelEdicion();
-                    CargarProductos();
+                    _ = ResetearListadoAsync(_criterioActual);
 
                     // Auditoría: CREAR
                     try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "CREAR", "productos", null, $"Creación de producto '{nuevo.Nombre}'", null, Environment.MachineName, "UI"); } catch { }
@@ -405,57 +410,96 @@ namespace LogiPharm.Presentacion
             }
         }
 
-        // --- Cargar/Buscar listado ---
-        private void CargarProductos()
+        // --- Listado con carga incremental ---
+        private async Task ResetearListadoAsync(string criterio)
         {
+            _criterioActual = string.IsNullOrWhiteSpace(criterio) ? null : criterio.Trim();
+            _offset = 0;
+            _allLoaded = false;
+            _tablaProductos = null;
+            DgvListado.DataSource = null;
+
+            await CargarPaginaAsync(true);
+        }
+
+        private async Task CargarPaginaAsync(bool esPrimera = false)
+        {
+            if (_isLoading || _allLoaded) return;
+            _isLoading = true;
             try
             {
-                DProductos d_Productos = new DProductos();
-                DgvListado.DataSource = d_Productos.ListarProductos();
+                DataTable pagina;
+                var d = new DProductos();
+                await Task.Yield(); // ceder UI
+                if (_criterioActual == null)
+                {
+                    pagina = d.ListarProductosPaginado(_offset, _pageSize);
+                }
+                else
+                {
+                    pagina = d.BuscarProductosPaginado(_criterioActual, _offset, _pageSize);
+                }
 
-                DgvListado.RowHeadersVisible = false;
+                if (pagina == null || pagina.Rows.Count == 0)
+                {
+                    _allLoaded = true;
+                    return;
+                }
 
-                if (DgvListado.Columns["Column1"] != null)
-                    DgvListado.Columns["Column1"].Visible = false;
+                if (_tablaProductos == null)
+                {
+                    _tablaProductos = pagina.Clone(); // misma estructura
+                    _tablaProductos.Locale = System.Globalization.CultureInfo.CurrentCulture;
+                }
 
-                if (DgvListado.Columns["ID"] != null)
-                    DgvListado.Columns["ID"].Visible = false;
+                foreach (DataRow r in pagina.Rows)
+                {
+                    _tablaProductos.ImportRow(r);
+                }
+                _offset += pagina.Rows.Count;
+                if (pagina.Rows.Count < _pageSize) _allLoaded = true;
+
+                if (DgvListado.DataSource == null)
+                {
+                    DgvListado.DataSource = _tablaProductos;
+                    DgvListado.RowHeadersVisible = false;
+                    if (DgvListado.Columns["ID"] != null)
+                        DgvListado.Columns["ID"].Visible = false;
+                    EnsureActionColumns();
+                }
+                else
+                {
+                    // Notificar cambios
+                    var cm = (CurrencyManager)BindingContext[DgvListado.DataSource];
+                    cm.Refresh();
+                }
 
                 lblTotal.Text = "Total de Registros: " + DgvListado.Rows.Count.ToString();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error al cargar productos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _allLoaded = true; // evitar bucles
+            }
+            finally
+            {
+                _isLoading = false;
             }
         }
 
-        private void btnBuscar_Click(object sender, EventArgs e)
+        private async void btnBuscar_Click(object sender, EventArgs e)
         {
             string criterio = txtBuscar.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(criterio))
             {
-                CargarProductos();
+                await ResetearListadoAsync(null);
                 return;
             }
 
             try
             {
-                DProductos d_Productos = new DProductos();
-                DataTable dt = d_Productos.BuscarProductos(criterio);
-
-                DgvListado.DataSource = dt;
-                DgvListado.RowHeadersVisible = false;
-
-                if (DgvListado.Columns["ID"] != null)
-                    DgvListado.Columns["ID"].Visible = false;
-
-
-                lblTotal.Text = "Total de Registros: " + DgvListado.Rows.Count.ToString();
-
-                if (DgvListado.Rows.Count == 0)
-                    MessageBox.Show("No se encontraron productos para el criterio ingresado.", "Búsqueda",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await ResetearListadoAsync(criterio);
 
                 // Auditoría: VISUALIZAR (búsqueda)
                 try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, $"Buscar productos por: '{criterio}'", null, Environment.MachineName, "UI"); } catch { }
@@ -480,7 +524,6 @@ namespace LogiPharm.Presentacion
         // --- Columnas de acción con PNG ---
         private void EnsureActionColumns()
         {
-            // Columna indicador de estado (pintada en CellPainting)
             if (DgvListado.Columns["colStatus"] == null)
             {
                 var colStatus = new DataGridViewTextBoxColumn
@@ -539,7 +582,6 @@ namespace LogiPharm.Presentacion
 
             DgvListado.RowTemplate.Height = Math.Max(DgvListado.RowTemplate.Height, 25);
         }
-
 
     }
 }

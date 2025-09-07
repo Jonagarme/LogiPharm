@@ -56,6 +56,47 @@ namespace LogiPharm.Datos
             return tabla;
         }
 
+        // NUEVO: Listado paginado (para carga incremental)
+        public DataTable ListarProductosPaginado(int offset, int limit)
+        {
+            DataTable tabla = new DataTable();
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    string query = @"
+                        SELECT 
+                            codigoPrincipal AS 'Código', 
+                            nombre AS 'Nombre', 
+                            stock AS 'Stock', 
+                            precioVenta AS 'PVP',
+                            stockMinimo AS 'StockMinimo',
+                            activo as 'Activo',
+                            id AS 'ID' 
+                        FROM productos 
+                        WHERE anulado = 0 
+                        ORDER BY nombre ASC
+                        LIMIT @limit OFFSET @offset;";
+
+                    using (var cmd = new MySqlCommand(query, cn))
+                    {
+                        cmd.Parameters.Add("@limit", MySqlDbType.Int32).Value = limit;
+                        cmd.Parameters.Add("@offset", MySqlDbType.Int32).Value = offset;
+                        using (var da = new MySqlDataAdapter(cmd))
+                        {
+                            da.Fill(tabla);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al listar productos (paginado): " + ex.Message);
+                }
+            }
+            return tabla;
+        }
+
         public DataTable BuscarProductosParaKardex(string criterio)
         {
             DataTable tabla = new DataTable();
@@ -371,6 +412,48 @@ namespace LogiPharm.Datos
                 catch (Exception ex)
                 {
                     throw new Exception("Error al buscar productos: " + ex.Message);
+                }
+            }
+            return tabla;
+        }
+
+        // NUEVO: Búsqueda paginada
+        public DataTable BuscarProductosPaginado(string criterio, int offset, int limit)
+        {
+            DataTable tabla = new DataTable();
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    string query = @"
+                        SELECT 
+                            codigoPrincipal AS 'Código', 
+                            nombre AS 'Nombre', 
+                            stock AS 'Stock', 
+                            precioVenta AS 'PVP',
+                            id AS 'ID',
+                            activo as 'Activo'
+                        FROM productos
+                        WHERE anulado = 0
+                          AND (codigoPrincipal LIKE @criterio OR nombre LIKE @criterio)
+                        ORDER BY nombre ASC
+                        LIMIT @limit OFFSET @offset;";
+
+                    using (var cmd = new MySqlCommand(query, cn))
+                    {
+                        cmd.Parameters.AddWithValue("@criterio", $"%{criterio}%");
+                        cmd.Parameters.Add("@limit", MySqlDbType.Int32).Value = limit;
+                        cmd.Parameters.Add("@offset", MySqlDbType.Int32).Value = offset;
+                        using (var da = new MySqlDataAdapter(cmd))
+                        {
+                            da.Fill(tabla);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al buscar productos (paginado): " + ex.Message);
                 }
             }
             return tabla;
