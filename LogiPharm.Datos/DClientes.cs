@@ -28,7 +28,7 @@ namespace LogiPharm.Datos
                                 Id = reader.GetInt32("id"),
                                 TipoIdentificacion = reader["tipo_identificacion"].ToString(),
                                 CedulaRuc = reader["cedula_ruc"].ToString(),
-                                RazonSocial = reader["nombres"].ToString(),
+                                RazonSocial = reader["razonSocial"] != DBNull.Value ? reader["razonSocial"].ToString() : reader["nombres"].ToString(),
                                 Direccion = reader["direccion"]?.ToString(),
                                 Telefono = reader["telefono"]?.ToString(),
                                 Email = reader["email"]?.ToString(),
@@ -46,6 +46,49 @@ namespace LogiPharm.Datos
             return cliente;
         }
 
+        public ECliente ObtenerClientePorId(int id)
+        {
+            ECliente cliente = null;
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    string query = "SELECT * FROM clientes WHERE id = @id AND anulado = 0 LIMIT 1";
+                    var cmd = new MySqlCommand(query, cn);
+                    cmd.Parameters.AddWithValue("@id", id);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            cliente = new ECliente
+                            {
+                                Id = reader.GetInt32("id"),
+                                TipoIdentificacion = reader["tipo_identificacion"].ToString(),
+                                CedulaRuc = reader["cedula_ruc"].ToString(),
+                                Nombres = reader["nombres"] != DBNull.Value ? reader["nombres"].ToString() : null,
+                                Apellidos = reader["apellidos"] != DBNull.Value ? reader["apellidos"].ToString() : null,
+                                RazonSocial = reader["razonSocial"] != DBNull.Value ? reader["razonSocial"].ToString() : null,
+                                Direccion = reader["direccion"] != DBNull.Value ? reader["direccion"].ToString() : null,
+                                Telefono = reader["telefono"] != DBNull.Value ? reader["telefono"].ToString() : null,
+                                Celular = reader["celular"] != DBNull.Value ? reader["celular"].ToString() : null,
+                                Email = reader["email"] != DBNull.Value ? reader["email"].ToString() : null,
+                                TipoCliente = reader["tipo_cliente"] != DBNull.Value ? reader["tipo_cliente"].ToString() : null,
+                                Estado = reader["estado"] != DBNull.Value ? Convert.ToInt32(reader["estado"]) : 1,
+                                CreadoPor = reader["creadoPor"] != DBNull.Value ? Convert.ToInt32(reader["creadoPor"]) : 1,
+                                EditadoPor = reader["editadoPor"] != DBNull.Value ? Convert.ToInt32(reader["editadoPor"]) : (int?)null
+                            };
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al obtener cliente por ID: " + ex.Message);
+                }
+            }
+            return cliente;
+        }
 
         public DataTable ListarClientes(string criterio)
         {
@@ -73,7 +116,6 @@ namespace LogiPharm.Datos
             }
             return tabla;
         }
-
 
         public bool ActualizarCliente(ECliente cliente)
         {
@@ -128,8 +170,6 @@ namespace LogiPharm.Datos
             return filasAfectadas > 0;
         }
 
-
-
         public bool InsertarCliente(ECliente cliente)
         {
             int filasAfectadas = 0;
@@ -169,7 +209,6 @@ namespace LogiPharm.Datos
             }
             return filasAfectadas > 0;
         }
-
 
         public DataTable ListarClientesActivos()
         {

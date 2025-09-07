@@ -29,6 +29,19 @@
             this.btnGuardar = new FontAwesome.Sharp.IconButton();
             this.btnNuevo = new FontAwesome.Sharp.IconButton();
             this.panelContenido = new Guna.UI2.WinForms.Guna2Panel();
+            this.dgvDetalleVenta = new Guna.UI2.WinForms.Guna2DataGridView();
+            this.colEliminar = new System.Windows.Forms.DataGridViewImageColumn();
+            this.colCodigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colProducto = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colInfo = new System.Windows.Forms.DataGridViewImageColumn();
+            this.colCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPrecio = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPFinal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colPorcentaje = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colDscto = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colIVA = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colSubtotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupTotales = new Guna.UI2.WinForms.Guna2GroupBox();
             this.lblTotal = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
@@ -58,19 +71,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtNumeroCotizacion = new Guna.UI2.WinForms.Guna2TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.dgvDetalleVenta = new Guna.UI2.WinForms.Guna2DataGridView();
-            this.colEliminar = new System.Windows.Forms.DataGridViewImageColumn();
-            this.colCodigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colProducto = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colInfo = new System.Windows.Forms.DataGridViewImageColumn();
-            this.colCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPrecio = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPFinal = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colPorcentaje = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colDscto = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colIVA = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colSubtotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.labelEstadoCaption = new System.Windows.Forms.Label();
+            this.lblEstado = new System.Windows.Forms.Label();
             this.panelToolbar.SuspendLayout();
             this.panelContenido.SuspendLayout();
             this.groupTotales.SuspendLayout();
@@ -171,6 +173,8 @@
             // 
             // panelContenido
             // 
+            this.panelContenido.Controls.Add(this.lblEstado);
+            this.panelContenido.Controls.Add(this.labelEstadoCaption);
             this.panelContenido.Controls.Add(this.dgvDetalleVenta);
             this.panelContenido.Controls.Add(this.groupTotales);
             this.panelContenido.Controls.Add(this.txtObservaciones);
@@ -188,6 +192,161 @@
             this.panelContenido.Padding = new System.Windows.Forms.Padding(12);
             this.panelContenido.Size = new System.Drawing.Size(1184, 571);
             this.panelContenido.TabIndex = 2;
+            // 
+            // dgvDetalleVenta
+            // 
+            this.dgvDetalleVenta.AllowUserToAddRows = false;
+            this.dgvDetalleVenta.AllowUserToDeleteRows = false;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
+            this.dgvDetalleVenta.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
+            this.dgvDetalleVenta.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvDetalleVenta.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvDetalleVenta.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
+            this.dgvDetalleVenta.ColumnHeadersHeight = 28;
+            this.dgvDetalleVenta.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            this.dgvDetalleVenta.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colEliminar,
+            this.colCodigo,
+            this.colProducto,
+            this.colInfo,
+            this.colCantidad,
+            this.colPrecio,
+            this.colPFinal,
+            this.colPorcentaje,
+            this.colDscto,
+            this.colIVA,
+            this.colSubtotal,
+            this.colTotal});
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvDetalleVenta.DefaultCellStyle = dataGridViewCellStyle6;
+            this.dgvDetalleVenta.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            this.dgvDetalleVenta.Location = new System.Drawing.Point(15, 191);
+            this.dgvDetalleVenta.Name = "dgvDetalleVenta";
+            this.dgvDetalleVenta.RowHeadersVisible = false;
+            this.dgvDetalleVenta.RowTemplate.Height = 28;
+            this.dgvDetalleVenta.Size = new System.Drawing.Size(1160, 183);
+            this.dgvDetalleVenta.TabIndex = 11;
+            this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
+            this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.Font = null;
+            this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.ForeColor = System.Drawing.Color.Empty;
+            this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.SelectionBackColor = System.Drawing.Color.Empty;
+            this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.SelectionForeColor = System.Drawing.Color.Empty;
+            this.dgvDetalleVenta.ThemeStyle.BackColor = System.Drawing.Color.White;
+            this.dgvDetalleVenta.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(88)))), ((int)(((byte)(255)))));
+            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
+            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
+            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.Height = 28;
+            this.dgvDetalleVenta.ThemeStyle.ReadOnly = false;
+            this.dgvDetalleVenta.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
+            this.dgvDetalleVenta.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dgvDetalleVenta.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Segoe UI", 10.5F);
+            this.dgvDetalleVenta.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            this.dgvDetalleVenta.ThemeStyle.RowsStyle.Height = 28;
+            this.dgvDetalleVenta.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
+            this.dgvDetalleVenta.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            // 
+            // colEliminar
+            // 
+            this.colEliminar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colEliminar.HeaderText = "";
+            this.colEliminar.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.colEliminar.Name = "colEliminar";
+            this.colEliminar.Width = 40;
+            // 
+            // colCodigo
+            // 
+            this.colCodigo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colCodigo.HeaderText = "Código";
+            this.colCodigo.Name = "colCodigo";
+            this.colCodigo.Width = 120;
+            // 
+            // colProducto
+            // 
+            this.colProducto.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.colProducto.HeaderText = "Producto/Item";
+            this.colProducto.Name = "colProducto";
+            // 
+            // colInfo
+            // 
+            this.colInfo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colInfo.HeaderText = "Info";
+            this.colInfo.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
+            this.colInfo.Name = "colInfo";
+            this.colInfo.Width = 40;
+            // 
+            // colCantidad
+            // 
+            this.colCantidad.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colCantidad.HeaderText = "Cant.";
+            this.colCantidad.Name = "colCantidad";
+            this.colCantidad.Width = 60;
+            // 
+            // colPrecio
+            // 
+            this.colPrecio.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colPrecio.HeaderText = "Precio";
+            this.colPrecio.Name = "colPrecio";
+            this.colPrecio.Width = 80;
+            // 
+            // colPFinal
+            // 
+            this.colPFinal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colPFinal.HeaderText = "P.Final";
+            this.colPFinal.Name = "colPFinal";
+            this.colPFinal.Width = 80;
+            // 
+            // colPorcentaje
+            // 
+            this.colPorcentaje.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colPorcentaje.HeaderText = "%";
+            this.colPorcentaje.Name = "colPorcentaje";
+            this.colPorcentaje.Width = 40;
+            // 
+            // colDscto
+            // 
+            this.colDscto.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colDscto.HeaderText = "Dsct.%";
+            this.colDscto.Name = "colDscto";
+            this.colDscto.Width = 60;
+            // 
+            // colIVA
+            // 
+            this.colIVA.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colIVA.HeaderText = "I.V.A";
+            this.colIVA.Name = "colIVA";
+            this.colIVA.Width = 60;
+            // 
+            // colSubtotal
+            // 
+            this.colSubtotal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colSubtotal.HeaderText = "Subtotal";
+            this.colSubtotal.Name = "colSubtotal";
+            this.colSubtotal.Width = 90;
+            // 
+            // colTotal
+            // 
+            this.colTotal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.colTotal.HeaderText = "Total";
+            this.colTotal.Name = "colTotal";
+            this.colTotal.Width = 90;
             // 
             // groupTotales
             // 
@@ -615,160 +774,26 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "No. Cotización:";
             // 
-            // dgvDetalleVenta
+            // labelEstadoCaption
             // 
-            this.dgvDetalleVenta.AllowUserToAddRows = false;
-            this.dgvDetalleVenta.AllowUserToDeleteRows = false;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
-            this.dgvDetalleVenta.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle4;
-            this.dgvDetalleVenta.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dgvDetalleVenta.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvDetalleVenta.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle5;
-            this.dgvDetalleVenta.ColumnHeadersHeight = 28;
-            this.dgvDetalleVenta.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            this.dgvDetalleVenta.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colEliminar,
-            this.colCodigo,
-            this.colProducto,
-            this.colInfo,
-            this.colCantidad,
-            this.colPrecio,
-            this.colPFinal,
-            this.colPorcentaje,
-            this.colDscto,
-            this.colIVA,
-            this.colSubtotal,
-            this.colTotal});
-            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 9F);
-            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dgvDetalleVenta.DefaultCellStyle = dataGridViewCellStyle6;
-            this.dgvDetalleVenta.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvDetalleVenta.Location = new System.Drawing.Point(15, 191);
-            this.dgvDetalleVenta.Name = "dgvDetalleVenta";
-            this.dgvDetalleVenta.RowHeadersVisible = false;
-            this.dgvDetalleVenta.RowTemplate.Height = 28;
-            this.dgvDetalleVenta.Size = new System.Drawing.Size(1160, 183);
-            this.dgvDetalleVenta.TabIndex = 11;
-            this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
-            this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.Font = null;
-            this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.ForeColor = System.Drawing.Color.Empty;
-            this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.SelectionBackColor = System.Drawing.Color.Empty;
-            this.dgvDetalleVenta.ThemeStyle.AlternatingRowsStyle.SelectionForeColor = System.Drawing.Color.Empty;
-            this.dgvDetalleVenta.ThemeStyle.BackColor = System.Drawing.Color.White;
-            this.dgvDetalleVenta.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(88)))), ((int)(((byte)(255)))));
-            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
-            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
-            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            this.dgvDetalleVenta.ThemeStyle.HeaderStyle.Height = 28;
-            this.dgvDetalleVenta.ThemeStyle.ReadOnly = false;
-            this.dgvDetalleVenta.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
-            this.dgvDetalleVenta.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-            this.dgvDetalleVenta.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Segoe UI", 10.5F);
-            this.dgvDetalleVenta.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            this.dgvDetalleVenta.ThemeStyle.RowsStyle.Height = 28;
-            this.dgvDetalleVenta.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvDetalleVenta.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            this.labelEstadoCaption.AutoSize = true;
+            this.labelEstadoCaption.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.labelEstadoCaption.Location = new System.Drawing.Point(740, 20);
+            this.labelEstadoCaption.Name = "labelEstadoCaption";
+            this.labelEstadoCaption.Size = new System.Drawing.Size(51, 17);
+            this.labelEstadoCaption.TabIndex = 100;
+            this.labelEstadoCaption.Text = "Estado:";
             // 
-            // colEliminar
+            // lblEstado
             // 
-            this.colEliminar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colEliminar.HeaderText = "";
-            this.colEliminar.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.colEliminar.Name = "colEliminar";
-            this.colEliminar.Width = 40;
-            // 
-            // colCodigo
-            // 
-            this.colCodigo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colCodigo.HeaderText = "Código";
-            this.colCodigo.Name = "colCodigo";
-            this.colCodigo.Width = 120;
-            // 
-            // colProducto
-            // 
-            this.colProducto.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.colProducto.HeaderText = "Producto/Item";
-            this.colProducto.Name = "colProducto";
-            // 
-            // colInfo
-            // 
-            this.colInfo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colInfo.HeaderText = "Info";
-            this.colInfo.ImageLayout = System.Windows.Forms.DataGridViewImageCellLayout.Zoom;
-            this.colInfo.Name = "colInfo";
-            this.colInfo.Width = 40;
-            // 
-            // colCantidad
-            // 
-            this.colCantidad.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colCantidad.HeaderText = "Cant.";
-            this.colCantidad.Name = "colCantidad";
-            this.colCantidad.Width = 60;
-            // 
-            // colPrecio
-            // 
-            this.colPrecio.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colPrecio.HeaderText = "Precio";
-            this.colPrecio.Name = "colPrecio";
-            this.colPrecio.Width = 80;
-            // 
-            // colPFinal
-            // 
-            this.colPFinal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colPFinal.HeaderText = "P.Final";
-            this.colPFinal.Name = "colPFinal";
-            this.colPFinal.Width = 80;
-            // 
-            // colPorcentaje
-            // 
-            this.colPorcentaje.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colPorcentaje.HeaderText = "%";
-            this.colPorcentaje.Name = "colPorcentaje";
-            this.colPorcentaje.Width = 40;
-            // 
-            // colDscto
-            // 
-            this.colDscto.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colDscto.HeaderText = "Dsct.%";
-            this.colDscto.Name = "colDscto";
-            this.colDscto.Width = 60;
-            // 
-            // colIVA
-            // 
-            this.colIVA.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colIVA.HeaderText = "I.V.A";
-            this.colIVA.Name = "colIVA";
-            this.colIVA.Width = 60;
-            // 
-            // colSubtotal
-            // 
-            this.colSubtotal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colSubtotal.HeaderText = "Subtotal";
-            this.colSubtotal.Name = "colSubtotal";
-            this.colSubtotal.Width = 90;
-            // 
-            // colTotal
-            // 
-            this.colTotal.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.colTotal.HeaderText = "Total";
-            this.colTotal.Name = "colTotal";
-            this.colTotal.Width = 90;
+            this.lblEstado.AutoSize = true;
+            this.lblEstado.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold);
+            this.lblEstado.ForeColor = System.Drawing.Color.ForestGreen;
+            this.lblEstado.Location = new System.Drawing.Point(797, 20);
+            this.lblEstado.Name = "lblEstado";
+            this.lblEstado.Size = new System.Drawing.Size(64, 17);
+            this.lblEstado.TabIndex = 101;
+            this.lblEstado.Text = "VIGENTE";
             // 
             // FrmCotizaciones
             // 
@@ -785,12 +810,12 @@
             this.panelToolbar.ResumeLayout(false);
             this.panelContenido.ResumeLayout(false);
             this.panelContenido.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvDetalleVenta)).EndInit();
             this.groupTotales.ResumeLayout(false);
             this.groupTotales.PerformLayout();
             this.groupCliente.ResumeLayout(false);
             this.groupCliente.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numValidez)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvDetalleVenta)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -847,5 +872,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colIVA;
         private System.Windows.Forms.DataGridViewTextBoxColumn colSubtotal;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTotal;
+        private System.Windows.Forms.Label labelEstadoCaption;
+        private System.Windows.Forms.Label lblEstado;
     }
 }
