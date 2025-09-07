@@ -4,6 +4,7 @@ using MySqlConnector;
 using Newtonsoft.Json;
 using System;
 using System.Data;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -104,6 +105,97 @@ namespace LogiPharm.Datos
 
                 return (dtHeader.Rows.Count > 0 ? dtHeader.Rows[0] : null, dtDet);
             }
+        }
+
+        public DataTable BuscarFacturasPorNumero(string termino)
+        {
+            if (termino == null) termino = string.Empty;
+            var like = $"%{termino}%";
+            var soloDigitos = new string(termino.Where(char.IsDigit).ToArray());
+            var likeDigits = $"%{soloDigitos}%";
+
+            using (var cn = new MySqlConnection(Conexion.cadena))
+            {
+                string sql = @"
+                SELECT 
+                    fv.id AS Id,
+                    fv.numeroFactura AS Factura,
+                    fv.numeroAutorizacion AS Autorizacion,
+                    c.nombres AS Cliente,
+                    fv.total AS Total,
+                    fv.estado AS Estado,
+                    fv.numeroAutorizacion AS ClaveAcceso
+                FROM facturas_venta fv
+                JOIN clientes c ON fv.idCliente = c.id
+                WHERE 
+                    -- Coincidencia directa o por fragmento
+                    fv.numeroFactura LIKE @like
+                    OR fv.numeroAutorizacion LIKE @like
+                    -- Coincidencia por últimos dígitos ignorando guiones
+                    OR REPLACE(fv.numeroFactura, '-', '') LIKE @likeDigits
+                ORDER BY fv.fechaEmision DESC;";
+
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@like", like);
+                    cmd.Parameters.AddWithValue("@likeDigits", likeDigits);
+
+                    var dt = new DataTable();
+                    new MySqlDataAdapter(cmd).Fill(dt);
+                    return dt;
+                }
+            }
+        }
+
+        // Obtiene encabezado y detalle por número de factura (o sus últimos dígitos)
+        public (DataRow Encabezado, DataTable Detalle) ObtenerFacturaPorNumero(string termino)
+        {
+            if (string.IsNullOrWhiteSpace(termino))
+            {
+                return (null, new DataTable());
+            }
+
+            var like = $"%{termino}%";
+            var soloDigitos = new string(termino.Where(char.IsDigit).ToArray());
+            var likeDigits = $"%{soloDigitos}%";
+
+            int? idFactura = null;
+
+            using (var cn = new MySqlConnection(Conexion.cadena))
+            {
+                cn.Open();
+
+                string sqlId = @"
+                SELECT fv.id
+                FROM facturas_venta fv
+                WHERE 
+                    fv.numeroFactura = @exact
+                    OR REPLACE(fv.numeroFactura, '-', '') = REPLACE(@exact, '-', '')
+                    OR fv.numeroFactura LIKE @like
+                    OR REPLACE(fv.numeroFactura, '-', '') LIKE @likeDigits
+                ORDER BY fv.fechaEmision DESC
+                LIMIT 1;";
+
+                using (var cmd = new MySqlCommand(sqlId, cn))
+                {
+                    cmd.Parameters.AddWithValue("@exact", termino);
+                    cmd.Parameters.AddWithValue("@like", like);
+                    cmd.Parameters.AddWithValue("@likeDigits", likeDigits);
+
+                    var result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        idFactura = Convert.ToInt32(result);
+                    }
+                }
+            }
+
+            if (idFactura.HasValue)
+            {
+                return ObtenerFacturaDesdeDb(idFactura.Value);
+            }
+
+            return (null, new DataTable());
         }
 
         // ✨ NUEVO MÉTODO: Llama a tu API para obtener el detalle de una factura

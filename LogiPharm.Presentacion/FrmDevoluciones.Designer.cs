@@ -500,6 +500,7 @@
             this.panelContenido.ResumeLayout(false);
             this.groupTotales.ResumeLayout(false);
             this.groupTotales.PerformLayout();
+            this.Load += new System.EventHandler(this.FrmDevoluciones_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvProductosDevolver)).EndInit();
             this.groupInfoFactura.ResumeLayout(false);
             this.groupInfoFactura.PerformLayout();
