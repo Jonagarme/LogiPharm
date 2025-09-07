@@ -3,6 +3,7 @@ using System.Data;
 using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -18,11 +19,13 @@ namespace LogiPharm.Presentacion
         private void FrmProveedores_Load(object sender, EventArgs e)
         {
             CargarProveedores();
-            // Asignar eventos a los controles
             this.txtBuscar.TextChanged += new System.EventHandler(this.txtBuscar_TextChanged);
             this.dgvProveedores.SelectionChanged += new System.EventHandler(this.dgvProveedores_SelectionChanged);
             this.btnNuevo.Click += new System.EventHandler(this.btnNuevo_Click);
             this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
+
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", "VISUALIZAR", "proveedores", null, "Abrir Gestión de Proveedores", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void CargarProveedores()
@@ -62,6 +65,8 @@ namespace LogiPharm.Presentacion
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
             CargarProveedores();
+            // Auditoría: VISUALIZAR filtro
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", "VISUALIZAR", "proveedores", null, $"Buscar proveedores '{txtBuscar.Text}'", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void dgvProveedores_SelectionChanged(object sender, EventArgs e)
@@ -75,6 +80,9 @@ namespace LogiPharm.Presentacion
                 txtDireccion.Text = dgvProveedores.CurrentRow.Cells["direccion"].Value.ToString();
                 txtTelefono.Text = dgvProveedores.CurrentRow.Cells["telefono"].Value.ToString();
                 txtEmail.Text = dgvProveedores.CurrentRow.Cells["email"].Value.ToString();
+
+                // Auditoría: VISUALIZAR selección
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", "VISUALIZAR", "proveedores", _idSeleccionado, "Ver ficha de proveedor", null, Environment.MachineName, "UI"); } catch { }
             }
         }
 
@@ -103,17 +111,18 @@ namespace LogiPharm.Presentacion
                     Direccion = txtDireccion.Text.Trim(),
                     Telefono = txtTelefono.Text.Trim(),
                     Email = txtEmail.Text.Trim(),
-                    CreadoPor = 1 // TODO: Reemplazar con el ID del usuario de la sesión actual
+                    CreadoPor = SesionActual.IdUsuario
                 };
 
                 DProveedores d_Proveedores = new DProveedores();
                 bool resultado;
 
-                if (proveedor.Id == 0) // Si el ID es 0, es un proveedor nuevo
+                bool esNuevo = proveedor.Id == 0;
+                if (esNuevo)
                 {
                     resultado = d_Proveedores.InsertarProveedor(proveedor);
                 }
-                else // Si el ID es diferente de 0, es una actualización
+                else
                 {
                     resultado = d_Proveedores.ActualizarProveedor(proveedor);
                 }
@@ -123,6 +132,9 @@ namespace LogiPharm.Presentacion
                     MessageBox.Show("Proveedor guardado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     CargarProveedores();
                     LimpiarCampos();
+
+                    // Auditoría: CREAR/EDITAR
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", esNuevo ? "CREAR" : "EDITAR", "proveedores", _idSeleccionado, $"Guardar proveedor '{proveedor.RazonSocial}'", null, Environment.MachineName, "UI"); } catch { }
                 }
             }
             catch (Exception ex)

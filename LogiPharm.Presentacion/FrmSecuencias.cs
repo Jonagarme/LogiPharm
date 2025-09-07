@@ -3,6 +3,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using LogiPharm.Datos;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -17,6 +18,9 @@ namespace LogiPharm.Presentacion
             dgvSecuencias.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
             CargarSecuencias();
+
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "VISUALIZAR", "secuencias", null, "Abrir Secuencias", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void CargarSecuencias()
@@ -53,6 +57,9 @@ namespace LogiPharm.Presentacion
                     bool activo = Convert.ToBoolean(row.Cells["colActivo"].Value ?? true);
 
                     d.GuardarSecuencia(nombre, valor, prefijo, longitud, activo);
+
+                    // Auditoría: CREAR/EDITAR
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "EDITAR", "secuencias", null, $"Guardar secuencia '{nombre}'", null, Environment.MachineName, "UI"); } catch { }
                 }
 
                 MessageBox.Show("Secuencias guardadas.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -90,6 +97,9 @@ namespace LogiPharm.Presentacion
                         var d = new DSecuencias();
                         d.EliminarSecuencia(nombre);
                         dgvSecuencias.Rows.Remove(dgvSecuencias.CurrentRow);
+
+                        // Auditoría: ELIMINAR
+                        try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "ELIMINAR", "secuencias", null, $"Eliminar secuencia '{nombre}'", null, Environment.MachineName, "UI"); } catch { }
                     }
                     catch (Exception ex)
                     {

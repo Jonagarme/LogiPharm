@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using LogiPharm.Datos;
 using TheArtOfDevHtmlRenderer.Adapters;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -25,12 +26,13 @@ namespace LogiPharm.Presentacion
         private void FrmReporteVentas_Load(object sender, EventArgs e)
         {
             CargarClientes();
-            // Aquí deberías tener un método similar para cargar los usuarios/cajeros
-            // CargarUsuarios(); 
 
             dtpFechaInicio.Value = DateTime.Today;
             dtpFechaFin.Value = DateTime.Today;
-            btnConsultar_Click(null, null); // Carga inicial
+            btnConsultar_Click(null, null);
+
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Reportes", "VISUALIZAR", "reporte_ventas", null, "Abrir Reporte de Ventas", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void CargarClientes()
@@ -156,13 +158,16 @@ namespace LogiPharm.Presentacion
             {
                 var dReportes = new DReportes();
                 int idCliente = Convert.ToInt32(cboCliente.SelectedValue ?? 0);
-                int idUsuario = 0; // Convert.ToInt32(cboCajero.SelectedValue ?? 0);
+                int idUsuario = 0;
                 string producto = txtProducto.Text.Trim();
 
                 DataTable dt = dReportes.GenerarReporteVentas(dtpFechaInicio.Value, dtpFechaFin.Value, idCliente, idUsuario, producto);
                 dgvReporte.DataSource = dt;
 
                 CalcularKPIs(dt);
+
+                // Auditoría: VISUALIZAR consulta reporte
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Reportes", "VISUALIZAR", "reporte_ventas", null, $"Consultar ventas {dtpFechaInicio.Value:yyyy-MM-dd} a {dtpFechaFin.Value:yyyy-MM-dd} cliente={idCliente} prod='{producto}'", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {

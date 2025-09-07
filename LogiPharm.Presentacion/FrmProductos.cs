@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -31,8 +32,6 @@ namespace LogiPharm.Presentacion
             DgvListado.RowTemplate.Height = Math.Max(DgvListado.RowTemplate.Height, 28);
         }
 
-
-
         private void AsignarEventosMenu()
         {
             contextMenuOpciones.Items.Clear();
@@ -55,6 +54,9 @@ namespace LogiPharm.Presentacion
             splitContainer1.Panel2Collapsed = true;
             CerrarPanelEdicion();
             CargarProductos();
+
+            // Auditoría: VISUALIZAR listado
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, "Abrir listado de productos", null, Environment.MachineName, "UI"); } catch { }
         }
 
         // --- Panel edición ---
@@ -124,6 +126,10 @@ namespace LogiPharm.Presentacion
                         // var d = new DProductos();
                         // var ok = d.Eliminar(idProducto);
                         MessageBox.Show($"Producto con ID {idProducto} eliminado (simulación).");
+
+                        // Auditoría: ELIMINAR (simulada)
+                        try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "ELIMINAR", "productos", idProducto, "Eliminación de producto (simulada)", null, Environment.MachineName, "UI"); } catch { }
+
                         CargarProductos();
                     }
                     catch (Exception ex)
@@ -225,6 +231,9 @@ namespace LogiPharm.Presentacion
                 EnsureActionColumns();
 
                 lblTotal.Text = "Total de Registros: " + DgvListado.Rows.Count.ToString();
+
+                // Auditoría: VISUALIZAR (refrescar list)
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, "Refrescar listado de productos", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {
@@ -248,7 +257,6 @@ namespace LogiPharm.Presentacion
             AbrirFormularioEditarProducto();
         }
 
-
         private void iconButton2_Click(object sender, EventArgs e) => AbrirFormularioEditarProducto();
 
         private void AbrirFormularioEditarProducto()
@@ -266,11 +274,17 @@ namespace LogiPharm.Presentacion
 
                 using (var frm = new FrmEditarProducto(idProductoSeleccionado))
                 {
+                    // Auditoría: VISUALIZAR detalle
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", idProductoSeleccionado, "Abrir detalle de producto", null, Environment.MachineName, "UI"); } catch { }
+
                     DialogResult resultado = frm.ShowDialog();
                     if (resultado == DialogResult.OK)
                     {
                         CargarProductos();
                         MessageBox.Show("Producto actualizado. Refrescando lista...");
+
+                        // Auditoría: EDITAR
+                        try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "EDITAR", "productos", idProductoSeleccionado, "Producto editado desde editor", null, Environment.MachineName, "UI"); } catch { }
                     }
                 }
             }
@@ -374,6 +388,9 @@ namespace LogiPharm.Presentacion
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     CerrarPanelEdicion();
                     CargarProductos();
+
+                    // Auditoría: CREAR
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "CREAR", "productos", null, $"Creación de producto '{nuevo.Nombre}'", null, Environment.MachineName, "UI"); } catch { }
                 }
                 else
                 {
@@ -439,6 +456,9 @@ namespace LogiPharm.Presentacion
                 if (DgvListado.Rows.Count == 0)
                     MessageBox.Show("No se encontraron productos para el criterio ingresado.", "Búsqueda",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Auditoría: VISUALIZAR (búsqueda)
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, $"Buscar productos por: '{criterio}'", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {

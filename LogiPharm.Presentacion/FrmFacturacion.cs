@@ -7,6 +7,7 @@ using System.Linq;
 using LogiPharm.Entidades;
 using System.Globalization;
 using System.Drawing;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -25,6 +26,9 @@ namespace LogiPharm.Presentacion
 
         private void FrmFacturacion_Load(object sender, EventArgs e)
         {
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Facturación", "VISUALIZAR", "facturas", null, "Abrir pantalla de facturación", null, Environment.MachineName, "UI"); } catch { }
+
             // Configura las columnas del grid principal antes de cargar datos
             ConfigurarGridPrincipal();
             ConfigurarGridDetalle();
@@ -70,6 +74,9 @@ namespace LogiPharm.Presentacion
                 dgvListaFacturas.AutoGenerateColumns = false;
                 dgvListaFacturas.DataSource = d.ListarFacturas(dtpFechaInicio.Value, dtpFechaFin.Value, txtCliente.Text);
                 lblTotalDocumentos.Text = $"Total de Documentos: {dgvListaFacturas.RowCount}";
+
+                // Auditoría: VISUALIZAR (consulta)
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Facturación", "VISUALIZAR", "facturas", null, $"Consultar facturas {dtpFechaInicio.Value:yyyy-MM-dd} a {dtpFechaFin.Value:yyyy-MM-dd} cliente='{txtCliente.Text}'", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {

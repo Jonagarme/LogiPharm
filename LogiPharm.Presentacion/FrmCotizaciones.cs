@@ -451,6 +451,15 @@ namespace LogiPharm.Presentacion
 
                 ActualizarEstadoVisual("VIGENTE", dtpFecha.Value, (int)numValidez.Value);
 
+                // Auditoría: CREAR o EDITAR
+                try
+                {
+                    string accion = (cot.Id == 0) ? "CREAR" : "EDITAR";
+                    string desc = $"Cotización No. {txtNumeroCotizacion.Text} guardada";
+                    new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Cotizaciones", accion, "cotizaciones", (long)idGenerado, desc, null, Environment.MachineName, "UI");
+                }
+                catch { }
+
                 MessageBox.Show("Cotización guardada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -477,6 +486,9 @@ namespace LogiPharm.Presentacion
 
                 ActualizarEstadoVisual("ANULADA", dtpFecha.Value, (int)numValidez.Value);
 
+                // Auditoría: ANULAR
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Cotizaciones", "ANULAR", "cotizaciones", (long)_idCotizacionActual.Value, $"Cotización No. {txtNumeroCotizacion.Text} anulada", null, Environment.MachineName, "UI"); } catch { }
+
                 MessageBox.Show("Cotización anulada.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
@@ -495,6 +507,9 @@ namespace LogiPharm.Presentacion
 
             // Estado visual dependiente de fecha y campo estado
             ActualizarEstadoVisual(cot.Estado, cot.Fecha, cot.ValidezDias);
+
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Cotizaciones", "VISUALIZAR", "cotizaciones", cot.Id, $"Ver cotización No. {txtNumeroCotizacion.Text}", null, Environment.MachineName, "UI"); } catch { }
 
             // Cargar cliente
             try

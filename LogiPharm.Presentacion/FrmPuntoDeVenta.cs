@@ -82,6 +82,9 @@ namespace LogiPharm.Presentacion
 
         private void FrmPuntoDeVenta_Shown(object sender, EventArgs e)
         {
+            // Registro de auditoría al abrir POS
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "POS", "VISUALIZAR", "ventas", null, "Abrir Punto de Venta", null, Environment.MachineName, "UI"); } catch { }
+
             // Nos aseguramos de que haya al menos una fila (la de 'Nueva Fila')
             if (dgvDetalleVenta.Rows.Count > 0)
             {
@@ -524,7 +527,6 @@ namespace LogiPharm.Presentacion
                 return;
             }
 
-            // Recolectar productos del grid
             var productos = new List<ProductoVenta>();
             foreach (DataGridViewRow row in dgvDetalleVenta.Rows)
             {
@@ -534,7 +536,6 @@ namespace LogiPharm.Presentacion
                 productos.Add(new ProductoVenta
                 {
                     Id = Convert.ToInt32(row.Tag),
-
                     CodigoPrincipal = Convert.ToString(row.Cells["colCodigo"].Value),
                     Descripcion = Convert.ToString(row.Cells["colProducto"].Value),
                     Cantidad = Convert.ToDecimal(row.Cells["colCantidad"].Value ?? 0),
@@ -560,25 +561,29 @@ namespace LogiPharm.Presentacion
                     MessageBox.Show("Venta procesada con éxito.", "Confirmación",
                                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                    // Auditoría: CREAR venta
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Ventas", "CREAR", "ventas", null, $"Venta facturada {frmPago.SecuencialUsado}", null, Environment.MachineName, "UI"); } catch { }
+
                     if (MessageBox.Show("¿Desea imprimir la factura?", "Imprimir",
                                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     {
                         ImprimirFactura(
                             _clienteSeleccionado,
                             productos,
-                            frmPago.EfectivoRecibido,   // efectivo recibido real
-                            frmPago.SecuencialUsado,    // Nº factura (secuencial)
-                            frmPago.ClaveAcceso,        // Clave de acceso (va al final)
-                            frmPago.NumeroAutorizacion  // Autorización SRI
+                            frmPago.EfectivoRecibido,
+                            frmPago.SecuencialUsado,
+                            frmPago.ClaveAcceso,
+                            frmPago.NumeroAutorizacion
                         );
+
+                        // Auditoría: IMPRIMIR
+                        try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Ventas", "IMPRIMIR", "ventas", null, $"Imprimir factura {frmPago.SecuencialUsado}", null, Environment.MachineName, "UI"); } catch { }
                     }
 
                     // LimpiarFormularioVenta(); // si aplica
                 }
             }
         }
-
-
 
         private void ImprimirFactura(
              ECliente cliente,

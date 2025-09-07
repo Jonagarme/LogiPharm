@@ -3,6 +3,7 @@ using System.Data;
 using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -18,11 +19,13 @@ namespace LogiPharm.Presentacion
         private void FrmClientes_Load(object sender, EventArgs e)
         {
             CargarClientes();
-            // Asignar eventos a los controles
             this.txtBuscar.TextChanged += new System.EventHandler(this.txtBuscar_TextChanged);
             this.dgvClientes.SelectionChanged += new System.EventHandler(this.dgvClientes_SelectionChanged);
             this.btnNuevo.Click += new System.EventHandler(this.btnNuevo_Click);
             this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
+
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", "VISUALIZAR", "clientes", null, "Abrir Gestión de Clientes", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void CargarClientes()
@@ -52,15 +55,14 @@ namespace LogiPharm.Presentacion
 
                 dgvClientes.Columns["cedula_ruc"].HeaderText = "Identificación";
                 dgvClientes.Columns["cedula_ruc"].Width = 120;
-                //dgvClientes.Columns["razonSocial"].HeaderText = "Nombre / Razón Social";
-                //dgvClientes.Columns["razonSocial"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
         }
 
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
-            // Filtra la lista cada vez que el usuario escribe
             CargarClientes();
+            // Auditoría: VISUALIZAR filtro
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", "VISUALIZAR", "clientes", null, $"Buscar clientes '{txtBuscar.Text}'", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void dgvClientes_SelectionChanged(object sender, EventArgs e)
@@ -74,13 +76,14 @@ namespace LogiPharm.Presentacion
                 txtDireccion.Text = dgvClientes.CurrentRow.Cells["direccion"].Value?.ToString();
                 txtTelefono.Text = dgvClientes.CurrentRow.Cells["celular"].Value?.ToString();
                 txtEmail.Text = dgvClientes.CurrentRow.Cells["email"].Value?.ToString();
+
+                // Auditoría: VISUALIZAR cliente seleccionado
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", "VISUALIZAR", "clientes", _idClienteSeleccionado, "Ver ficha de cliente", null, Environment.MachineName, "UI"); } catch { }
             }
         }
 
-
         private void btnNuevo_Click(object sender, EventArgs e)
         {
-            // Limpia todos los campos para permitir el ingreso de un nuevo cliente
             LimpiarCampos();
             cboTipoIdentificacion.Focus();
         }
@@ -106,18 +109,19 @@ namespace LogiPharm.Presentacion
                     Direccion = txtDireccion.Text.Trim(),
                     Telefono = txtTelefono.Text.Trim(),
                     Email = txtEmail.Text.Trim(),
-                    CreadoPor = 1, // TODO: Reemplazar con el ID del usuario de la sesión actual
-                    EditadoPor = 1 // TODO: Reemplazar con el ID del usuario de la sesión actual
+                    CreadoPor = SesionActual.IdUsuario,
+                    EditadoPor = SesionActual.IdUsuario
                 };
 
                 DClientes d_Clientes = new DClientes();
                 bool resultado;
 
-                if (cliente.Id == 0) // Si el ID es 0, es un cliente nuevo
+                bool esNuevo = cliente.Id == 0;
+                if (esNuevo)
                 {
                     resultado = d_Clientes.InsertarCliente(cliente);
                 }
-                else // Si el ID es diferente de 0, es una actualización
+                else
                 {
                     resultado = d_Clientes.ActualizarCliente(cliente);
                 }
@@ -127,6 +131,9 @@ namespace LogiPharm.Presentacion
                     MessageBox.Show("Cliente guardado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     CargarClientes();
                     LimpiarCampos();
+
+                    // Auditoría: CREAR/EDITAR
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", esNuevo ? "CREAR" : "EDITAR", "clientes", _idClienteSeleccionado, $"Guardar cliente '{cliente.RazonSocial}'", null, Environment.MachineName, "UI"); } catch { }
                 }
             }
             catch (Exception ex)
@@ -134,8 +141,6 @@ namespace LogiPharm.Presentacion
                 MessageBox.Show(ex.Message, "Error al Guardar", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-
 
         private void LimpiarCampos()
         {

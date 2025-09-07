@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
 using LogiPharm.Negocio;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -21,12 +22,14 @@ namespace LogiPharm.Presentacion
             CargarRoles();
             CargarUsuarios();
 
-            // Asignar eventos a los controles
             this.txtBuscar.TextChanged += new System.EventHandler(this.txtBuscar_TextChanged);
             this.dgvUsuarios.SelectionChanged += new System.EventHandler(this.dgvUsuarios_SelectionChanged);
             this.btnNuevo.Click += new System.EventHandler(this.btnNuevo_Click);
             this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
             this.btnEliminar.Click += new System.EventHandler(this.btnEliminar_Click);
+
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Seguridad", "VISUALIZAR", "usuarios", null, "Abrir Gestión de Usuarios", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void CargarUsuarios()
@@ -80,6 +83,8 @@ namespace LogiPharm.Presentacion
         private void txtBuscar_TextChanged(object sender, EventArgs e)
         {
             CargarUsuarios();
+            // Auditoría: VISUALIZAR filtro
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Seguridad", "VISUALIZAR", "usuarios", null, $"Buscar usuarios '{txtBuscar.Text}'", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void dgvUsuarios_SelectionChanged(object sender, EventArgs e)
@@ -92,7 +97,10 @@ namespace LogiPharm.Presentacion
                 txtEmail.Text = dgvUsuarios.CurrentRow.Cells["email"].Value.ToString();
                 cboRol.SelectedValue = dgvUsuarios.CurrentRow.Cells["idRol"].Value;
                 chkActivo.Checked = Convert.ToBoolean(dgvUsuarios.CurrentRow.Cells["activo"].Value);
-                txtContrasena.Clear(); // Limpiar por seguridad
+                txtContrasena.Clear();
+
+                // Auditoría: VISUALIZAR selección
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Seguridad", "VISUALIZAR", "usuarios", _idSeleccionado, "Ver ficha de usuario", null, Environment.MachineName, "UI"); } catch { }
             }
         }
 
@@ -110,7 +118,6 @@ namespace LogiPharm.Presentacion
                 return;
             }
 
-            // Si es un usuario nuevo, la contraseña es obligatoria
             if (_idSeleccionado == 0 && string.IsNullOrWhiteSpace(txtContrasena.Text))
             {
                 MessageBox.Show("La contraseña es obligatoria para un nuevo usuario.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -125,21 +132,22 @@ namespace LogiPharm.Presentacion
                     NombreCompleto = txtNombreCompleto.Text.Trim(),
                     NombreUsuario = txtNombreUsuario.Text.Trim(),
                     Email = txtEmail.Text.Trim(),
-                    ContrasenaHash = txtContrasena.Text, // La capa de datos se encarga de encriptar
+                    ContrasenaHash = txtContrasena.Text,
                     IdRol = Convert.ToInt32(cboRol.SelectedValue),
                     Activo = chkActivo.Checked,
-                    CreadoPor = 1, // TODO: Reemplazar con el ID del usuario de la sesión actual
-                    EditadoPor = 1 // TODO: Reemplazar con el ID del usuario de la sesión actual
+                    CreadoPor = SesionActual.IdUsuario,
+                    EditadoPor = SesionActual.IdUsuario
                 };
 
                 DUsuario d_Usuarios = new DUsuario();
                 bool resultado;
+                bool esNuevo = usuario.Id == 0;
 
-                if (usuario.Id == 0) // Si el ID es 0, es un usuario nuevo
+                if (esNuevo)
                 {
                     resultado = d_Usuarios.InsertarUsuario(usuario);
                 }
-                else // Si el ID es diferente de 0, es una actualización
+                else
                 {
                     resultado = d_Usuarios.ActualizarUsuario(usuario);
                 }
@@ -149,6 +157,9 @@ namespace LogiPharm.Presentacion
                     MessageBox.Show("Usuario guardado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     CargarUsuarios();
                     LimpiarCampos();
+
+                    // Auditoría: CREAR/EDITAR
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Seguridad", esNuevo ? "CREAR" : "EDITAR", "usuarios", _idSeleccionado, $"Guardar usuario '{usuario.NombreUsuario}'", null, Environment.MachineName, "UI"); } catch { }
                 }
             }
             catch (Exception ex)
@@ -170,13 +181,16 @@ namespace LogiPharm.Presentacion
                 try
                 {
                     DUsuario d_Usuarios = new DUsuario();
-                    int idUsuarioAnulador = 1; // TODO: Reemplazar con el ID del usuario de la sesión actual
+                    int idUsuarioAnulador = SesionActual.IdUsuario;
 
                     if (d_Usuarios.AnularUsuario(_idSeleccionado, idUsuarioAnulador))
                     {
                         MessageBox.Show("Usuario eliminado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         CargarUsuarios();
                         LimpiarCampos();
+
+                        // Auditoría: ELIMINAR
+                        try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Seguridad", "ELIMINAR", "usuarios", _idSeleccionado, "Eliminar usuario", null, Environment.MachineName, "UI"); } catch { }
                     }
                 }
                 catch (Exception ex)

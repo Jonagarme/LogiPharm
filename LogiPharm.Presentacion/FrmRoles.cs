@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -25,6 +26,9 @@ namespace LogiPharm.Presentacion
         {
             CargarRoles();
             CargarPermisos();
+
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Seguridad", "VISUALIZAR", "roles", null, "Abrir Gestión de Roles", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void DgvRoles_SelectionChanged(object sender, EventArgs e)
@@ -33,17 +37,15 @@ namespace LogiPharm.Presentacion
             var data = dgvRoles.CurrentRow.DataBoundItem as DataRowView;
             if (data == null) return;
 
-            // Asume que tu DataTable tiene columnas: id, nombre, descripcion
             _rolIdSeleccionado = Convert.ToInt32(data["id"]);
             txtNombreRol.Text = data["nombre"]?.ToString() ?? "";
             txtDescripcion.Text = (data.Row.Table.Columns.Contains("descripcion"))
                                     ? data["descripcion"]?.ToString() ?? ""
                                     : "";
 
-            // Si quieres, aquí cargas y marcas los permisos del rol:
-            // CargarPermisosDelRol(_rolIdSeleccionado);
+            // Auditoría: VISUALIZAR selección de rol
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Seguridad", "VISUALIZAR", "roles", _rolIdSeleccionado, "Ver rol", null, Environment.MachineName, "UI"); } catch { }
         }
-
 
         private void CargarPermisosDePrueba()
         {
@@ -123,7 +125,7 @@ namespace LogiPharm.Presentacion
                 {
                     Nombre = txtNombreRol.Text,
                     Descripcion = txtDescripcion.Text,
-                    CreadoPor = 1 // TODO: Reemplazar con el ID del usuario actual de la sesión
+                    CreadoPor = SesionActual.IdUsuario
                 };
 
                 // 2. Llama al método de la capa de datos para insertarlo
@@ -133,7 +135,9 @@ namespace LogiPharm.Presentacion
                     MessageBox.Show("Rol guardado exitosamente.");
                     // 3. Actualiza la lista de roles en la pantalla
                     CargarRoles();
-                    //LimpiarFormulario();
+
+                    // Auditoría: CREAR rol
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Seguridad", "CREAR", "roles", null, $"Guardar rol '{nuevoRol.Nombre}'", null, Environment.MachineName, "UI"); } catch { }
                 }
             }
             catch (Exception ex)

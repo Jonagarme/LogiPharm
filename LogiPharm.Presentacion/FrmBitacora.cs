@@ -35,6 +35,8 @@ namespace LogiPharm.Presentacion
                 cboUsuarios.ValueMember = "id";
 
                 // Cargar acciones
+                cboAccion.Items.Clear();
+                cboAccion.Items.AddRange(new object[] { "TODAS", "LOGIN", "LOGOUT", "CREAR", "EDITAR", "ACTUALIZAR", "ELIMINAR", "ANULAR", "IMPRIMIR", "VISUALIZAR" });
                 cboAccion.SelectedIndex = 0; // Seleccionar "TODAS"
             }
             catch (Exception ex)
@@ -50,8 +52,8 @@ namespace LogiPharm.Presentacion
                 DBitacora d_Bitacora = new DBitacora();
 
                 // Obtener valores de los filtros
-                DateTime fechaInicio = dtpFechaInicio.Value;
-                DateTime fechaFin = dtpFechaFin.Value;
+                DateTime fechaInicio = dtpFechaInicio.Value.Date;
+                DateTime fechaFin = dtpFechaFin.Value.Date; // el SP ya expande hasta fin de día
                 string usuario = cboUsuarios.Text;
                 string accion = cboAccion.Text;
 
@@ -71,11 +73,11 @@ namespace LogiPharm.Presentacion
         {
             if (dgvBitacora.Columns.Count > 0)
             {
-                dgvBitacora.Columns["Fecha"].Width = 150;
-                dgvBitacora.Columns["Usuario"].Width = 120;
-                dgvBitacora.Columns["Modulo"].Width = 150;
-                dgvBitacora.Columns["Accion"].Width = 150;
-                dgvBitacora.Columns["Detalle"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                if (dgvBitacora.Columns.Contains("Fecha")) dgvBitacora.Columns["Fecha"].Width = 150;
+                if (dgvBitacora.Columns.Contains("Usuario")) dgvBitacora.Columns["Usuario"].Width = 120;
+                if (dgvBitacora.Columns.Contains("Modulo")) dgvBitacora.Columns["Modulo"].Width = 150;
+                if (dgvBitacora.Columns.Contains("Accion")) dgvBitacora.Columns["Accion"].Width = 150;
+                if (dgvBitacora.Columns.Contains("Detalle")) dgvBitacora.Columns["Detalle"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
         }
     }

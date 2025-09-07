@@ -4,6 +4,7 @@ using System.Drawing; // Necesario para los colores
 using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -12,16 +13,17 @@ namespace LogiPharm.Presentacion
         public FrmAjusteInventario()
         {
             InitializeComponent();
-            // Asociamos el evento CellEndEdit una sola vez en el constructor
             dgvDetalleAjuste.CellEndEdit += dgvDetalleAjuste_CellEndEdit;
-            // NUEVO: Suscribimos el evento KeyDown para poder usar la tecla Supr
             dgvDetalleAjuste.KeyDown += dgvDetalleAjuste_KeyDown;
         }
 
         private void FrmAjusteInventario_Load(object sender, EventArgs e)
         {
             ConfigurarEstadoFormulario(true);
-            ConfigurarGridDetalle(); // Llamamos a la configuración mejorada
+            ConfigurarGridDetalle();
+
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "VISUALIZAR", "ajuste_inventario", null, "Abrir Ajuste de Inventario", null, Environment.MachineName, "UI"); } catch { }
         }
 
         /// <summary>
@@ -213,6 +215,9 @@ namespace LogiPharm.Presentacion
                         }
                     }
                 }
+
+                // Auditoría: VISUALIZAR búsqueda producto
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "VISUALIZAR", "ajuste_inventario", null, $"Buscar producto '{textoBuscado}' en ajuste", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {

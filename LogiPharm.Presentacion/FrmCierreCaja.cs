@@ -10,7 +10,6 @@ namespace LogiPharm.Presentacion
 {
     public partial class FrmCierreCaja : Form
     {
-
         private DataRow _aperturaActual; // Para guardar toda la info de la apertura abierta
 
         public FrmCierreCaja()
@@ -21,8 +20,9 @@ namespace LogiPharm.Presentacion
 
         private void FrmCierreCaja_Load(object sender, EventArgs e)
         {
-            // Ya no es necesario cboCaja.SelectedIndex = 0;
-            // Lo cargaremos todo desde la base de datos
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Caja", "VISUALIZAR", "caja", null, "Abrir Cierre de Caja", null, Environment.MachineName, "UI"); } catch { }
+
             CargarDatosApertura();
         }
 
@@ -154,6 +154,9 @@ namespace LogiPharm.Presentacion
                 DCierreCaja d_Cierre = new DCierreCaja();
                 d_Cierre.CerrarCaja(idCierre, totalContado, saldoTeorico, diferencia, idUsuarioCierre);
 
+                // Auditoría: CIERRE
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Caja", "CREAR", "caja", idCierre, $"Cierre de caja con diferencia {diferencia:C2}", null, Environment.MachineName, "UI"); } catch { }
+
                 MessageBox.Show("La caja se ha cerrado exitosamente.", "Cierre Exitoso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
             }
@@ -194,6 +197,9 @@ namespace LogiPharm.Presentacion
                 {
                     frmVisor.ShowDialog();
                 }
+
+                // Auditoría: IMPRIMIR
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Caja", "IMPRIMIR", "caja", null, "Imprimir reporte de cierre de caja", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {

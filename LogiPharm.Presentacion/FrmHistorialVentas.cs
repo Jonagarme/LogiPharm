@@ -5,6 +5,7 @@ using LogiPharm.Datos;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -28,6 +29,9 @@ namespace LogiPharm.Presentacion
             dtpFechaInicio.Value = DateTime.Today;
             dtpFechaFin.Value = DateTime.Today;
             btnConsultar_Click(sender, e);
+
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Ventas", "VISUALIZAR", "historial_ventas", null, "Abrir Historial de Ventas", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private static string Norm(string s)
@@ -169,6 +173,9 @@ namespace LogiPharm.Presentacion
 
                 EstilizarGrid();
                 CalcularTotales();
+
+                // Auditoría: VISUALIZAR consulta
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Ventas", "VISUALIZAR", "historial_ventas", null, $"Consultar historial {fechaInicio:yyyy-MM-dd} a {fechaFin:yyyy-MM-dd} cliente={idClienteSeleccionado} prod='{productoBuscado}'", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {

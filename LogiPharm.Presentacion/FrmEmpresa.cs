@@ -28,6 +28,9 @@ namespace LogiPharm.Presentacion
         {
             guna2ShadowForm1.SetShadowForm(this);
             CargarDatos();
+
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "VISUALIZAR", "empresa", null, "Abrir Configuración de Empresa", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void CargarDatos()
@@ -109,6 +112,8 @@ namespace LogiPharm.Presentacion
 
             try
             {
+                bool esNuevo = string.IsNullOrWhiteSpace(_empresaActual?.Ruc);
+
                 // Pasamos los datos de la UI a nuestro objeto
                 _empresaActual.Ruc = txtRuc.Text;
                 _empresaActual.RazonSocial = txtRazonSocial.Text;
@@ -149,6 +154,14 @@ namespace LogiPharm.Presentacion
                 // Guardamos en la base de datos
                 DEmpresa d_empresa = new DEmpresa();
                 d_empresa.GuardarDatosEmpresa(_empresaActual);
+
+                // Auditoría: CREAR / EDITAR
+                try
+                {
+                    string accion = esNuevo ? "CREAR" : "EDITAR";
+                    new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", accion, "empresa", null, "Guardar configuración de empresa", null, Environment.MachineName, "UI");
+                }
+                catch { }
 
                 MessageBox.Show("Datos de la empresa actualizados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();

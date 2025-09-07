@@ -93,6 +93,14 @@ namespace LogiPharm.Presentacion.Utilidades
             var r = MessageBox.Show("¿Deseas cerrar sesión?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (r != DialogResult.Yes) return;
 
+            // Auditoría: LOGOUT (si hay sesión activa)
+            try
+            {
+                if (SesionActual.Activa)
+                    new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Login", "LOGOUT", "usuarios", SesionActual.IdUsuario, "Cierre de sesión", null, Environment.MachineName, "UI");
+            }
+            catch { }
+
             // Cierra formularios hijos si el principal es MDI
             foreach (var child in formulario.MdiChildren) child.Close();
 

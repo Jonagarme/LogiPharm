@@ -65,6 +65,9 @@ namespace LogiPharm.Presentacion
                         LlenarFormularioConDatosXML(factura);
 
                         MessageBox.Show("Factura XML importada con éxito.", "Importación Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // Auditoría: VISUALIZAR/IMPORTAR
+                        try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", "VISUALIZAR", "compras", null, $"Importar XML de compra: {Path.GetFileName(filePath)}", null, Environment.MachineName, "UI"); } catch { }
                     }
                     catch (Exception ex)
                     {
@@ -82,6 +85,9 @@ namespace LogiPharm.Presentacion
         {
             // Al cancelar, simplemente limpiamos la pantalla
             LimpiarPantalla();
+
+            // Auditoría: LIMPIAR/CANCELAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", "ELIMINAR", "compras", null, "Cancelar/Limpiar formulario de recepción", null, Environment.MachineName, "UI"); } catch { }
         }
 
         /// <summary>
@@ -209,7 +215,7 @@ namespace LogiPharm.Presentacion
                 // 1. Crear el objeto de la factura con los datos de la pantalla
                 EFacturaCompra factura = new EFacturaCompra
                 {
-                    IdUsuario = 1, // TODO: Reemplazar con el ID del usuario de la sesión
+                    IdUsuario = SesionActual.IdUsuario,
                     NumeroFactura = txtNumeroFactura.Text,
                     Autorizacion = txtAutorizacion.Text,
                     FechaRecepcion = DateTime.Now,
@@ -276,12 +282,15 @@ namespace LogiPharm.Presentacion
                 if (dRecepcion.GuardarRecepcion(factura))
                 {
                     MessageBox.Show("Factura de compra guardada y stock actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Auditoría: CREAR COMPRA
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", "CREAR", "compras", null, $"Guardar recepción de compra No. {txtNumeroFactura.Text}", null, Environment.MachineName, "UI"); } catch { }
+
                     LimpiarPantalla();
                 }
             }
             catch (Exception ex)
             {
-                
                 MessageBox.Show("Error al guardar la recepción:\n" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -322,17 +331,15 @@ namespace LogiPharm.Presentacion
                         return;
                     }
 
-                    // 🔸 data.ComprobanteXml es el XML de la <factura> (no viene envuelto en <comprobante> con CDATA)
-                    // Por lo tanto, podemos parsearlo directamente con tu helper.
-                    // Si tu XmlHelper.ParseFactura esperaba el InnerText de <comprobante>,
-                    // de todos modos esta llamada funciona si acepta una raíz <factura>.
                     EFacturaCompraXml factura = XmlHelper.ParseFactura(data.ComprobanteXml);
 
-                    // Rellena la UI con los datos obtenidos
                     LlenarFormularioConDatosXML(factura);
 
                     MessageBox.Show("Factura cargada desde el SRI con éxito.",
                                     "Consulta Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Auditoría: VISUALIZAR/CONSULTAR SRI
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", "VISUALIZAR", "compras", null, $"Consultar SRI por clave {claveAcceso}", null, Environment.MachineName, "UI"); } catch { }
                 }
             }
             catch (Exception ex)

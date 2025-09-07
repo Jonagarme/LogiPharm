@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using LogiPharm.Negocio;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
+using LogiPharm.Datos;
 
 namespace LogiPharm.Presentacion
 {
@@ -29,6 +30,14 @@ namespace LogiPharm.Presentacion
                 SesionActual.NombreUsuario = datos.Usuario;
                 SesionActual.NombreCompleto = datos.NombreCompleto;
                 SesionActual.Rol = datos.Rol;
+
+                // Auditoría: LOGIN
+                try
+                {
+                    var bit = new DBitacora();
+                    bit.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Login", "LOGIN", "usuarios", SesionActual.IdUsuario, "Inicio de sesión exitoso", null, Environment.MachineName, "UI");
+                }
+                catch { }
 
                 // Abrir principal y ocultar login (NO se cierra para poder reusarlo al cerrar sesión)
                 var principal = new FrmPrincipal(datos.Rol);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -15,7 +16,6 @@ namespace LogiPharm.Presentacion
             InitializeComponent();
         }
 
-        // FrmKardex.cs (en el Load o en el constructor después de InitializeComponent)
         private void FrmKardex_Load(object sender, EventArgs e)
         {
             cboBodega.SelectedIndex = 0;
@@ -35,8 +35,10 @@ namespace LogiPharm.Presentacion
             dgvKardex.Columns["colIngresos"].DataPropertyName = "Ingreso";
             dgvKardex.Columns["colEgresos"].DataPropertyName = "Egreso";
             dgvKardex.Columns["colSaldo"].DataPropertyName = "Saldo";
-        }
 
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Kardex", "VISUALIZAR", "kardex", null, "Abrir Kardex", null, Environment.MachineName, "UI"); } catch { }
+        }
 
         private void txtProducto_KeyDown(object sender, KeyEventArgs e)
         {
@@ -120,6 +122,9 @@ namespace LogiPharm.Presentacion
                 DKardex d_Kardex = new DKardex();
                 dgvKardex.DataSource = d_Kardex.ObtenerMovimientos((int)_productoSeleccionado.Id, dtpFechaInicio.Value, dtpFechaFin.Value);
                 EstilizarGrid();
+
+                // Auditoría: VISUALIZAR kardex de producto
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Kardex", "VISUALIZAR", "kardex", _productoSeleccionado.Id, $"Ver kardex de {_productoSeleccionado.Nombre}", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {

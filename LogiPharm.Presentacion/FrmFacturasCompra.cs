@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using LogiPharm.Datos;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -15,6 +17,13 @@ namespace LogiPharm.Presentacion
         public FrmFacturasCompra()
         {
             InitializeComponent();
+            this.Load += FrmFacturasCompra_Load;
+        }
+
+        private void FrmFacturasCompra_Load(object sender, EventArgs e)
+        {
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", "VISUALIZAR", "facturas_compra", null, "Abrir Facturas de Compra", null, Environment.MachineName, "UI"); } catch { }
         }
     }
 }

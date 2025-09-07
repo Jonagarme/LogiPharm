@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Guna.Charts.WinForms;
 using LogiPharm.Datos; // Asegúrate de que este using sea correcto
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -18,6 +19,9 @@ namespace LogiPharm.Presentacion
 
         private void FrmDashboard_Load(object sender, EventArgs e)
         {
+            // Auditoría: VISUALIZAR
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Dashboard", "VISUALIZAR", "dashboard", null, "Abrir Dashboard", null, Environment.MachineName, "UI"); } catch { }
+
             // Llamamos a los métodos para cargar cada componente del dashboard
             CargarKPIs();
             CargarChartVentas();
