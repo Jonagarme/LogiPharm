@@ -29,34 +29,39 @@ namespace LogiPharm.Presentacion.Utilidades
             ToolStripMenuItem seguridad = ConstruirMenuSeguridad(formulario);
             ToolStripMenuItem configuracion = ConstruirMenuConfiguracion(formulario);
             ToolStripMenuItem sucursales = ConstruirMenuSucursales();
+            ToolStripMenuItem ventanas = ConstruirMenuVentanas(formulario);
 
             // Agregar menús según el rol
             if (rolUsuario == "Administrador")
             {
                 menu.Items.AddRange(new ToolStripItem[]
                 {
-                    inicio, ventas, inventario, compras, clientes, finanzas, normativas, seguridad, configuracion, sucursales
+                    inicio, ventas, inventario, compras, clientes, finanzas, normativas, seguridad, configuracion, sucursales, ventanas
                 });
             }
             else if (rolUsuario == "Farmacéutico")
             {
                 menu.Items.AddRange(new ToolStripItem[]
                 {
-                    inicio, ventas, inventario, clientes, normativas
+                    inicio, ventas, inventario, clientes, normativas, ventanas
                 });
             }
             else if (rolUsuario == "Cajera")
             {
                 menu.Items.AddRange(new ToolStripItem[]
                 {
-                    inicio, ventas, clientes
+                    inicio, ventas, clientes, ventanas
                 });
             }
             else
             {
                 // Rol desconocido: menú mínimo
                 menu.Items.Add(inicio);
+                menu.Items.Add(ventanas);
             }
+
+            // Agregar control visual de navegación de ventanas abiertas
+            AgregarNavegadorVentanas(menu, formulario);
 
             return menu;
         }
@@ -71,11 +76,10 @@ namespace LogiPharm.Presentacion.Utilidades
             mDashboard.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmDashboard>(formulario);
 
             var mNotif = new ToolStripMenuItem("Notificaciones");
-            // si tienes formulario de notificaciones, agregar el Click aquí
 
             var mCerrar = new ToolStripMenuItem("Cerrar Sesión");
             mCerrar.ShortcutKeys = Keys.Control | Keys.L;
-            mCerrar.Click += (s, e) => CerrarSesion(formulario);  // ⬅️ handler real
+            mCerrar.Click += (s, e) => CerrarSesion(formulario);
 
             inicio.DropDownItems.Add(mDashboard);
             inicio.DropDownItems.Add(mNotif);
@@ -85,15 +89,11 @@ namespace LogiPharm.Presentacion.Utilidades
             return inicio;
         }
 
-
-
-
         private static void CerrarSesion(Form formulario)
         {
             var r = MessageBox.Show("¿Deseas cerrar sesión?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (r != DialogResult.Yes) return;
 
-            // Auditoría: LOGOUT (si hay sesión activa)
             try
             {
                 if (SesionActual.Activa)
@@ -101,97 +101,64 @@ namespace LogiPharm.Presentacion.Utilidades
             }
             catch { }
 
-            // Cierra formularios hijos si el principal es MDI
             foreach (var child in formulario.MdiChildren) child.Close();
-
-            // Limpia la sesión en memoria
             SesionActual.Limpiar();
 
-            // Busca un login abierto/oculto o crea uno nuevo
             var frmLogin = Application.OpenForms.OfType<FrmLogin>().FirstOrDefault();
             if (frmLogin == null) frmLogin = new FrmLogin();
 
             frmLogin.Show();
             frmLogin.BringToFront();
-
-            // Cierra el formulario principal actual
             formulario.Close();
         }
 
         private static ToolStripMenuItem ConstruirMenuVentas(Form formulario)
         {
             ToolStripMenuItem ventas = new ToolStripMenuItem("🧾 Ventas y Recetas");
-
             ToolStripMenuItem puntoDeVenta = new ToolStripMenuItem("Punto de venta");
             puntoDeVenta.Click += (s, e) => AbrirPuntoDeVentaConVerificacion(formulario);
             ventas.DropDownItems.Add(puntoDeVenta);
-
             ToolStripMenuItem facturacion = new ToolStripMenuItem("Facturación");
             facturacion.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmFacturacion>(formulario);
             ventas.DropDownItems.Add(facturacion);
-
             ToolStripMenuItem devoluciones = new ToolStripMenuItem("Devoluciones");
             devoluciones.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmDevoluciones>(formulario);
             ventas.DropDownItems.Add(devoluciones);
-            //ventas.DropDownItems.Add("Devoluciones");
-
             ToolStripMenuItem cierreDeCaja = new ToolStripMenuItem("Cierre de Caja");
             cierreDeCaja.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmCierreCaja>(formulario);
             ventas.DropDownItems.Add(cierreDeCaja);
-
-            //ventas.DropDownItems.Add("Historial de ventas");
-
             ToolStripMenuItem historialDeVentas = new ToolStripMenuItem("Historial de ventas");
             historialDeVentas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmHistorialVentas>(formulario);
             ventas.DropDownItems.Add(historialDeVentas);
-
             ToolStripMenuItem cotizaciones = new ToolStripMenuItem("Cotizaciones");
             cotizaciones.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmCotizaciones>(formulario);
             ventas.DropDownItems.Add(cotizaciones);
-
             ventas.DropDownItems.Add("Recetas médicas");
             return ventas;
         }
 
         private static void AbrirPuntoDeVentaConVerificacion(Form formularioPrincipal)
         {
-            // ✅ CAMBIO: Ahora usamos DCierreCaja para toda la lógica.
             DCierreCaja d_Cierre = new DCierreCaja();
-
-            // ✅ CAMBIO: Usamos el ID numérico de la caja, no el texto.
-            int idCajaActual = 1; // Asumimos que la caja principal es la 1.
-
+            int idCajaActual = 1;
             try
             {
-                // 1. VERIFICAMOS SI LA CAJA YA ESTÁ ABIERTA
                 bool cajaAbierta = d_Cierre.VerificarCajaAbiertaHoy(idCajaActual);
-
                 if (cajaAbierta)
                 {
-                    // Si está abierta, abre el POS directamente
                     FormulariosHelper.AbrirFormulario<FrmPuntoDeVenta>(formularioPrincipal);
                 }
                 else
                 {
-                    // 2. SI NO ESTÁ ABIERTA, FORZAMOS LA APERTURA
                     MessageBox.Show("Debe realizar la apertura de caja para poder iniciar las ventas.", "Caja Cerrada", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
                     using (FrmAperturaCaja frmApertura = new FrmAperturaCaja())
                     {
                         if (frmApertura.ShowDialog() == DialogResult.OK)
                         {
-                            // 3. SI EL USUARIO ACEPTA, REGISTRAMOS Y ABRIMOS EL POS
                             decimal montoInicial = frmApertura.MontoInicial;
-
-                            // ✅ CAMBIO: Enviamos el ID del usuario (INT), no el nombre (string).
                             int idUsuarioActual = SesionActual.IdUsuario;
-
-                            // Llamamos al método RegistrarApertura de nuestra clase unificada
                             d_Cierre.RegistrarApertura(montoInicial, idUsuarioActual, idCajaActual);
-
                             MessageBox.Show($"Caja abierta con {montoInicial:C2}", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                            // Abre el POS usando tu Helper
                             FormulariosHelper.AbrirFormulario<FrmPuntoDeVenta>(formularioPrincipal);
                         }
                     }
@@ -210,22 +177,16 @@ namespace LogiPharm.Presentacion.Utilidades
             ToolStripMenuItem productos = new ToolStripMenuItem("Productos");
             productos.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmProductos>(formulario);
             inventario.DropDownItems.Add(productos);
-
             inventario.DropDownItems.Add("Laboratorios");
             inventario.DropDownItems.Add("Perchas");
             inventario.DropDownItems.Add("Ingreso de productos");
             inventario.DropDownItems.Add("Lotes y vencimientos");
-
             ToolStripMenuItem kardex = new ToolStripMenuItem("Kardex");
             kardex.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmKardex>(formulario);
             inventario.DropDownItems.Add(kardex);
-            //inventario.DropDownItems.Add("Kardex");
-
-            //inventario.DropDownItems.Add("Ajustes de inventario");
             ToolStripMenuItem ajusteDeInventario = new ToolStripMenuItem("Ajustes de inventario");
             ajusteDeInventario.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmAjusteInventario>(formulario);
             inventario.DropDownItems.Add(ajusteDeInventario);
-
             inventario.DropDownItems.Add("Transferencias entre sucursales");
             inventario.DropDownItems.Add("Alertas de stock mínimo");
             inventario.DropDownItems.Add("Principios activos");
@@ -233,69 +194,49 @@ namespace LogiPharm.Presentacion.Utilidades
             inventario.DropDownItems.Add("Medicamentos controlados");
             inventario.DropDownItems.Add("Código de barras");
             inventario.DropDownItems.Add("Vademécum");
-
             return inventario;
         }
 
         private static ToolStripMenuItem ConstruirMenuCompras(Form formulario)
         {
             ToolStripMenuItem compras = new ToolStripMenuItem("🛒 Compras y Proveedores");
-
-            //ToolStripMenuItem proveedores = new ToolStripMenuItem("Gestión de proveedores");
-            //proveedores.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmProveedores>(formulario);
             compras.DropDownItems.Add("Órdenes de compra");
-
             ToolStripMenuItem recepcionProductos = new ToolStripMenuItem("Recepcion de Productos");
             recepcionProductos.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmRecepcionProductos>(formulario);
             compras.DropDownItems.Add(recepcionProductos);
-
-
             ToolStripMenuItem facturasCompra = new ToolStripMenuItem("Facturas de compra");
             facturasCompra.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmFacturasCompra>(formulario);
             compras.DropDownItems.Add(facturasCompra);
-
             ToolStripMenuItem historialCompra = new ToolStripMenuItem("Historial de compras");
             historialCompra.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmHistorialCompras>(formulario);
             compras.DropDownItems.Add(historialCompra);
-
-            //compras.DropDownItems.Add(proveedores);
             ToolStripMenuItem proveedores = new ToolStripMenuItem("Proveedores");
             proveedores.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmProveedores>(formulario);
             compras.DropDownItems.Add(proveedores);
-
             compras.DropDownItems.Add("Ranking");
-
             return compras;
         }
 
         private static ToolStripMenuItem ConstruirMenuClientes(Form formulario)
         {
             ToolStripMenuItem clientes = new ToolStripMenuItem("👥 Clientes");
-
             ToolStripMenuItem gestionClientes = new ToolStripMenuItem("Gestión de Clientes");
             gestionClientes.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmClientes>(formulario);
             clientes.DropDownItems.Add(gestionClientes);
-
             clientes.DropDownItems.Add("Historial de compras");
-
-
             clientes.DropDownItems.Add("Créditos / puntos");
-
             return clientes;
         }
 
         private static ToolStripMenuItem ConstruirMenuFinanzas(Form formulario)
         {
             ToolStripMenuItem finanzas = new ToolStripMenuItem("📊 Finanzas y Reportes");
+            ToolStripMenuItem Reporteventas = new ToolStripMenuItem("Reporte de ventas");
+            Reporteventas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmReporteVentas>(formulario);
             finanzas.DropDownItems.Add("CxC / CxP");
             finanzas.DropDownItems.Add("Libro diario / mayor");
             finanzas.DropDownItems.Add("Conciliaciones");
-            //finanzas.DropDownItems.Add("Reporte de ventas");
-
-            ToolStripMenuItem Reporteventas = new ToolStripMenuItem("Reporte de ventas");
-            Reporteventas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmReporteVentas>(formulario);
             finanzas.DropDownItems.Add(Reporteventas);
-
             finanzas.DropDownItems.Add("Reporte de inventario");
             finanzas.DropDownItems.Add("Reporte de compras");
             finanzas.DropDownItems.Add("Reportes financieros");
@@ -313,39 +254,30 @@ namespace LogiPharm.Presentacion.Utilidades
         private static ToolStripMenuItem ConstruirMenuSeguridad(Form formulario)
         {
             ToolStripMenuItem seguridad = new ToolStripMenuItem("👤 Seguridad");
-
             ToolStripMenuItem usuarios = new ToolStripMenuItem("Usuarios");
             usuarios.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmUsuarios>(formulario);
             seguridad.DropDownItems.Add(usuarios);
-
-            //seguridad.DropDownItems.Add("Roles");
             ToolStripMenuItem roles = new ToolStripMenuItem("Roles");
             roles.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmRoles>(formulario);
             seguridad.DropDownItems.Add(roles);
-
             ToolStripMenuItem bitacora = new ToolStripMenuItem("Bitácora");
             bitacora.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmBitacora>(formulario);
             seguridad.DropDownItems.Add(bitacora);
-
             return seguridad;
         }
 
         private static ToolStripMenuItem ConstruirMenuConfiguracion(Form formulario)
         {
             ToolStripMenuItem configuracion = new ToolStripMenuItem("⚙️ Configuración");
-
             ToolStripMenuItem empresa = new ToolStripMenuItem("Empresa");
             empresa.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmEmpresa>(formulario);
             configuracion.DropDownItems.Add(empresa);
-
             var impuestos = new ToolStripMenuItem("Impuestos");
             impuestos.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmImpuestos>(formulario);
             configuracion.DropDownItems.Add(impuestos);
-
             var secuencias = new ToolStripMenuItem("Secuencias");
             secuencias.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmSecuencias>(formulario);
             configuracion.DropDownItems.Add(secuencias);
-
             configuracion.DropDownItems.Add("Firma electrónica");
             configuracion.DropDownItems.Add("Integraciones");
             return configuracion;
@@ -359,6 +291,105 @@ namespace LogiPharm.Presentacion.Utilidades
             return sucursales;
         }
 
-    }
+        // === Ventanas: listado dinámico de formularios abiertos y navegación rápida ===
+        private static ToolStripMenuItem ConstruirMenuVentanas(Form formulario)
+        {
+            var ventanas = new ToolStripMenuItem("🗂 Ventanas");
+            var mAnterior = new ToolStripMenuItem("Anterior");
+            mAnterior.ShortcutKeys = Keys.Control | Keys.Shift | Keys.F6;
+            mAnterior.Click += (s, e) => ActivarVentanaOffset(formulario, -1);
+            var mSiguiente = new ToolStripMenuItem("Siguiente");
+            mSiguiente.ShortcutKeys = Keys.Control | Keys.F6;
+            mSiguiente.Click += (s, e) => ActivarVentanaOffset(formulario, +1);
+            ventanas.DropDownOpening += (s, e) =>
+            {
+                ventanas.DropDownItems.Clear();
+                ventanas.DropDownItems.Add(mAnterior);
+                ventanas.DropDownItems.Add(mSiguiente);
+                ventanas.DropDownItems.Add(new ToolStripSeparator());
+                var forms = ObtenerVentanas(formulario);
+                foreach (var f in forms)
+                {
+                    var item = new ToolStripMenuItem(f.Text) { Checked = (f == GetActiva(formulario)), Tag = f };
+                    item.Click += (ss, ee) => { ActivarVentana((Form)((ToolStripMenuItem)ss).Tag); };
+                    ventanas.DropDownItems.Add(item);
+                }
+                if (forms.Count == 0)
+                    ventanas.DropDownItems.Add(new ToolStripMenuItem("(No hay ventanas abiertas)") { Enabled = false });
+            };
+            return ventanas;
+        }
 
+        private static void ActivarVentanaOffset(Form formulario, int offset)
+        {
+            var forms = ObtenerVentanas(formulario);
+            if (forms.Count == 0) return;
+            Form activa = GetActiva(formulario) ?? forms[0];
+            int idx = forms.IndexOf(activa);
+            if (idx < 0) idx = 0;
+            idx = (idx + offset) % forms.Count;
+            if (idx < 0) idx += forms.Count;
+            ActivarVentana(forms[idx]);
+        }
+
+        private static void ActivarVentana(Form f)
+        {
+            if (f.WindowState == FormWindowState.Minimized) f.WindowState = FormWindowState.Normal;
+            f.Activate();
+            f.BringToFront();
+        }
+
+        private static System.Collections.Generic.List<Form> ObtenerVentanas(Form formulario)
+        {
+            return formulario.IsMdiContainer
+                ? formulario.MdiChildren.Where(f => f.Visible).ToList()
+                : Application.OpenForms.Cast<Form>().Where(f => f.Visible).ToList();
+        }
+
+        private static Form GetActiva(Form formulario)
+        {
+            return formulario.IsMdiContainer ? formulario.ActiveMdiChild : Form.ActiveForm;
+        }
+
+        // Control visual: flechas + dropdown con ventanas
+        private static void AgregarNavegadorVentanas(MenuStrip menu, Form formulario)
+        {
+            var btnPrev = new ToolStripButton("◀") { ToolTipText = "Ventana anterior" };
+            var ddStack = new ToolStripDropDownButton("Ventanas") { ToolTipText = "Ventanas abiertas" };
+            var btnNext = new ToolStripButton("▶") { ToolTipText = "Ventana siguiente" };
+
+            btnPrev.Click += (s, e) => ActivarVentanaOffset(formulario, -1);
+            btnNext.Click += (s, e) => ActivarVentanaOffset(formulario, +1);
+
+            ddStack.DropDownOpening += (s, e) =>
+            {
+                ddStack.DropDownItems.Clear();
+                var forms = ObtenerVentanas(formulario);
+                var activa = GetActiva(formulario);
+                ddStack.Text = activa != null ? TruncTitulo(activa.Text) : "Ventanas";
+                foreach (var f in forms)
+                {
+                    var item = new ToolStripMenuItem(f.Text) { Checked = (f == activa), Tag = f };
+                    item.Click += (ss, ee) => { ActivarVentana((Form)((ToolStripMenuItem)ss).Tag); };
+                    ddStack.DropDownItems.Add(item);
+                }
+                if (forms.Count == 0)
+                    ddStack.DropDownItems.Add(new ToolStripMenuItem("(No hay ventanas abiertas)") { Enabled = false });
+            };
+
+            // Opcional: separador y alineación a la derecha
+            var sep = new ToolStripSeparator();
+            menu.Items.Add(sep);
+            menu.Items.Add(btnPrev);
+            menu.Items.Add(ddStack);
+            menu.Items.Add(btnNext);
+        }
+
+        private static string TruncTitulo(string text, int max = 28)
+        {
+            if (string.IsNullOrEmpty(text)) return "Ventanas";
+            return text.Length <= max ? text : text.Substring(0, max - 1) + "…";
+        }
+
+    }
 }
