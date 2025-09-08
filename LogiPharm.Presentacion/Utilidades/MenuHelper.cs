@@ -338,7 +338,9 @@ namespace LogiPharm.Presentacion.Utilidades
             empresa.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmEmpresa>(formulario);
             configuracion.DropDownItems.Add(empresa);
 
-            configuracion.DropDownItems.Add("Impuestos");
+            var impuestos = new ToolStripMenuItem("Impuestos");
+            impuestos.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmImpuestos>(formulario);
+            configuracion.DropDownItems.Add(impuestos);
 
             var secuencias = new ToolStripMenuItem("Secuencias");
             secuencias.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmSecuencias>(formulario);

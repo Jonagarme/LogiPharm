@@ -138,7 +138,8 @@ namespace LogiPharm.Presentacion
             decimal subtotalConIVA = 0;
             if (factura.ValorIVA > 0)
             {
-                subtotalConIVA = factura.ValorIVA / 0.15m; // Asumiendo IVA del 15%
+                var iva = ImpuestoProvider.GetIVA();
+                subtotalConIVA = factura.ValorIVA / iva;
             }
             decimal subtotalSinIVA = factura.TotalSinImpuestos - subtotalConIVA;
 

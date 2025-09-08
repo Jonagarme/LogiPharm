@@ -186,7 +186,6 @@ namespace LogiPharm.Presentacion
             decimal subtotal = 0;
             foreach (DataGridViewRow row in dgvProductosDevolver.Rows)
             {
-                // Verificamos si la fila está seleccionada para la devolución
                 bool seleccionado = Convert.ToBoolean(row.Cells["colSeleccionar"].Value ?? false);
                 if (seleccionado)
                 {
@@ -196,7 +195,8 @@ namespace LogiPharm.Presentacion
                 }
             }
 
-            decimal iva = subtotal * 0.15m; // Asumiendo IVA del 15%
+            decimal ivaRate = ImpuestoProvider.GetIVA();
+            decimal iva = subtotal * ivaRate;
             decimal total = subtotal + iva;
 
             lblSubtotal.Text = subtotal.ToString("C2");

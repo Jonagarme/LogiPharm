@@ -613,7 +613,7 @@ namespace LogiPharm.Presentacion
                 // --- (La lógica para calcular totales y llenar el detalle no cambia) ---
                 decimal subtotal = 0m;
                 decimal descuentoTotal = 0m;
-                const decimal IVA_RATE = 0.15m;
+                decimal IVA_RATE = ImpuestoProvider.GetIVA();
 
                 foreach (var prod in productos)
                 {
@@ -837,16 +837,14 @@ namespace LogiPharm.Presentacion
                 decimal montoDescuento = subtotal * (descuentoPorc / 100);
                 decimal subtotalConDescuento = subtotal - montoDescuento;
 
-                // Asumiendo IVA del 15% sobre el subtotal con descuento
-                decimal iva = subtotalConDescuento * 0.15m;
+                decimal ivaRate = ImpuestoProvider.GetIVA();
+                decimal iva = subtotalConDescuento * ivaRate;
                 decimal total = subtotalConDescuento + iva;
 
-                // Asignar valores calculados
                 fila.Cells["colSubtotal"].Value = subtotalConDescuento;
                 fila.Cells["colIVA"].Value = iva;
                 fila.Cells["colTotal"].Value = total;
 
-                // Formatear celdas para mostrar como moneda
                 fila.Cells["colPFinal"].Value = string.Format("{0:N2}", precioFinal);
                 fila.Cells["colSubtotal"].Value = string.Format("{0:N2}", subtotalConDescuento);
                 fila.Cells["colIVA"].Value = string.Format("{0:N2}", iva);
@@ -856,7 +854,6 @@ namespace LogiPharm.Presentacion
             }
             catch (FormatException)
             {
-                // Ignorar errores de formato mientras el usuario está escribiendo.
             }
         }
 
