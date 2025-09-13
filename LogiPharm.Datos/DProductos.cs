@@ -619,5 +619,38 @@ namespace LogiPharm.Datos
             }
         }
 
+        // NUEVO: Conteo total de productos activos/no anulados
+        public int ContarProductos()
+        {
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                cn.Open();
+                const string sql = @"SELECT COUNT(*) FROM productos WHERE anulado = 0";
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    var obj = cmd.ExecuteScalar();
+                    return Convert.ToInt32(obj);
+                }
+            }
+        }
+
+        // NUEVO: Conteo para búsqueda
+        public int ContarProductosBusqueda(string criterio)
+        {
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                cn.Open();
+                const string sql = @"
+                    SELECT COUNT(*)
+                    FROM productos
+                    WHERE anulado = 0 AND (codigoPrincipal LIKE @c OR nombre LIKE @c);";
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@c", $"%{criterio}%");
+                    var obj = cmd.ExecuteScalar();
+                    return Convert.ToInt32(obj);
+                }
+            }
+        }
     }
 }

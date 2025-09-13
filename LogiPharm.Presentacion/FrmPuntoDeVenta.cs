@@ -105,6 +105,18 @@ namespace LogiPharm.Presentacion
             lblCaja.Text = "CAJA 001";
             lblFechaEmision.Text = DateTime.Now.ToString("dd/MM/yyyy");
 
+            // Mostrar último número de factura emitida
+            try
+            {
+                var dFac = new DFacturacion();
+                var ultimo = dFac.ObtenerUltimoNumeroFactura();
+                if (!string.IsNullOrWhiteSpace(ultimo) && this.lblNumeroFactura != null)
+                {
+                    this.lblNumeroFactura.Text = ultimo;
+                }
+            }
+            catch { }
+
             //if (dgvDetalleVenta.Rows.Count == 0)
             //    dgvDetalleVenta.Rows.Add();
             dgvDetalleVenta.Columns["colPrecio"].ReadOnly = true;

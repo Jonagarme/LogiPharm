@@ -221,5 +221,20 @@ namespace LogiPharm.Datos
                 return JsonConvert.DeserializeObject<RespuestaConsultaApi>(jsonResponse);
             }
         }
+
+        // Devuelve el último número de factura (más reciente por fechaEmision)
+        public string ObtenerUltimoNumeroFactura()
+        {
+            using (var cn = new MySqlConnection(Conexion.cadena))
+            {
+                cn.Open();
+                const string sql = @"SELECT numeroFactura FROM facturas_venta ORDER BY fechaEmision DESC LIMIT 1;";
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    var obj = cmd.ExecuteScalar();
+                    return obj == null || obj == DBNull.Value ? null : Convert.ToString(obj);
+                }
+            }
+        }
     }
 }

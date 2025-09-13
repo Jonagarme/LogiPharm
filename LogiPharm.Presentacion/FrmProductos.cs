@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LogiPharm.Datos;
@@ -18,19 +19,32 @@ namespace LogiPharm.Presentacion
         private bool _isLoading = false;
         private bool _allLoaded = false;
         private string _criterioActual = null; // null = listado normal; texto = búsqueda
+        private int _totalRegistros = -1;
+
+        // Debounce/Cancelación
+        private System.Windows.Forms.Timer _debounceTimer;
+        private CancellationTokenSource _ctsBusqueda;
 
         public FrmProductos()
         {
             InitializeComponent();
+
+            // DoubleBuffer para menos parpadeo
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
+                null, DgvListado, new object[] { true });
+
+            // VirtualMode: cuando el DataSource es DataTable no es estrictamente necesario, pero lo preparamos
+            DgvListado.VirtualMode = false; // si migras a un proveedor virtual, colócalo en true y maneja CellValueNeeded
 
             btnGuardar.Click += btnGuardar_Click;
             btnCancelar.Click += BtnCancelar_Click;
 
             DgvListado.CellDoubleClick += DgvListado_CellDoubleClick;
             DgvListado.CellMouseEnter += DgvListado_CellMouseEnter;
-            DgvListado.CellFormatting += DgvListado_CellFormatting;   // <-- importante
+            DgvListado.CellFormatting += DgvListado_CellFormatting;
             DgvListado.DataError += (s, e) => { e.ThrowException = false; };
-            DgvListado.Scroll += DgvListado_Scroll; // <-- carga incremental
+            DgvListado.Scroll += DgvListado_Scroll;
 
             AsignarEventosMenu();
 
@@ -39,21 +53,51 @@ namespace LogiPharm.Presentacion
             DgvListado.AllowUserToAddRows = false;
             DgvListado.RowHeadersVisible = false;
             DgvListado.RowTemplate.Height = Math.Max(DgvListado.RowTemplate.Height, 28);
+
+            // Debounce para búsqueda
+            _debounceTimer = new System.Windows.Forms.Timer { Interval = 300 };
+            _debounceTimer.Tick += async (s, e) =>
+            {
+                _debounceTimer.Stop();
+                await EjecutarBusquedaDebouncedAsync();
+            };
         }
 
-        private void AsignarEventosMenu()
+        private async Task EjecutarBusquedaDebouncedAsync()
         {
-            contextMenuOpciones.Items.Clear();
-            contextMenuOpciones.Items.AddRange(new ToolStripItem[] {
-                new ToolStripMenuItem("➕ Nueva Categoría",   null, new EventHandler(menuNuevaCategoria_Click)),
-                new ToolStripMenuItem("➕ Nueva Subcategoría", null, new EventHandler(menuNuevaSubcategoria_Click)),
-                new ToolStripMenuItem("➕ Nuevo Subnivel",     null, new EventHandler(menuNuevoSubnivel_Click)),
-                new ToolStripMenuItem("➕ Nueva Marca",        null, new EventHandler(menuNuevaMarca_Click)),
-                new ToolStripMenuItem("➕ Nueva Publicidad",   null, new EventHandler(menuNuevaPublicidad_Click)),
-                new ToolStripMenuItem("➕ Nuevo Laboratorio",  null, new EventHandler(menuNuevoLaboratorio_Click)),
-                new ToolStripSeparator(),
-                new ToolStripMenuItem("➕ Nuevo Producto",     null, new EventHandler(menuNuevoProducto_Click))
-            });
+            CancelarBusquedaEnCurso();
+            _ctsBusqueda = new CancellationTokenSource();
+            try
+            {
+                string criterio = txtBuscar.Text.Trim();
+                if (string.IsNullOrWhiteSpace(criterio))
+                {
+                    await ResetearListadoAsync(null);
+                }
+                else
+                {
+                    await ResetearListadoAsync(criterio);
+                }
+            }
+            catch (OperationCanceledException) { }
+            finally
+            {
+                _ctsBusqueda = null;
+            }
+        }
+
+        private void CancelarBusquedaEnCurso()
+        {
+            if (_ctsBusqueda != null && !_ctsBusqueda.IsCancellationRequested)
+            {
+                _ctsBusqueda.Cancel();
+            }
+        }
+
+        private void txtBuscar_TextChanged(object sender, EventArgs e)
+        {
+            _debounceTimer.Stop();
+            _debounceTimer.Start();
         }
 
         private void BtnCancelar_Click(object sender, EventArgs e) => CerrarPanelEdicion();
@@ -63,7 +107,8 @@ namespace LogiPharm.Presentacion
             splitContainer1.Panel2Collapsed = true;
             CerrarPanelEdicion();
 
-            // Inicial: listado normal sin filtros con carga incremental
+            txtBuscar.TextChanged += txtBuscar_TextChanged;
+
             await ResetearListadoAsync(null);
 
             // Auditoría: VISUALIZAR listado
@@ -419,6 +464,10 @@ namespace LogiPharm.Presentacion
             _tablaProductos = null;
             DgvListado.DataSource = null;
 
+            // Total
+            var d = new DProductos();
+            _totalRegistros = _criterioActual == null ? d.ContarProductos() : d.ContarProductosBusqueda(_criterioActual);
+
             await CargarPaginaAsync(true);
         }
 
@@ -431,14 +480,11 @@ namespace LogiPharm.Presentacion
                 DataTable pagina;
                 var d = new DProductos();
                 await Task.Yield(); // ceder UI
+
                 if (_criterioActual == null)
-                {
                     pagina = d.ListarProductosPaginado(_offset, _pageSize);
-                }
                 else
-                {
                     pagina = d.BuscarProductosPaginado(_criterioActual, _offset, _pageSize);
-                }
 
                 if (pagina == null || pagina.Rows.Count == 0)
                 {
@@ -457,7 +503,7 @@ namespace LogiPharm.Presentacion
                     _tablaProductos.ImportRow(r);
                 }
                 _offset += pagina.Rows.Count;
-                if (pagina.Rows.Count < _pageSize) _allLoaded = true;
+                if (_offset >= _totalRegistros) _allLoaded = true;
 
                 if (DgvListado.DataSource == null)
                 {
@@ -474,7 +520,13 @@ namespace LogiPharm.Presentacion
                     cm.Refresh();
                 }
 
-                lblTotal.Text = "Total de Registros: " + DgvListado.Rows.Count.ToString();
+                lblTotal.Text = $"Total: {_totalRegistros} | Mostrando: {DgvListado.Rows.Count}";
+
+                // Prefetch: si faltan <=10 filas para llegar al final, comenzar siguiente carga en background
+                if (!_allLoaded && DgvListado.RowCount - (DgvListado.FirstDisplayedScrollingRowIndex + DgvListado.DisplayedRowCount(false)) <= 10)
+                {
+                    _ = Task.Run(async () => await CargarPaginaAsync());
+                }
             }
             catch (Exception ex)
             {
@@ -489,36 +541,8 @@ namespace LogiPharm.Presentacion
 
         private async void btnBuscar_Click(object sender, EventArgs e)
         {
-            string criterio = txtBuscar.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(criterio))
-            {
-                await ResetearListadoAsync(null);
-                return;
-            }
-
-            try
-            {
-                await ResetearListadoAsync(criterio);
-
-                // Auditoría: VISUALIZAR (búsqueda)
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, $"Buscar productos por: '{criterio}'", null, Environment.MachineName, "UI"); } catch { }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al buscar productos: " + ex.Message, "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void txtBuscar_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                btnBuscar_Click(sender, e);
-                e.Handled = true;
-                e.SuppressKeyPress = true;
-            }
+            _debounceTimer.Stop();
+            await EjecutarBusquedaDebouncedAsync();
         }
 
         // --- Columnas de acción con PNG ---
@@ -581,6 +605,31 @@ namespace LogiPharm.Presentacion
             DgvListado.Columns["colEliminar"].DisplayIndex = 2;
 
             DgvListado.RowTemplate.Height = Math.Max(DgvListado.RowTemplate.Height, 25);
+        }
+
+        private void AsignarEventosMenu()
+        {
+            contextMenuOpciones.Items.Clear();
+            contextMenuOpciones.Items.AddRange(new ToolStripItem[] {
+                new ToolStripMenuItem("➕ Nueva Categoría",   null, new EventHandler(menuNuevaCategoria_Click)),
+                new ToolStripMenuItem("➕ Nueva Subcategoría", null, new EventHandler(menuNuevaSubcategoria_Click)),
+                new ToolStripMenuItem("➕ Nuevo Subnivel",     null, new EventHandler(menuNuevoSubnivel_Click)),
+                new ToolStripMenuItem("➕ Nueva Marca",        null, new EventHandler(menuNuevaMarca_Click)),
+                new ToolStripMenuItem("➕ Nueva Publicidad",   null, new EventHandler(menuNuevaPublicidad_Click)),
+                new ToolStripMenuItem("➕ Nuevo Laboratorio",  null, new EventHandler(menuNuevoLaboratorio_Click)),
+                new ToolStripSeparator(),
+                new ToolStripMenuItem("➕ Nuevo Producto",     null, new EventHandler(menuNuevoProducto_Click))
+            });
+        }
+
+        private void txtBuscar_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnBuscar_Click(sender, e);
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
         }
 
     }
