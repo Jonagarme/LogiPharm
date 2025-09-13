@@ -177,7 +177,11 @@ namespace LogiPharm.Presentacion.Utilidades
             ToolStripMenuItem productos = new ToolStripMenuItem("Productos");
             productos.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmProductos>(formulario);
             inventario.DropDownItems.Add(productos);
-            inventario.DropDownItems.Add("Laboratorios");
+
+            ToolStripMenuItem laboratorios = new ToolStripMenuItem("Laboratorios");
+            laboratorios.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmLaboratorios>(formulario);
+            inventario.DropDownItems.Add(laboratorios);
+
             inventario.DropDownItems.Add("Perchas");
             inventario.DropDownItems.Add("Ingreso de productos");
             inventario.DropDownItems.Add("Lotes y vencimientos");
