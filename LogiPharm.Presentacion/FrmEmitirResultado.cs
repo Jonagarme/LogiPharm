@@ -50,7 +50,7 @@ namespace LogiPharm.Presentacion
                 cboPaciente.SelectedIndexChanged += (s, e) =>
                 {
                     var drv = cboPaciente.SelectedItem as DataRowView;
-                    txtPacienteId.Text = drv != null ? Convert.ToString(drv["documento"]) : string.Empty;
+                    //txtPacienteId.Text = drv != null ? Convert.ToString(drv["documento"]) : string.Empty;
                 };
             }
             catch (Exception ex)
