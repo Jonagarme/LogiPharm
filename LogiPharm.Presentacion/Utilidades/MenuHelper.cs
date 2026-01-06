@@ -1,9 +1,10 @@
-﻿using System.Windows.Forms;
-using System.Drawing;
-using LogiPharm.Datos; 
+﻿using LogiPharm.Datos; 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace LogiPharm.Presentacion.Utilidades
 {
@@ -15,52 +16,52 @@ namespace LogiPharm.Presentacion.Utilidades
             {
                 Dock = DockStyle.Top,
                 BackColor = Color.WhiteSmoke,
-                Font = new Font("Segoe UI", 10, FontStyle.Regular)
+                Font = new Font("Segoe UI", 10, FontStyle.Regular),
+                // 1. Aseguramos que el overflow esté habilitado
+                CanOverflow = true,
+                LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow
+
             };
 
-            // Menús disponibles
-            ToolStripMenuItem inicio = ConstruirMenuInicio(formulario);
-            ToolStripMenuItem ventas = ConstruirMenuVentas(formulario);
-            ToolStripMenuItem inventario = ConstruirMenuInventario(formulario);
-            ToolStripMenuItem compras = ConstruirMenuCompras(formulario);
-            ToolStripMenuItem clientes = ConstruirMenuClientes(formulario);
-            ToolStripMenuItem finanzas = ConstruirMenuFinanzas(formulario);
-            ToolStripMenuItem normativas = ConstruirMenuNormativas();
-            ToolStripMenuItem seguridad = ConstruirMenuSeguridad(formulario);
-            ToolStripMenuItem configuracion = ConstruirMenuConfiguracion(formulario);
-            ToolStripMenuItem sucursales = ConstruirMenuSucursales();
-            ToolStripMenuItem ventanas = ConstruirMenuVentanas(formulario);
+            // Diccionario para acceder fácilmente a cada menú por un nombre clave
+            var todosLosMenus = new Dictionary<string, ToolStripMenuItem>
+                {
+                    { "Inicio", ConstruirMenuInicio(formulario) },
+                    { "Ventas", ConstruirMenuVentas(formulario) },
+                    { "Inventario", ConstruirMenuInventario(formulario) },
+                    { "Compras", ConstruirMenuCompras(formulario) },
+                    { "Clientes", ConstruirMenuClientes(formulario) },
+                    { "Finanzas", ConstruirMenuFinanzas(formulario) },
+                    { "Normativas", ConstruirMenuNormativas() },
+                    { "Seguridad", ConstruirMenuSeguridad(formulario) },
+                    { "Configuracion", ConstruirMenuConfiguracion(formulario) },
+                    { "Sucursales", ConstruirMenuSucursales() },
+                    { "Ventanas", ConstruirMenuVentanas(formulario) }
+                };
 
-            // Agregar menús según el rol
-            if (rolUsuario == "Administrador")
+            // 2. Creamos una lista vacía y la llenamos SÓLO con los menús del rol actual
+            var menusParaEsteRol = new List<ToolStripMenuItem>();
+
+            switch (rolUsuario)
             {
-                menu.Items.AddRange(new ToolStripItem[]
-                {
-                    inicio, ventas, inventario, compras, clientes, finanzas, normativas, seguridad, configuracion, sucursales, ventanas
-                });
-            }
-            else if (rolUsuario == "Farmacéutico")
-            {
-                menu.Items.AddRange(new ToolStripItem[]
-                {
-                    inicio, ventas, inventario, clientes, normativas, ventanas
-                });
-            }
-            else if (rolUsuario == "Cajera")
-            {
-                menu.Items.AddRange(new ToolStripItem[]
-                {
-                    inicio, ventas, clientes, ventanas
-                });
-            }
-            else
-            {
-                // Rol desconocido: menú mínimo
-                menu.Items.Add(inicio);
-                menu.Items.Add(ventanas);
+                case "Administrador":
+                    menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventas"], todosLosMenus["Inventario"], todosLosMenus["Compras"], todosLosMenus["Clientes"], todosLosMenus["Finanzas"], todosLosMenus["Normativas"], todosLosMenus["Seguridad"], todosLosMenus["Configuracion"], todosLosMenus["Sucursales"], todosLosMenus["Ventanas"] });
+                    break;
+                case "Farmacéutico":
+                    menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventas"], todosLosMenus["Inventario"], todosLosMenus["Clientes"], todosLosMenus["Normativas"], todosLosMenus["Ventanas"] });
+                    break;
+                case "Cajera":
+                    menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventas"], todosLosMenus["Clientes"], todosLosMenus["Ventanas"] });
+                    break;
+                default: // Rol desconocido
+                    menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventanas"] });
+                    break;
             }
 
-            // Agregar control visual de navegación de ventanas abiertas
+            // 3. Añadimos los menús del rol al MenuStrip
+            menu.Items.AddRange(menusParaEsteRol.ToArray());
+
+            // 4. AL FINAL, añadimos los controles de navegación anclados a la derecha
             AgregarNavegadorVentanas(menu, formulario);
 
             return menu;
@@ -88,6 +89,8 @@ namespace LogiPharm.Presentacion.Utilidades
 
             return inicio;
         }
+
+
 
         private static void CerrarSesion(Form formulario)
         {
@@ -182,16 +185,29 @@ namespace LogiPharm.Presentacion.Utilidades
             laboratorios.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmLaboratorios>(formulario);
             inventario.DropDownItems.Add(laboratorios);
 
-            inventario.DropDownItems.Add("Perchas");
-            inventario.DropDownItems.Add("Ingreso de productos");
-            inventario.DropDownItems.Add("Lotes y vencimientos");
+            ToolStripMenuItem perchas = new ToolStripMenuItem("Perchas");
+            perchas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmPerchas>(formulario);
+            inventario.DropDownItems.Add(perchas);
+
+            ToolStripMenuItem ingreso = new ToolStripMenuItem("Ingreso de productos");
+            ingreso.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmIngresoXML>(formulario);
+            inventario.DropDownItems.Add(ingreso);
+
+
+            ToolStripMenuItem lotesVencimientos = new ToolStripMenuItem("Lotes y vencimientos");
+            lotesVencimientos.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmLotesVencimientos>(formulario);
+            inventario.DropDownItems.Add(lotesVencimientos);
             ToolStripMenuItem kardex = new ToolStripMenuItem("Kardex");
             kardex.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmKardex>(formulario);
             inventario.DropDownItems.Add(kardex);
             ToolStripMenuItem ajusteDeInventario = new ToolStripMenuItem("Ajustes de inventario");
             ajusteDeInventario.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmAjusteInventario>(formulario);
             inventario.DropDownItems.Add(ajusteDeInventario);
-            inventario.DropDownItems.Add("Transferencias entre sucursales");
+            
+            ToolStripMenuItem transferencias = new ToolStripMenuItem("Transferencias entre sucursales");
+            transferencias.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmTransferencias>(formulario);
+            inventario.DropDownItems.Add(transferencias);
+            
             inventario.DropDownItems.Add("Alertas de stock mínimo");
             inventario.DropDownItems.Add("Principios activos");
             inventario.DropDownItems.Add("Presentaciones");
@@ -204,7 +220,9 @@ namespace LogiPharm.Presentacion.Utilidades
         private static ToolStripMenuItem ConstruirMenuCompras(Form formulario)
         {
             ToolStripMenuItem compras = new ToolStripMenuItem("🛒 Compras y Proveedores");
-            compras.DropDownItems.Add("Órdenes de compra");
+            ToolStripMenuItem ordenesCompra = new ToolStripMenuItem("Órdenes de compra");
+            ordenesCompra.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmOrdenesCompra>(formulario);
+            compras.DropDownItems.Add(ordenesCompra);
             ToolStripMenuItem recepcionProductos = new ToolStripMenuItem("Recepcion de Productos");
             recepcionProductos.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmRecepcionProductos>(formulario);
             compras.DropDownItems.Add(recepcionProductos);
@@ -358,9 +376,22 @@ namespace LogiPharm.Presentacion.Utilidades
         // Control visual: flechas + dropdown con ventanas
         private static void AgregarNavegadorVentanas(MenuStrip menu, Form formulario)
         {
-            var btnPrev = new ToolStripButton("◀") { ToolTipText = "Ventana anterior" };
-            var ddStack = new ToolStripDropDownButton("Ventanas") { ToolTipText = "Ventanas abiertas" };
-            var btnNext = new ToolStripButton("▶") { ToolTipText = "Ventana siguiente" };
+            // 1. AÑADIMOS LA PROPIEDAD 'ALIGNMENT' A CADA CONTROL
+            var btnPrev = new ToolStripButton("◀")
+            {
+                ToolTipText = "Ventana anterior",
+                Alignment = ToolStripItemAlignment.Right // <-- ANCLA A LA DERECHA
+            };
+            var ddStack = new ToolStripDropDownButton("Ventanas")
+            {
+                ToolTipText = "Ventanas abiertas",
+                Alignment = ToolStripItemAlignment.Right // <-- ANCLA A LA DERECHA
+            };
+            var btnNext = new ToolStripButton("▶")
+            {
+                ToolTipText = "Ventana siguiente",
+                Alignment = ToolStripItemAlignment.Right // <-- ANCLA A LA DERECHA
+            };
 
             btnPrev.Click += (s, e) => ActivarVentanaOffset(formulario, -1);
             btnNext.Click += (s, e) => ActivarVentanaOffset(formulario, +1);
@@ -381,12 +412,11 @@ namespace LogiPharm.Presentacion.Utilidades
                     ddStack.DropDownItems.Add(new ToolStripMenuItem("(No hay ventanas abiertas)") { Enabled = false });
             };
 
-            // Opcional: separador y alineación a la derecha
-            var sep = new ToolStripSeparator();
-            menu.Items.Add(sep);
-            menu.Items.Add(btnPrev);
-            menu.Items.Add(ddStack);
+            // 2. AÑADIMOS LOS CONTROLES AL MENÚ PRINCIPAL
+            // El orden es importante para que aparezcan correctamente alineados a la derecha.
             menu.Items.Add(btnNext);
+            menu.Items.Add(ddStack);
+            menu.Items.Add(btnPrev);
         }
 
         private static string TruncTitulo(string text, int max = 28)
