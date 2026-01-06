@@ -22,6 +22,7 @@ namespace LogiPharm.Presentacion
             this.Load += FrmFacturacion_Load;
             this.btnBuscar.Click += btnBuscar_Click;
             this.dgvListaFacturas.SelectionChanged += dgvListaFacturas_SelectionChanged;
+            this.btnReenviarSRI.Click += btnReenviarSRI_Click;
         }
 
         private void FrmFacturacion_Load(object sender, EventArgs e)
@@ -33,10 +34,69 @@ namespace LogiPharm.Presentacion
             ConfigurarGridPrincipal();
             ConfigurarGridDetalle();
 
+            // Cargar los filtros con datos reales
+            CargarFiltros();
+
             // Establece las fechas por defecto y realiza la primera búsqueda
             dtpFechaInicio.Value = DateTime.Today;
             dtpFechaFin.Value = DateTime.Today;
             btnBuscar_Click(sender, e);
+        }
+
+        private void CargarFiltros()
+        {
+            try
+            {
+                var d = new DFacturacion();
+
+                // Cargar Cajas
+                var dtCajas = d.ObtenerCajas();
+                cboCaja.DataSource = dtCajas;
+                cboCaja.DisplayMember = "nombre";
+                cboCaja.ValueMember = "id";
+                cboCaja.SelectedIndex = 0; // Seleccionar "TODAS"
+
+                // Cargar Tipos de Documento
+                cboTipoDocumento.Items.Clear();
+                cboTipoDocumento.Items.AddRange(new object[] { 
+                    "TODOS",
+                    "FACTURA", 
+                    "NOTA DE VENTA",
+                    "NOTA DE CRÉDITO"
+                });
+                cboTipoDocumento.SelectedIndex = 0; // "TODOS"
+
+                // Cargar Estados de Factura
+                cboEstado.Items.Clear();
+                cboEstado.Items.AddRange(new object[] { 
+                    "TODOS",
+                    "ACTIVO", 
+                    "ANULADO"
+                });
+                cboEstado.SelectedIndex = 0; // "TODOS"
+
+                // Cargar Estados SRI
+                cboEstadoSRI.Items.Clear();
+                cboEstadoSRI.Items.AddRange(new object[] { 
+                    "TODOS",
+                    "AUTORIZADO", 
+                    "SIN AUTORIZAR",
+                    "ERROR",
+                    "RECHAZADO"
+                });
+                cboEstadoSRI.SelectedIndex = 0; // "TODOS"
+
+                // Cargar Cajeros
+                var dtCajeros = d.ObtenerCajeros();
+                cboCajero.DataSource = dtCajeros;
+                cboCajero.DisplayMember = "nombreUsuario";
+                cboCajero.ValueMember = "id";
+                cboCajero.SelectedIndex = 0; // Seleccionar "TODOS"
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar filtros: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void ConfigurarGridPrincipal()
@@ -57,6 +117,22 @@ namespace LogiPharm.Presentacion
             SetDP("colEstado", "Estado");
             SetDP("colAutorizacion", "Autorizacion");
 
+            // Aplicar formato de moneda a la columna Total
+            if (dgvListaFacturas.Columns["colTotal"] != null)
+            {
+                dgvListaFacturas.Columns["colTotal"].DefaultCellStyle.Format = "C2";
+                dgvListaFacturas.Columns["colTotal"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            }
+
+            // Mejorar apariencia visual del grid
+            dgvListaFacturas.EnableHeadersVisualStyles = false;
+            dgvListaFacturas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 122, 204);
+            dgvListaFacturas.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgvListaFacturas.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dgvListaFacturas.RowTemplate.Height = 28;
+            dgvListaFacturas.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(240, 245, 250);
+            dgvListaFacturas.DefaultCellStyle.SelectionBackColor = Color.FromArgb(0, 122, 204);
+            dgvListaFacturas.DefaultCellStyle.SelectionForeColor = Color.White;
         }
 
         private void SetDP(string columnName, string propertyName)
@@ -72,11 +148,49 @@ namespace LogiPharm.Presentacion
             {
                 var d = new DFacturacion();
                 dgvListaFacturas.AutoGenerateColumns = false;
-                dgvListaFacturas.DataSource = d.ListarFacturas(dtpFechaInicio.Value, dtpFechaFin.Value, txtCliente.Text);
+
+                // Obtener valores de los filtros
+                int? idCaja = cboCaja.SelectedValue != null && Convert.ToInt32(cboCaja.SelectedValue) > 0 
+                    ? Convert.ToInt32(cboCaja.SelectedValue) 
+                    : (int?)null;
+
+                string tipoDocumento = cboTipoDocumento.SelectedItem?.ToString();
+                string estado = cboEstado.SelectedItem?.ToString();
+                string estadoSRI = cboEstadoSRI.SelectedItem?.ToString();
+
+                int? idCajero = cboCajero.SelectedValue != null && Convert.ToInt32(cboCajero.SelectedValue) > 0 
+                    ? Convert.ToInt32(cboCajero.SelectedValue) 
+                    : (int?)null;
+
+                // Realizar la búsqueda con todos los filtros
+                dgvListaFacturas.DataSource = d.ListarFacturas(
+                    dtpFechaInicio.Value, 
+                    dtpFechaFin.Value, 
+                    txtCliente.Text,
+                    idCaja,
+                    tipoDocumento,
+                    estado,
+                    estadoSRI,
+                    idCajero
+                );
+
                 lblTotalDocumentos.Text = $"Total de Documentos: {dgvListaFacturas.RowCount}";
 
                 // Auditoría: VISUALIZAR (consulta)
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Facturación", "VISUALIZAR", "facturas", null, $"Consultar facturas {dtpFechaInicio.Value:yyyy-MM-dd} a {dtpFechaFin.Value:yyyy-MM-dd} cliente='{txtCliente.Text}'", null, Environment.MachineName, "UI"); } catch { }
+                try { 
+                    new DBitacora().Registrar(
+                        SesionActual.IdUsuario, 
+                        SesionActual.NombreUsuario, 
+                        "Facturación", 
+                        "VISUALIZAR", 
+                        "facturas", 
+                        null, 
+                        $"Consultar facturas {dtpFechaInicio.Value:yyyy-MM-dd} a {dtpFechaFin.Value:yyyy-MM-dd} - Filtros: Caja={cboCaja.Text}, Estado={estado}, EstadoSRI={estadoSRI}, Cajero={cboCajero.Text}, Cliente='{txtCliente.Text}'", 
+                        null, 
+                        Environment.MachineName, 
+                        "UI"
+                    ); 
+                } catch { }
             }
             catch (Exception ex)
             {
@@ -90,6 +204,7 @@ namespace LogiPharm.Presentacion
             if (dgvListaFacturas.CurrentRow == null)
             {
                 LimpiarDetalle();
+                btnReenviarSRI.Enabled = false;
                 return;
             }
 
@@ -97,6 +212,7 @@ namespace LogiPharm.Presentacion
             if (drv == null)
             {
                 LimpiarDetalle();
+                btnReenviarSRI.Enabled = false;
                 return;
             }
 
@@ -114,7 +230,8 @@ namespace LogiPharm.Presentacion
                 if (res.Encabezado == null)
                 {
                     LimpiarDetalle();
-                    MostrarEstadoError("ERROR");   // opcional
+                    MostrarEstadoError("ERROR");
+                    btnReenviarSRI.Enabled = false;
                     return;
                 }
 
@@ -132,9 +249,17 @@ namespace LogiPharm.Presentacion
                 // Estado SRI según si tiene o no autorización
                 var autorizacion = Convert.ToString(res.Encabezado["Autorizacion"]);
                 if (string.IsNullOrWhiteSpace(autorizacion))
-                    MostrarEstadoError("ERROR");           // rojo
+                {
+                    MostrarEstadoError("SIN AUTORIZAR");
+                    btnReenviarSRI.Enabled = true;
+                    btnReenviarSRI.Text = "Enviar al SRI";
+                }
                 else
-                    MostrarEstadoAutorizado();             // verde
+                {
+                    MostrarEstadoAutorizado();
+                    btnReenviarSRI.Enabled = false;
+                    btnReenviarSRI.Text = "Ya Autorizado";
+                }
 
                 // (opcional) otros labels:
                 // lblTipoDoc.Text = "FACTURA"; lblAmbiente.Text = "..."; etc.
@@ -151,6 +276,7 @@ namespace LogiPharm.Presentacion
             {
                 MessageBox.Show(ex.Message, "Error al cargar detalle", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 MostrarEstadoError("ERROR");
+                btnReenviarSRI.Enabled = false;
                 LimpiarDetalle(mantenerEstado: true);
             }
             finally
@@ -423,6 +549,142 @@ namespace LogiPharm.Presentacion
         {
             // cuando limpias o no hay selección
             SetEstadoSRI("...", Color.White, Color.FromArgb(64, 64, 64));
+        }
+
+        private async void btnReenviarSRI_Click(object sender, EventArgs e)
+        {
+            // Validar que haya una fila seleccionada
+            if (dgvListaFacturas.CurrentRow == null)
+            {
+                MessageBox.Show("Por favor, seleccione una factura para reenviar.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var drv = dgvListaFacturas.CurrentRow.DataBoundItem as DataRowView;
+            if (drv == null) return;
+
+            // Verificar si ya está autorizada
+            string autorizacionExistente = drv.Row.Table.Columns.Contains("Autorizacion")
+                ? Convert.ToString(drv["Autorizacion"])
+                : null;
+
+            if (!string.IsNullOrWhiteSpace(autorizacionExistente))
+            {
+                MessageBox.Show("Esta factura ya está autorizada por el SRI.\n\nNúmero de Autorización: " + autorizacionExistente, 
+                    "Factura Ya Autorizada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Obtener la clave de acceso (número de autorización)
+            string claveAcceso = drv.Row.Table.Columns.Contains("ClaveAcceso")
+                ? Convert.ToString(drv["ClaveAcceso"])
+                : null;
+
+            if (string.IsNullOrWhiteSpace(claveAcceso))
+            {
+                MessageBox.Show("Esta factura no tiene clave de acceso. No se puede reenviar al SRI.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Confirmar la acción
+            var resultado = MessageBox.Show(
+                $"¿Está seguro que desea reenviar esta factura al SRI?\n\nClave de Acceso: {claveAcceso}",
+                "Confirmar Reenvío",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (resultado != DialogResult.Yes) return;
+
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                btnReenviarSRI.Enabled = false;
+
+                var d = new DFacturacion();
+                var respuesta = await d.ReenviarFacturaAlSri(claveAcceso);
+
+                if (respuesta != null)
+                {
+                    string mensaje = $"Factura reenviada exitosamente al SRI.\n\n";
+                    mensaje += $"Estado: {respuesta.Estado ?? "N/A"}\n";
+                    mensaje += $"Número de Autorización: {respuesta.NumeroAutorizacion ?? "N/A"}\n";
+                    mensaje += $"Fecha de Autorización: {respuesta.FechaAutorizacion ?? "N/A"}";
+
+                    MessageBox.Show(mensaje, "Reenvío Exitoso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Actualizar el estado del label si la autorización es exitosa
+                    if (!string.IsNullOrWhiteSpace(respuesta.Estado))
+                    {
+                        var estado = respuesta.Estado.Trim().ToUpperInvariant();
+                        if (estado == "AUTORIZADO")
+                        {
+                            MostrarEstadoAutorizado();
+                            btnReenviarSRI.Enabled = false;
+                            btnReenviarSRI.Text = "Ya Autorizado";
+                            lblAutorizacion.Text = respuesta.NumeroAutorizacion ?? "...";
+                        }
+                        else if (estado == "ERROR" || estado == "RECHAZADO" || estado == "NO AUTORIZADO")
+                        {
+                            MostrarEstadoError(estado);
+                            btnReenviarSRI.Enabled = true;
+                            btnReenviarSRI.Text = "Reintentar Envío";
+                        }
+                        else
+                        {
+                            MostrarEstadoPendiente(estado);
+                            btnReenviarSRI.Enabled = true;
+                            btnReenviarSRI.Text = "Reintentar Envío";
+                        }
+                    }
+
+                    // Auditoría
+                    try
+                    {
+                        new DBitacora().Registrar(
+                            SesionActual.IdUsuario,
+                            SesionActual.NombreUsuario,
+                            "Facturación",
+                            "REENVIAR",
+                            "facturas",
+                            null,
+                            $"Reenvío factura al SRI: {claveAcceso}",
+                            null,
+                            Environment.MachineName,
+                            "UI");
+                    }
+                    catch { }
+                }
+                else
+                {
+                    MessageBox.Show("No se recibió respuesta del servidor.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al reenviar la factura al SRI:\n\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                // Auditoría de error
+                try
+                {
+                    new DBitacora().Registrar(
+                        SesionActual.IdUsuario,
+                        SesionActual.NombreUsuario,
+                        "Facturación",
+                        "ERROR_REENVIAR",
+                        "facturas",
+                        null,
+                        $"Error al reenviar factura al SRI: {claveAcceso} - {ex.Message}",
+                        null,
+                        Environment.MachineName,
+                        "UI");
+                }
+                catch { }
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+                btnReenviarSRI.Enabled = true;
+            }
         }
 
     }

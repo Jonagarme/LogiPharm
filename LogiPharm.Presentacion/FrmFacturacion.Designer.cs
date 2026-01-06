@@ -79,6 +79,7 @@
             this.lblFechaAutorizacion = new System.Windows.Forms.Label();
             this.lblNoInterno = new System.Windows.Forms.Label();
             this.lblNumeroFactura = new System.Windows.Forms.Label();
+            this.btnReenviarSRI = new Guna.UI2.WinForms.Guna2Button();
             this.panelFiltros.SuspendLayout();
             this.panelLista.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvListaFacturas)).BeginInit();
@@ -126,7 +127,7 @@
             this.btnBuscar.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnBuscar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnBuscar.ForeColor = System.Drawing.Color.White;
-            this.btnBuscar.Location = new System.Drawing.Point(1081, 41);
+            this.btnBuscar.Location = new System.Drawing.Point(1166, 41);
             this.btnBuscar.Name = "btnBuscar";
             this.btnBuscar.Size = new System.Drawing.Size(107, 28);
             this.btnBuscar.TabIndex = 17;
@@ -139,18 +140,18 @@
             this.dtpFechaFin.Checked = true;
             this.dtpFechaFin.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.dtpFechaFin.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpFechaFin.Location = new System.Drawing.Point(958, 41);
+            this.dtpFechaFin.Location = new System.Drawing.Point(1050, 41);
             this.dtpFechaFin.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
             this.dtpFechaFin.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
             this.dtpFechaFin.Name = "dtpFechaFin";
-            this.dtpFechaFin.Size = new System.Drawing.Size(117, 28);
+            this.dtpFechaFin.Size = new System.Drawing.Size(110, 28);
             this.dtpFechaFin.TabIndex = 16;
             this.dtpFechaFin.Value = new System.DateTime(2025, 4, 25, 0, 0, 0, 0);
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(955, 25);
+            this.label8.Location = new System.Drawing.Point(1047, 25);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(57, 13);
             this.label8.TabIndex = 15;
@@ -162,18 +163,18 @@
             this.dtpFechaInicio.Checked = true;
             this.dtpFechaInicio.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.dtpFechaInicio.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpFechaInicio.Location = new System.Drawing.Point(835, 41);
+            this.dtpFechaInicio.Location = new System.Drawing.Point(934, 41);
             this.dtpFechaInicio.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
             this.dtpFechaInicio.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
             this.dtpFechaInicio.Name = "dtpFechaInicio";
-            this.dtpFechaInicio.Size = new System.Drawing.Size(117, 28);
+            this.dtpFechaInicio.Size = new System.Drawing.Size(110, 28);
             this.dtpFechaInicio.TabIndex = 14;
             this.dtpFechaInicio.Value = new System.DateTime(2025, 4, 25, 0, 0, 0, 0);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(832, 25);
+            this.label7.Location = new System.Drawing.Point(931, 25);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(68, 13);
             this.label7.TabIndex = 13;
@@ -191,17 +192,17 @@
             this.txtCliente.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtCliente.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtCliente.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtCliente.Location = new System.Drawing.Point(679, 41);
+            this.txtCliente.Location = new System.Drawing.Point(808, 41);
             this.txtCliente.Name = "txtCliente";
             this.txtCliente.PlaceholderText = "";
             this.txtCliente.SelectedText = "";
-            this.txtCliente.Size = new System.Drawing.Size(150, 28);
+            this.txtCliente.Size = new System.Drawing.Size(120, 28);
             this.txtCliente.TabIndex = 12;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(676, 25);
+            this.label6.Location = new System.Drawing.Point(805, 25);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(42, 13);
             this.label6.TabIndex = 11;
@@ -219,17 +220,17 @@
             this.txtNumero.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtNumero.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtNumero.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtNumero.Location = new System.Drawing.Point(523, 41);
+            this.txtNumero.Location = new System.Drawing.Point(672, 41);
             this.txtNumero.Name = "txtNumero";
             this.txtNumero.PlaceholderText = "";
             this.txtNumero.SelectedText = "";
-            this.txtNumero.Size = new System.Drawing.Size(150, 28);
+            this.txtNumero.Size = new System.Drawing.Size(130, 28);
             this.txtNumero.TabIndex = 10;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(520, 25);
+            this.label5.Location = new System.Drawing.Point(669, 25);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(47, 13);
             this.label5.TabIndex = 9;
@@ -248,15 +249,15 @@
             this.cboCajero.ItemHeight = 22;
             this.cboCajero.Items.AddRange(new object[] {
             "TODOS"});
-            this.cboCajero.Location = new System.Drawing.Point(401, 41);
+            this.cboCajero.Location = new System.Drawing.Point(546, 41);
             this.cboCajero.Name = "cboCajero";
-            this.cboCajero.Size = new System.Drawing.Size(116, 28);
+            this.cboCajero.Size = new System.Drawing.Size(120, 28);
             this.cboCajero.TabIndex = 8;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(398, 25);
+            this.label4.Location = new System.Drawing.Point(543, 25);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(40, 13);
             this.label4.TabIndex = 7;
@@ -275,15 +276,15 @@
             this.cboEstadoSRI.ItemHeight = 22;
             this.cboEstadoSRI.Items.AddRange(new object[] {
             "Todos"});
-            this.cboEstadoSRI.Location = new System.Drawing.Point(279, 41);
+            this.cboEstadoSRI.Location = new System.Drawing.Point(400, 41);
             this.cboEstadoSRI.Name = "cboEstadoSRI";
-            this.cboEstadoSRI.Size = new System.Drawing.Size(116, 28);
+            this.cboEstadoSRI.Size = new System.Drawing.Size(140, 28);
             this.cboEstadoSRI.TabIndex = 6;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(276, 25);
+            this.label3.Location = new System.Drawing.Point(397, 25);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(64, 13);
             this.label3.TabIndex = 5;
@@ -302,15 +303,15 @@
             this.cboEstado.ItemHeight = 22;
             this.cboEstado.Items.AddRange(new object[] {
             "Todas"});
-            this.cboEstado.Location = new System.Drawing.Point(201, 41);
+            this.cboEstado.Location = new System.Drawing.Point(294, 41);
             this.cboEstado.Name = "cboEstado";
-            this.cboEstado.Size = new System.Drawing.Size(72, 28);
+            this.cboEstado.Size = new System.Drawing.Size(100, 28);
             this.cboEstado.TabIndex = 4;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(198, 25);
+            this.label2.Location = new System.Drawing.Point(291, 25);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 13);
             this.label2.TabIndex = 3;
@@ -329,15 +330,15 @@
             this.cboTipoDocumento.ItemHeight = 22;
             this.cboTipoDocumento.Items.AddRange(new object[] {
             "FACTURA"});
-            this.cboTipoDocumento.Location = new System.Drawing.Point(92, 41);
+            this.cboTipoDocumento.Location = new System.Drawing.Point(138, 41);
             this.cboTipoDocumento.Name = "cboTipoDocumento";
-            this.cboTipoDocumento.Size = new System.Drawing.Size(103, 28);
+            this.cboTipoDocumento.Size = new System.Drawing.Size(150, 28);
             this.cboTipoDocumento.TabIndex = 2;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(89, 25);
+            this.label1.Location = new System.Drawing.Point(135, 25);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(89, 13);
             this.label1.TabIndex = 1;
@@ -358,7 +359,7 @@
             "CAJA 001"});
             this.cboCaja.Location = new System.Drawing.Point(12, 41);
             this.cboCaja.Name = "cboCaja";
-            this.cboCaja.Size = new System.Drawing.Size(74, 28);
+            this.cboCaja.Size = new System.Drawing.Size(120, 28);
             this.cboCaja.TabIndex = 0;
             // 
             // lblCaja
@@ -568,6 +569,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.guna2GroupBox1.BorderColor = System.Drawing.Color.LightGray;
             this.guna2GroupBox1.BorderRadius = 6;
+            this.guna2GroupBox1.Controls.Add(this.btnReenviarSRI);
             this.guna2GroupBox1.Controls.Add(this.lblAutorizacion);
             this.guna2GroupBox1.Controls.Add(this.label22);
             this.guna2GroupBox1.Controls.Add(this.lblCajaDetalle);
@@ -868,6 +870,24 @@
             this.lblNumeroFactura.TabIndex = 0;
             this.lblNumeroFactura.Text = "...";
             // 
+            // btnReenviarSRI
+            // 
+            this.btnReenviarSRI.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnReenviarSRI.BorderRadius = 6;
+            this.btnReenviarSRI.DisabledState.BorderColor = System.Drawing.Color.DarkGray;
+            this.btnReenviarSRI.DisabledState.CustomBorderColor = System.Drawing.Color.DarkGray;
+            this.btnReenviarSRI.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(169)))), ((int)(((byte)(169)))), ((int)(((byte)(169)))));
+            this.btnReenviarSRI.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
+            this.btnReenviarSRI.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.btnReenviarSRI.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnReenviarSRI.ForeColor = System.Drawing.Color.White;
+            this.btnReenviarSRI.Location = new System.Drawing.Point(595, 49);
+            this.btnReenviarSRI.Name = "btnReenviarSRI";
+            this.btnReenviarSRI.Size = new System.Drawing.Size(140, 28);
+            this.btnReenviarSRI.TabIndex = 24;
+            this.btnReenviarSRI.Text = "Reenviar al SRI";
+            this.btnReenviarSRI.Click += new System.EventHandler(this.btnReenviarSRI_Click);
+            // 
             // FrmFacturacion
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -956,5 +976,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colClaveAcceso;
         private System.Windows.Forms.DataGridViewTextBoxColumn Id;
         private System.Windows.Forms.DataGridViewTextBoxColumn ClaveAcceso;
+        private Guna.UI2.WinForms.Guna2Button btnReenviarSRI;
     }
 }
