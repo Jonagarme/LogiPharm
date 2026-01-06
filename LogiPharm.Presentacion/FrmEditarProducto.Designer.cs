@@ -66,6 +66,7 @@ namespace LogiPharm.Presentacion
             this.colAplicaCompra = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.colAplicaVenta = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.tabPrecios = new System.Windows.Forms.TabPage();
+            this.panelPreciosWrapper = new Guna.UI2.WinForms.Guna2Panel();
             this.dgvPrecios = new Guna.UI2.WinForms.Guna2DataGridView();
             this.colUnidadNegocio = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colCostoUnidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -75,23 +76,62 @@ namespace LogiPharm.Presentacion
             this.colPvpUnidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPvp = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.labelHeaderPVP = new System.Windows.Forms.Label();
-            this.labelHeaderCostoPonderado = new System.Windows.Forms.Label();
-            this.labelHeaderUltimoCosto = new System.Windows.Forms.Label();
-            this.labelSubPVP = new System.Windows.Forms.Label();
-            this.labelSubPvpUnidad = new System.Windows.Forms.Label();
-            this.labelSubCostoPonderadoCaja = new System.Windows.Forms.Label();
-            this.labelSubCostoPonderadoUnidad = new System.Windows.Forms.Label();
-            this.labelSubCostoCaja = new System.Windows.Forms.Label();
-            this.labelSubCostoUnidad = new System.Windows.Forms.Label();
-            this.labelSubUnidadNegocio = new System.Windows.Forms.Label();
+            this.lblPreciosHint = new System.Windows.Forms.Label();
+            this.lblPreciosTitle = new System.Windows.Forms.Label();
             this.btnAgregarPrecio = new Guna.UI2.WinForms.Guna2Button();
-            this.tabPlanesComerciales = new System.Windows.Forms.TabPage();
             this.tabPerchas = new System.Windows.Forms.TabPage();
-            this.tabProveedores = new System.Windows.Forms.TabPage();
+            this.tableLayoutPerchas = new System.Windows.Forms.TableLayoutPanel();
+            this.panelPerchaCard = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnGuardarPercha = new Guna.UI2.WinForms.Guna2Button();
+            this.txtPerchaReferencia = new Guna.UI2.WinForms.Guna2TextBox();
+            this.lblPerchaReferencia = new System.Windows.Forms.Label();
+            this.numPerchaNivel = new Guna.UI2.WinForms.Guna2NumericUpDown();
+            this.lblPerchaNivel = new System.Windows.Forms.Label();
+            this.txtPerchaUbicacion = new Guna.UI2.WinForms.Guna2TextBox();
+            this.lblPerchaUbicacion = new System.Windows.Forms.Label();
+            this.lblPerchaHint = new System.Windows.Forms.Label();
+            this.lblPerchaTitle = new System.Windows.Forms.Label();
+            this.panelBandejaCard = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnGuardarBandeja = new Guna.UI2.WinForms.Guna2Button();
+            this.numBandejaCapacidad = new Guna.UI2.WinForms.Guna2NumericUpDown();
+            this.lblBandejaCapacidad = new System.Windows.Forms.Label();
+            this.cboBandejaSeccion = new Guna.UI2.WinForms.Guna2ComboBox();
+            this.lblBandejaSeccion = new System.Windows.Forms.Label();
+            this.txtBandejaCodigo = new Guna.UI2.WinForms.Guna2TextBox();
+            this.lblBandejaCodigo = new System.Windows.Forms.Label();
+            this.lblBandejaHint = new System.Windows.Forms.Label();
+            this.lblBandejaTitle = new System.Windows.Forms.Label();
             this.tabStock = new System.Windows.Forms.TabPage();
+            this.tableLayoutStock = new System.Windows.Forms.TableLayoutPanel();
+            this.flowStockCards = new System.Windows.Forms.FlowLayoutPanel();
+            this.cardStockActual = new Guna.UI2.WinForms.Guna2Panel();
+            this.lblStockActualValue = new System.Windows.Forms.Label();
+            this.lblStockActualTitle = new System.Windows.Forms.Label();
+            this.cardStockMin = new Guna.UI2.WinForms.Guna2Panel();
+            this.lblStockMinValue = new System.Windows.Forms.Label();
+            this.lblStockMinTitle = new System.Windows.Forms.Label();
+            this.cardStockMax = new Guna.UI2.WinForms.Guna2Panel();
+            this.lblStockMaxValue = new System.Windows.Forms.Label();
+            this.lblStockMaxTitle = new System.Windows.Forms.Label();
+            this.dgvStockMovimientos = new Guna.UI2.WinForms.Guna2DataGridView();
+            this.colStockFecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colStockTipo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colStockCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colStockSaldo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabCaducidad = new System.Windows.Forms.TabPage();
-            this.tabCodigos = new System.Windows.Forms.TabPage();
+            this.tableLayoutCaducidad = new System.Windows.Forms.TableLayoutPanel();
+            this.panelCaducidadFiltro = new Guna.UI2.WinForms.Guna2Panel();
+            this.btnAgregarLote = new Guna.UI2.WinForms.Guna2Button();
+            this.btnFiltrarCaducidad = new Guna.UI2.WinForms.Guna2Button();
+            this.dtpCaducidadHasta = new Guna.UI2.WinForms.Guna2DateTimePicker();
+            this.lblCaducidadHasta = new System.Windows.Forms.Label();
+            this.dtpCaducidadDesde = new Guna.UI2.WinForms.Guna2DateTimePicker();
+            this.lblCaducidadDesde = new System.Windows.Forms.Label();
+            this.dgvCaducidades = new Guna.UI2.WinForms.Guna2DataGridView();
+            this.colCaducidadLote = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCaducidadFecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCaducidadCantidad = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCaducidadEstado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnSalir = new Guna.UI2.WinForms.Guna2Button();
             this.btnModificar = new Guna.UI2.WinForms.Guna2Button();
             this.label6 = new System.Windows.Forms.Label();
@@ -126,6 +166,23 @@ namespace LogiPharm.Presentacion
             this.tabPrecios.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPrecios)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tabPerchas.SuspendLayout();
+            this.tableLayoutPerchas.SuspendLayout();
+            this.panelPerchaCard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numPerchaNivel)).BeginInit();
+            this.panelBandejaCard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numBandejaCapacidad)).BeginInit();
+            this.tabStock.SuspendLayout();
+            this.tableLayoutStock.SuspendLayout();
+            this.flowStockCards.SuspendLayout();
+            this.cardStockActual.SuspendLayout();
+            this.cardStockMin.SuspendLayout();
+            this.cardStockMax.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvStockMovimientos)).BeginInit();
+            this.tabCaducidad.SuspendLayout();
+            this.tableLayoutCaducidad.SuspendLayout();
+            this.panelCaducidadFiltro.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvCaducidades)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStockMinimo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStockMaximo)).BeginInit();
             this.SuspendLayout();
@@ -286,26 +343,23 @@ namespace LogiPharm.Presentacion
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabProducto.Controls.Add(this.tabImpuestos);
             this.tabProducto.Controls.Add(this.tabPrecios);
-            this.tabProducto.Controls.Add(this.tabPlanesComerciales);
             this.tabProducto.Controls.Add(this.tabPerchas);
-            this.tabProducto.Controls.Add(this.tabProveedores);
             this.tabProducto.Controls.Add(this.tabStock);
             this.tabProducto.Controls.Add(this.tabCaducidad);
-            this.tabProducto.Controls.Add(this.tabCodigos);
             this.tabProducto.ItemSize = new System.Drawing.Size(120, 40);
             this.tabProducto.Location = new System.Drawing.Point(20, 580);
             this.tabProducto.Name = "tabProducto";
             this.tabProducto.SelectedIndex = 0;
             this.tabProducto.Size = new System.Drawing.Size(998, 220);
             this.tabProducto.TabButtonHoverState.BorderColor = System.Drawing.Color.Empty;
-            this.tabProducto.TabButtonHoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(52)))), ((int)(((byte)(70)))));
+            this.tabProducto.TabButtonHoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(180)))));
             this.tabProducto.TabButtonHoverState.Font = new System.Drawing.Font("Segoe UI Semibold", 10F);
             this.tabProducto.TabButtonHoverState.ForeColor = System.Drawing.Color.White;
-            this.tabProducto.TabButtonHoverState.InnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(52)))), ((int)(((byte)(70)))));
+            this.tabProducto.TabButtonHoverState.InnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(102)))), ((int)(((byte)(180)))));
             this.tabProducto.TabButtonIdleState.BorderColor = System.Drawing.Color.Empty;
-            this.tabProducto.TabButtonIdleState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(249)))), ((int)(((byte)(249)))));
+            this.tabProducto.TabButtonIdleState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(247)))), ((int)(((byte)(249)))), ((int)(((byte)(252)))));
             this.tabProducto.TabButtonIdleState.Font = new System.Drawing.Font("Segoe UI Semibold", 10F);
-            this.tabProducto.TabButtonIdleState.ForeColor = System.Drawing.Color.Gray;
+            this.tabProducto.TabButtonIdleState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(129)))), ((int)(((byte)(149)))));
             this.tabProducto.TabButtonIdleState.InnerColor = System.Drawing.Color.Transparent;
             this.tabProducto.TabButtonSelectedState.BorderColor = System.Drawing.Color.Empty;
             this.tabProducto.TabButtonSelectedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
@@ -314,7 +368,7 @@ namespace LogiPharm.Presentacion
             this.tabProducto.TabButtonSelectedState.InnerColor = System.Drawing.Color.Transparent;
             this.tabProducto.TabButtonSize = new System.Drawing.Size(120, 40);
             this.tabProducto.TabIndex = 21;
-            this.tabProducto.TabMenuBackColor = System.Drawing.Color.White;
+            this.tabProducto.TabMenuBackColor = System.Drawing.Color.WhiteSmoke;
             this.tabProducto.TabMenuOrientation = Guna.UI2.WinForms.TabMenuOrientation.HorizontalTop;
             //
             // tabImpuestos
@@ -422,28 +476,47 @@ namespace LogiPharm.Presentacion
             // 
             // tabPrecios
             // 
-            this.tabPrecios.Controls.Add(this.dgvPrecios);
-            this.tabPrecios.Controls.Add(this.tableLayoutPanel1);
-            this.tabPrecios.Controls.Add(this.btnAgregarPrecio);
+            this.tabPrecios.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPrecios.Controls.Add(this.panelPreciosWrapper);
             this.tabPrecios.Location = new System.Drawing.Point(4, 44);
             this.tabPrecios.Name = "tabPrecios";
             this.tabPrecios.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPrecios.Size = new System.Drawing.Size(1000, 220);
+            this.tabPrecios.Size = new System.Drawing.Size(990, 172);
             this.tabPrecios.TabIndex = 1;
             this.tabPrecios.Text = "PRECIOS";
-            this.tabPrecios.UseVisualStyleBackColor = true;
+            // 
+            // panelPreciosWrapper
+            // 
+            this.panelPreciosWrapper.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.panelPreciosWrapper.BorderRadius = 8;
+            this.panelPreciosWrapper.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelPreciosWrapper.Location = new System.Drawing.Point(3, 3);
+            this.panelPreciosWrapper.Name = "panelPreciosWrapper";
+            this.panelPreciosWrapper.Padding = new System.Windows.Forms.Padding(15);
+            this.panelPreciosWrapper.ShadowDecoration.Enabled = true;
+            this.panelPreciosWrapper.Size = new System.Drawing.Size(984, 166);
+            this.panelPreciosWrapper.TabIndex = 0;
+            this.panelPreciosWrapper.Controls.Add(this.tableLayoutPanel1);
+            this.panelPreciosWrapper.Controls.Add(this.dgvPrecios);
+            this.panelPreciosWrapper.Controls.Add(this.lblPreciosHint);
+            this.panelPreciosWrapper.Controls.Add(this.lblPreciosTitle);
+            this.panelPreciosWrapper.Controls.Add(this.btnAgregarPrecio);
             // 
             // dgvPrecios
             // 
             this.dgvPrecios.AllowUserToAddRows = false;
             this.dgvPrecios.AllowUserToDeleteRows = false;
+            this.dgvPrecios.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             dataGridViewCellStyle10.BackColor = System.Drawing.Color.White;
             this.dgvPrecios.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle10;
+            this.dgvPrecios.BackgroundColor = System.Drawing.Color.White;
+            this.dgvPrecios.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvPrecios.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             dataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(88)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle11.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle11.BackColor = System.Drawing.Color.WhiteSmoke;
+            dataGridViewCellStyle11.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            dataGridViewCellStyle11.ForeColor = System.Drawing.Color.DimGray;
+            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.Color.WhiteSmoke;
             dataGridViewCellStyle11.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle11.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvPrecios.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle11;
@@ -456,58 +529,40 @@ namespace LogiPharm.Presentacion
             this.colCostoPonderadoCaja,
             this.colPvpUnidad,
             this.colPvp});
-            this.dgvPrecios.DefaultCellStyle = dataGridViewCellStyle6;
-            this.dgvPrecios.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvPrecios.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvPrecios.Location = new System.Drawing.Point(3, 103);
-            this.dgvPrecios.Name = "dgvPrecios";
-            this.dgvPrecios.RowHeadersVisible = false;
-            this.dgvPrecios.RowTemplate.Height = 35;
-            this.dgvPrecios.Size = new System.Drawing.Size(990, 60);
-            this.dgvPrecios.TabIndex = 2;
-            this.dgvPrecios.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvPrecios.ThemeStyle.HeaderStyle.Height = 23;
-            this.dgvPrecios.ThemeStyle.RowsStyle.Height = 35;
             dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle12.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            dataGridViewCellStyle12.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(241)))), ((int)(((byte)(243)))));
+            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
             dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvPrecios.DefaultCellStyle = dataGridViewCellStyle12;
             this.dgvPrecios.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvPrecios.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvPrecios.Location = new System.Drawing.Point(3, 103);
+            this.dgvPrecios.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
+            this.dgvPrecios.Location = new System.Drawing.Point(15, 115);
             this.dgvPrecios.Name = "dgvPrecios";
             this.dgvPrecios.RowHeadersVisible = false;
-            this.dgvPrecios.Size = new System.Drawing.Size(777, 66);
-            this.dgvPrecios.TabIndex = 2;
+            this.dgvPrecios.RowTemplate.Height = 35;
+            this.dgvPrecios.Size = new System.Drawing.Size(954, 36);
+            this.dgvPrecios.TabIndex = 3;
             this.dgvPrecios.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
-            this.dgvPrecios.ThemeStyle.AlternatingRowsStyle.Font = null;
-            this.dgvPrecios.ThemeStyle.AlternatingRowsStyle.ForeColor = System.Drawing.Color.Empty;
-            this.dgvPrecios.ThemeStyle.AlternatingRowsStyle.SelectionBackColor = System.Drawing.Color.Empty;
-            this.dgvPrecios.ThemeStyle.AlternatingRowsStyle.SelectionForeColor = System.Drawing.Color.Empty;
             this.dgvPrecios.ThemeStyle.BackColor = System.Drawing.Color.White;
-            this.dgvPrecios.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvPrecios.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(88)))), ((int)(((byte)(255)))));
+            this.dgvPrecios.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
+            this.dgvPrecios.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.WhiteSmoke;
             this.dgvPrecios.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            this.dgvPrecios.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dgvPrecios.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.White;
-            this.dgvPrecios.ThemeStyle.HeaderStyle.HeaightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.dgvPrecios.ThemeStyle.HeaderStyle.Height = 23;
-            this.dgvPrecios.ThemeStyle.ReadOnly = false;
+            this.dgvPrecios.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.dgvPrecios.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.DimGray;
             this.dgvPrecios.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
             this.dgvPrecios.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-            this.dgvPrecios.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dgvPrecios.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
-            this.dgvPrecios.ThemeStyle.RowsStyle.Height = 22;
-            this.dgvPrecios.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(229)))), ((int)(((byte)(255)))));
-            this.dgvPrecios.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(71)))), ((int)(((byte)(69)))), ((int)(((byte)(94)))));
+            this.dgvPrecios.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.dgvPrecios.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.dgvPrecios.ThemeStyle.RowsStyle.Height = 35;
+            this.dgvPrecios.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(241)))), ((int)(((byte)(243)))));
+            this.dgvPrecios.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
             // 
-            // tableLayoutPanel1 (El encabezado personalizado)
+            // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.White;
             this.tableLayoutPanel1.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
             this.tableLayoutPanel1.ColumnCount = 7;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
@@ -517,35 +572,49 @@ namespace LogiPharm.Presentacion
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel1.Controls.Add(this.labelHeaderPVP, 5, 0);
-            this.tableLayoutPanel1.Controls.Add(this.labelHeaderCostoPonderado, 3, 0);
-            this.tableLayoutPanel1.Controls.Add(this.labelHeaderUltimoCosto, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubPVP, 6, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubPvpUnidad, 5, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubCostoPonderadoCaja, 4, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubCostoPonderadoUnidad, 3, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubCostoCaja, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubCostoUnidad, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubUnidadNegocio, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 43);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(15, 70);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0, 15, 0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(777, 60);
-            this.tableLayoutPanel1.TabIndex = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(954, 60);
+            this.tableLayoutPanel1.TabIndex = 2;
+            // 
+            // lblPreciosHint
+            // 
+            this.lblPreciosHint.AutoSize = true;
+            this.lblPreciosHint.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblPreciosHint.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblPreciosHint.Location = new System.Drawing.Point(18, 46);
+            this.lblPreciosHint.Name = "lblPreciosHint";
+            this.lblPreciosHint.Size = new System.Drawing.Size(266, 15);
+            this.lblPreciosHint.TabIndex = 1;
+            this.lblPreciosHint.Text = "Define los precios base y obtén cálculos automáticos";
+            // 
+            // lblPreciosTitle
+            // 
+            this.lblPreciosTitle.AutoSize = true;
+            this.lblPreciosTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblPreciosTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.lblPreciosTitle.Location = new System.Drawing.Point(16, 18);
+            this.lblPreciosTitle.Name = "lblPreciosTitle";
+            this.lblPreciosTitle.Size = new System.Drawing.Size(182, 20);
+            this.lblPreciosTitle.TabIndex = 0;
+            this.lblPreciosTitle.Text = "Gestión de precios activos";
             // 
             // btnAgregarPrecio
             // 
-            this.btnAgregarPrecio.BorderRadius = 4;
-            this.btnAgregarPrecio.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(130)))), ((int)(((byte)(12)))));
+            this.btnAgregarPrecio.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAgregarPrecio.BorderRadius = 6;
+            this.btnAgregarPrecio.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
             this.btnAgregarPrecio.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnAgregarPrecio.ForeColor = System.Drawing.Color.White;
-            this.btnAgregarPrecio.Location = new System.Drawing.Point(6, 6);
+            this.btnAgregarPrecio.Location = new System.Drawing.Point(849, 15);
             this.btnAgregarPrecio.Name = "btnAgregarPrecio";
-            this.btnAgregarPrecio.Size = new System.Drawing.Size(120, 31);
-            this.btnAgregarPrecio.TabIndex = 0;
+            this.btnAgregarPrecio.Size = new System.Drawing.Size(120, 32);
+            this.btnAgregarPrecio.TabIndex = 4;
             this.btnAgregarPrecio.Text = "+ Agregar precio";
             // 
             // colUnidadNegocio
@@ -576,172 +645,748 @@ namespace LogiPharm.Presentacion
             // 
             this.colPvp.Name = "colPvp";
             // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
-            this.tableLayoutPanel1.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Single;
-            this.tableLayoutPanel1.ColumnCount = 7;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 14.28571F));
-            this.tableLayoutPanel1.Controls.Add(this.labelHeaderPVP, 5, 0);
-            this.tableLayoutPanel1.Controls.Add(this.labelHeaderCostoPonderado, 3, 0);
-            this.tableLayoutPanel1.Controls.Add(this.labelHeaderUltimoCosto, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubPVP, 6, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubPvpUnidad, 5, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubCostoPonderadoCaja, 4, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubCostoPonderadoUnidad, 3, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubCostoCaja, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubCostoUnidad, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.labelSubUnidadNegocio, 0, 1);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 43);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(777, 60);
-            this.tableLayoutPanel1.TabIndex = 1;
-            // 
-            // labelHeaderPVP
-            // 
-            this.labelHeaderPVP.Location = new System.Drawing.Point(0, 0);
-            this.labelHeaderPVP.Name = "labelHeaderPVP";
-            this.labelHeaderPVP.Size = new System.Drawing.Size(100, 23);
-            this.labelHeaderPVP.TabIndex = 0;
-            // 
-            // labelHeaderCostoPonderado
-            // 
-            this.labelHeaderCostoPonderado.Location = new System.Drawing.Point(0, 0);
-            this.labelHeaderCostoPonderado.Name = "labelHeaderCostoPonderado";
-            this.labelHeaderCostoPonderado.Size = new System.Drawing.Size(100, 23);
-            this.labelHeaderCostoPonderado.TabIndex = 1;
-            // 
-            // labelHeaderUltimoCosto
-            // 
-            this.labelHeaderUltimoCosto.Location = new System.Drawing.Point(0, 0);
-            this.labelHeaderUltimoCosto.Name = "labelHeaderUltimoCosto";
-            this.labelHeaderUltimoCosto.Size = new System.Drawing.Size(100, 23);
-            this.labelHeaderUltimoCosto.TabIndex = 2;
-            // 
-            // labelSubPVP
-            // 
-            this.labelSubPVP.Location = new System.Drawing.Point(0, 0);
-            this.labelSubPVP.Name = "labelSubPVP";
-            this.labelSubPVP.Size = new System.Drawing.Size(100, 23);
-            this.labelSubPVP.TabIndex = 3;
-            // 
-            // labelSubPvpUnidad
-            // 
-            this.labelSubPvpUnidad.Location = new System.Drawing.Point(0, 0);
-            this.labelSubPvpUnidad.Name = "labelSubPvpUnidad";
-            this.labelSubPvpUnidad.Size = new System.Drawing.Size(100, 23);
-            this.labelSubPvpUnidad.TabIndex = 4;
-            // 
-            // labelSubCostoPonderadoCaja
-            // 
-            this.labelSubCostoPonderadoCaja.Location = new System.Drawing.Point(0, 0);
-            this.labelSubCostoPonderadoCaja.Name = "labelSubCostoPonderadoCaja";
-            this.labelSubCostoPonderadoCaja.Size = new System.Drawing.Size(100, 23);
-            this.labelSubCostoPonderadoCaja.TabIndex = 5;
-            // 
-            // labelSubCostoPonderadoUnidad
-            // 
-            this.labelSubCostoPonderadoUnidad.Location = new System.Drawing.Point(0, 0);
-            this.labelSubCostoPonderadoUnidad.Name = "labelSubCostoPonderadoUnidad";
-            this.labelSubCostoPonderadoUnidad.Size = new System.Drawing.Size(100, 23);
-            this.labelSubCostoPonderadoUnidad.TabIndex = 6;
-            // 
-            // labelSubCostoCaja
-            // 
-            this.labelSubCostoCaja.Location = new System.Drawing.Point(0, 0);
-            this.labelSubCostoCaja.Name = "labelSubCostoCaja";
-            this.labelSubCostoCaja.Size = new System.Drawing.Size(100, 23);
-            this.labelSubCostoCaja.TabIndex = 7;
-            // 
-            // labelSubCostoUnidad
-            // 
-            this.labelSubCostoUnidad.Location = new System.Drawing.Point(0, 0);
-            this.labelSubCostoUnidad.Name = "labelSubCostoUnidad";
-            this.labelSubCostoUnidad.Size = new System.Drawing.Size(100, 23);
-            this.labelSubCostoUnidad.TabIndex = 8;
-            // 
-            // labelSubUnidadNegocio
-            // 
-            this.labelSubUnidadNegocio.Location = new System.Drawing.Point(0, 0);
-            this.labelSubUnidadNegocio.Name = "labelSubUnidadNegocio";
-            this.labelSubUnidadNegocio.Size = new System.Drawing.Size(100, 23);
-            this.labelSubUnidadNegocio.TabIndex = 9;
-            // 
-            // btnAgregarPrecio
-            // 
-            this.btnAgregarPrecio.BorderRadius = 4;
-            this.btnAgregarPrecio.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(130)))), ((int)(((byte)(12)))));
-            this.btnAgregarPrecio.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnAgregarPrecio.ForeColor = System.Drawing.Color.White;
-            this.btnAgregarPrecio.Location = new System.Drawing.Point(6, 6);
-            this.btnAgregarPrecio.Name = "btnAgregarPrecio";
-            this.btnAgregarPrecio.Size = new System.Drawing.Size(120, 31);
-            this.btnAgregarPrecio.TabIndex = 0;
-            this.btnAgregarPrecio.Text = "+ Agregar precio";
-            // 
-            // tabPlanesComerciales
-            // 
-            this.tabPlanesComerciales.Location = new System.Drawing.Point(4, 84);
-            this.tabPlanesComerciales.Name = "tabPlanesComerciales";
-            this.tabPlanesComerciales.Size = new System.Drawing.Size(783, 132);
-            this.tabPlanesComerciales.TabIndex = 2;
-            this.tabPlanesComerciales.Text = "PLANES COMERCIALES";
-            this.tabPlanesComerciales.UseVisualStyleBackColor = true;
             // 
             // tabPerchas
             // 
-            this.tabPerchas.Location = new System.Drawing.Point(4, 84);
+            this.tabPerchas.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPerchas.Controls.Add(this.tableLayoutPerchas);
+            this.tabPerchas.Location = new System.Drawing.Point(4, 44);
             this.tabPerchas.Name = "tabPerchas";
-            this.tabPerchas.Size = new System.Drawing.Size(783, 132);
-            this.tabPerchas.TabIndex = 3;
+            this.tabPerchas.Padding = new System.Windows.Forms.Padding(12);
+            this.tabPerchas.Size = new System.Drawing.Size(990, 172);
+            this.tabPerchas.TabIndex = 2;
             this.tabPerchas.Text = "PERCHAS Y BANDEJAS";
-            this.tabPerchas.UseVisualStyleBackColor = true;
             // 
-            // tabProveedores
+            // tableLayoutPerchas
             // 
-            this.tabProveedores.Location = new System.Drawing.Point(4, 84);
-            this.tabProveedores.Name = "tabProveedores";
-            this.tabProveedores.Size = new System.Drawing.Size(783, 132);
-            this.tabProveedores.TabIndex = 4;
-            this.tabProveedores.Text = "PROVEEDORES";
-            this.tabProveedores.UseVisualStyleBackColor = true;
+            this.tableLayoutPerchas.ColumnCount = 2;
+            this.tableLayoutPerchas.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPerchas.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPerchas.Controls.Add(this.panelPerchaCard, 0, 0);
+            this.tableLayoutPerchas.Controls.Add(this.panelBandejaCard, 1, 0);
+            this.tableLayoutPerchas.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPerchas.Location = new System.Drawing.Point(12, 12);
+            this.tableLayoutPerchas.Name = "tableLayoutPerchas";
+            this.tableLayoutPerchas.RowCount = 1;
+            this.tableLayoutPerchas.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPerchas.Size = new System.Drawing.Size(966, 148);
+            this.tableLayoutPerchas.TabIndex = 0;
+            // 
+            // panelPerchaCard
+            // 
+            this.panelPerchaCard.BackColor = System.Drawing.Color.White;
+            this.panelPerchaCard.BorderRadius = 10;
+            this.panelPerchaCard.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelPerchaCard.FillColor = System.Drawing.Color.White;
+            this.panelPerchaCard.Location = new System.Drawing.Point(3, 3);
+            this.panelPerchaCard.Name = "panelPerchaCard";
+            this.panelPerchaCard.Padding = new System.Windows.Forms.Padding(18);
+            this.panelPerchaCard.ShadowDecoration.Enabled = true;
+            this.panelPerchaCard.Size = new System.Drawing.Size(477, 142);
+            this.panelPerchaCard.TabIndex = 0;
+            this.panelPerchaCard.Controls.Add(this.btnGuardarPercha);
+            this.panelPerchaCard.Controls.Add(this.txtPerchaReferencia);
+            this.panelPerchaCard.Controls.Add(this.lblPerchaReferencia);
+            this.panelPerchaCard.Controls.Add(this.numPerchaNivel);
+            this.panelPerchaCard.Controls.Add(this.lblPerchaNivel);
+            this.panelPerchaCard.Controls.Add(this.txtPerchaUbicacion);
+            this.panelPerchaCard.Controls.Add(this.lblPerchaUbicacion);
+            this.panelPerchaCard.Controls.Add(this.lblPerchaHint);
+            this.panelPerchaCard.Controls.Add(this.lblPerchaTitle);
+            // 
+            // btnGuardarPercha
+            // 
+            this.btnGuardarPercha.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGuardarPercha.BorderRadius = 6;
+            this.btnGuardarPercha.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+            this.btnGuardarPercha.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnGuardarPercha.ForeColor = System.Drawing.Color.White;
+            this.btnGuardarPercha.Location = new System.Drawing.Point(341, 101);
+            this.btnGuardarPercha.Name = "btnGuardarPercha";
+            this.btnGuardarPercha.Size = new System.Drawing.Size(120, 32);
+            this.btnGuardarPercha.TabIndex = 7;
+            this.btnGuardarPercha.Text = "Guardar";
+            // 
+            // txtPerchaReferencia
+            // 
+            this.txtPerchaReferencia.BorderRadius = 6;
+            this.txtPerchaReferencia.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtPerchaReferencia.DefaultText = "";
+            this.txtPerchaReferencia.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
+            this.txtPerchaReferencia.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
+            this.txtPerchaReferencia.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtPerchaReferencia.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtPerchaReferencia.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtPerchaReferencia.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtPerchaReferencia.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtPerchaReferencia.Location = new System.Drawing.Point(21, 104);
+            this.txtPerchaReferencia.Name = "txtPerchaReferencia";
+            this.txtPerchaReferencia.PlaceholderText = "Descripción o referencia visual";
+            this.txtPerchaReferencia.SelectedText = "";
+            this.txtPerchaReferencia.Size = new System.Drawing.Size(304, 29);
+            this.txtPerchaReferencia.TabIndex = 6;
+            // 
+            // lblPerchaReferencia
+            // 
+            this.lblPerchaReferencia.AutoSize = true;
+            this.lblPerchaReferencia.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblPerchaReferencia.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblPerchaReferencia.Location = new System.Drawing.Point(18, 86);
+            this.lblPerchaReferencia.Name = "lblPerchaReferencia";
+            this.lblPerchaReferencia.Size = new System.Drawing.Size(141, 15);
+            this.lblPerchaReferencia.TabIndex = 5;
+            this.lblPerchaReferencia.Text = "Referencia o descripción";
+            // 
+            // numPerchaNivel
+            // 
+            this.numPerchaNivel.BackColor = System.Drawing.Color.Transparent;
+            this.numPerchaNivel.BorderRadius = 6;
+            this.numPerchaNivel.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.numPerchaNivel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.numPerchaNivel.Location = new System.Drawing.Point(341, 51);
+            this.numPerchaNivel.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numPerchaNivel.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numPerchaNivel.Name = "numPerchaNivel";
+            this.numPerchaNivel.Size = new System.Drawing.Size(120, 29);
+            this.numPerchaNivel.TabIndex = 4;
+            this.numPerchaNivel.UpDownButtonFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+            this.numPerchaNivel.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // lblPerchaNivel
+            // 
+            this.lblPerchaNivel.AutoSize = true;
+            this.lblPerchaNivel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblPerchaNivel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblPerchaNivel.Location = new System.Drawing.Point(338, 33);
+            this.lblPerchaNivel.Name = "lblPerchaNivel";
+            this.lblPerchaNivel.Size = new System.Drawing.Size(121, 15);
+            this.lblPerchaNivel.TabIndex = 3;
+            this.lblPerchaNivel.Text = "Nivel o altura asignada";
+            // 
+            // txtPerchaUbicacion
+            // 
+            this.txtPerchaUbicacion.BorderRadius = 6;
+            this.txtPerchaUbicacion.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtPerchaUbicacion.DefaultText = "";
+            this.txtPerchaUbicacion.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
+            this.txtPerchaUbicacion.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
+            this.txtPerchaUbicacion.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtPerchaUbicacion.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtPerchaUbicacion.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtPerchaUbicacion.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtPerchaUbicacion.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtPerchaUbicacion.Location = new System.Drawing.Point(21, 51);
+            this.txtPerchaUbicacion.Name = "txtPerchaUbicacion";
+            this.txtPerchaUbicacion.PlaceholderText = "Ej. Zona A / Pasillo 3";
+            this.txtPerchaUbicacion.SelectedText = "";
+            this.txtPerchaUbicacion.Size = new System.Drawing.Size(304, 29);
+            this.txtPerchaUbicacion.TabIndex = 2;
+            // 
+            // lblPerchaUbicacion
+            // 
+            this.lblPerchaUbicacion.AutoSize = true;
+            this.lblPerchaUbicacion.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblPerchaUbicacion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblPerchaUbicacion.Location = new System.Drawing.Point(18, 33);
+            this.lblPerchaUbicacion.Name = "lblPerchaUbicacion";
+            this.lblPerchaUbicacion.Size = new System.Drawing.Size(129, 15);
+            this.lblPerchaUbicacion.TabIndex = 1;
+            this.lblPerchaUbicacion.Text = "Ubicación / unidad de negocio";
+            // 
+            // lblPerchaHint
+            // 
+            this.lblPerchaHint.AutoSize = true;
+            this.lblPerchaHint.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblPerchaHint.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(129)))), ((int)(((byte)(149)))));
+            this.lblPerchaHint.Location = new System.Drawing.Point(18, 18);
+            this.lblPerchaHint.Name = "lblPerchaHint";
+            this.lblPerchaHint.Size = new System.Drawing.Size(224, 15);
+            this.lblPerchaHint.TabIndex = 0;
+            this.lblPerchaHint.Text = "Organiza las perchas activas del producto";
+            // 
+            // lblPerchaTitle
+            // 
+            this.lblPerchaTitle.AutoSize = true;
+            this.lblPerchaTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblPerchaTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.lblPerchaTitle.Location = new System.Drawing.Point(17, 0);
+            this.lblPerchaTitle.Name = "lblPerchaTitle";
+            this.lblPerchaTitle.Size = new System.Drawing.Size(164, 20);
+            this.lblPerchaTitle.TabIndex = 0;
+            this.lblPerchaTitle.Text = "Asignación de perchas";
+            // 
+            // panelBandejaCard
+            // 
+            this.panelBandejaCard.BackColor = System.Drawing.Color.White;
+            this.panelBandejaCard.BorderRadius = 10;
+            this.panelBandejaCard.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelBandejaCard.FillColor = System.Drawing.Color.White;
+            this.panelBandejaCard.Location = new System.Drawing.Point(486, 3);
+            this.panelBandejaCard.Name = "panelBandejaCard";
+            this.panelBandejaCard.Padding = new System.Windows.Forms.Padding(18);
+            this.panelBandejaCard.ShadowDecoration.Enabled = true;
+            this.panelBandejaCard.Size = new System.Drawing.Size(477, 142);
+            this.panelBandejaCard.TabIndex = 1;
+            this.panelBandejaCard.Controls.Add(this.btnGuardarBandeja);
+            this.panelBandejaCard.Controls.Add(this.numBandejaCapacidad);
+            this.panelBandejaCard.Controls.Add(this.lblBandejaCapacidad);
+            this.panelBandejaCard.Controls.Add(this.cboBandejaSeccion);
+            this.panelBandejaCard.Controls.Add(this.lblBandejaSeccion);
+            this.panelBandejaCard.Controls.Add(this.txtBandejaCodigo);
+            this.panelBandejaCard.Controls.Add(this.lblBandejaCodigo);
+            this.panelBandejaCard.Controls.Add(this.lblBandejaHint);
+            this.panelBandejaCard.Controls.Add(this.lblBandejaTitle);
+            // 
+            // btnGuardarBandeja
+            // 
+            this.btnGuardarBandeja.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGuardarBandeja.BorderRadius = 6;
+            this.btnGuardarBandeja.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(153)))), ((int)(((byte)(102)))));
+            this.btnGuardarBandeja.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnGuardarBandeja.ForeColor = System.Drawing.Color.White;
+            this.btnGuardarBandeja.Location = new System.Drawing.Point(341, 101);
+            this.btnGuardarBandeja.Name = "btnGuardarBandeja";
+            this.btnGuardarBandeja.Size = new System.Drawing.Size(120, 32);
+            this.btnGuardarBandeja.TabIndex = 7;
+            this.btnGuardarBandeja.Text = "Guardar";
+            // 
+            // numBandejaCapacidad
+            // 
+            this.numBandejaCapacidad.BackColor = System.Drawing.Color.Transparent;
+            this.numBandejaCapacidad.BorderRadius = 6;
+            this.numBandejaCapacidad.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.numBandejaCapacidad.DecimalPlaces = 0;
+            this.numBandejaCapacidad.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.numBandejaCapacidad.Location = new System.Drawing.Point(237, 104);
+            this.numBandejaCapacidad.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.numBandejaCapacidad.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numBandejaCapacidad.Name = "numBandejaCapacidad";
+            this.numBandejaCapacidad.Size = new System.Drawing.Size(98, 29);
+            this.numBandejaCapacidad.TabIndex = 6;
+            this.numBandejaCapacidad.UpDownButtonFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(153)))), ((int)(((byte)(102)))));
+            this.numBandejaCapacidad.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // lblBandejaCapacidad
+            // 
+            this.lblBandejaCapacidad.AutoSize = true;
+            this.lblBandejaCapacidad.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblBandejaCapacidad.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblBandejaCapacidad.Location = new System.Drawing.Point(234, 86);
+            this.lblBandejaCapacidad.Name = "lblBandejaCapacidad";
+            this.lblBandejaCapacidad.Size = new System.Drawing.Size(139, 15);
+            this.lblBandejaCapacidad.TabIndex = 5;
+            this.lblBandejaCapacidad.Text = "Capacidad (unidades)";
+            // 
+            // cboBandejaSeccion
+            // 
+            this.cboBandejaSeccion.BackColor = System.Drawing.Color.Transparent;
+            this.cboBandejaSeccion.BorderRadius = 6;
+            this.cboBandejaSeccion.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboBandejaSeccion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboBandejaSeccion.FocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cboBandejaSeccion.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cboBandejaSeccion.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cboBandejaSeccion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
+            this.cboBandejaSeccion.ItemHeight = 26;
+            this.cboBandejaSeccion.Items.AddRange(new object[] {
+            "Almacén",
+            "Exhibición",
+            "Anaquel"});
+            this.cboBandejaSeccion.Location = new System.Drawing.Point(21, 101);
+            this.cboBandejaSeccion.Name = "cboBandejaSeccion";
+            this.cboBandejaSeccion.Size = new System.Drawing.Size(190, 32);
+            this.cboBandejaSeccion.TabIndex = 4;
+            // 
+            // lblBandejaSeccion
+            // 
+            this.lblBandejaSeccion.AutoSize = true;
+            this.lblBandejaSeccion.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblBandejaSeccion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblBandejaSeccion.Location = new System.Drawing.Point(18, 86);
+            this.lblBandejaSeccion.Name = "lblBandejaSeccion";
+            this.lblBandejaSeccion.Size = new System.Drawing.Size(90, 15);
+            this.lblBandejaSeccion.TabIndex = 3;
+            this.lblBandejaSeccion.Text = "Sección destino";
+            // 
+            // txtBandejaCodigo
+            // 
+            this.txtBandejaCodigo.BorderRadius = 6;
+            this.txtBandejaCodigo.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtBandejaCodigo.DefaultText = "";
+            this.txtBandejaCodigo.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
+            this.txtBandejaCodigo.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
+            this.txtBandejaCodigo.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtBandejaCodigo.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtBandejaCodigo.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtBandejaCodigo.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtBandejaCodigo.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtBandejaCodigo.Location = new System.Drawing.Point(21, 51);
+            this.txtBandejaCodigo.Name = "txtBandejaCodigo";
+            this.txtBandejaCodigo.PlaceholderText = "Código o identificador";
+            this.txtBandejaCodigo.SelectedText = "";
+            this.txtBandejaCodigo.Size = new System.Drawing.Size(304, 29);
+            this.txtBandejaCodigo.TabIndex = 2;
+            // 
+            // lblBandejaCodigo
+            // 
+            this.lblBandejaCodigo.AutoSize = true;
+            this.lblBandejaCodigo.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblBandejaCodigo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblBandejaCodigo.Location = new System.Drawing.Point(18, 33);
+            this.lblBandejaCodigo.Name = "lblBandejaCodigo";
+            this.lblBandejaCodigo.Size = new System.Drawing.Size(143, 15);
+            this.lblBandejaCodigo.TabIndex = 1;
+            this.lblBandejaCodigo.Text = "Código de bandeja / lote";
+            // 
+            // lblBandejaHint
+            // 
+            this.lblBandejaHint.AutoSize = true;
+            this.lblBandejaHint.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblBandejaHint.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(120)))), ((int)(((byte)(129)))), ((int)(((byte)(149)))));
+            this.lblBandejaHint.Location = new System.Drawing.Point(18, 18);
+            this.lblBandejaHint.Name = "lblBandejaHint";
+            this.lblBandejaHint.Size = new System.Drawing.Size(274, 15);
+            this.lblBandejaHint.TabIndex = 0;
+            this.lblBandejaHint.Text = "Configura bandejas o bandejas especiales por lote";
+            // 
+            // lblBandejaTitle
+            // 
+            this.lblBandejaTitle.AutoSize = true;
+            this.lblBandejaTitle.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
+            this.lblBandejaTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.lblBandejaTitle.Location = new System.Drawing.Point(17, 0);
+            this.lblBandejaTitle.Name = "lblBandejaTitle";
+            this.lblBandejaTitle.Size = new System.Drawing.Size(169, 20);
+            this.lblBandejaTitle.TabIndex = 0;
+            this.lblBandejaTitle.Text = "Perchas y bandejas";
             // 
             // tabStock
             // 
-            this.tabStock.Location = new System.Drawing.Point(4, 84);
+            this.tabStock.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabStock.Controls.Add(this.tableLayoutStock);
+            this.tabStock.Location = new System.Drawing.Point(4, 44);
             this.tabStock.Name = "tabStock";
-            this.tabStock.Size = new System.Drawing.Size(783, 132);
-            this.tabStock.TabIndex = 5;
+            this.tabStock.Padding = new System.Windows.Forms.Padding(12);
+            this.tabStock.Size = new System.Drawing.Size(990, 172);
+            this.tabStock.TabIndex = 3;
             this.tabStock.Text = "STOCK";
-            this.tabStock.UseVisualStyleBackColor = true;
+            this.tabStock.UseVisualStyleBackColor = false;
+            // 
+            // tableLayoutStock
+            // 
+            this.tableLayoutStock.ColumnCount = 1;
+            this.tableLayoutStock.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutStock.Controls.Add(this.flowStockCards, 0, 0);
+            this.tableLayoutStock.Controls.Add(this.dgvStockMovimientos, 0, 1);
+            this.tableLayoutStock.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutStock.Location = new System.Drawing.Point(12, 12);
+            this.tableLayoutStock.Name = "tableLayoutStock";
+            this.tableLayoutStock.RowCount = 2;
+            this.tableLayoutStock.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
+            this.tableLayoutStock.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutStock.Size = new System.Drawing.Size(966, 148);
+            this.tableLayoutStock.TabIndex = 0;
+            // 
+            // flowStockCards
+            // 
+            this.flowStockCards.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.flowStockCards.Controls.Add(this.cardStockActual);
+            this.flowStockCards.Controls.Add(this.cardStockMin);
+            this.flowStockCards.Controls.Add(this.cardStockMax);
+            this.flowStockCards.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowStockCards.Location = new System.Drawing.Point(3, 3);
+            this.flowStockCards.Name = "flowStockCards";
+            this.flowStockCards.Padding = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.flowStockCards.WrapContents = false;
+            this.flowStockCards.Size = new System.Drawing.Size(960, 84);
+            this.flowStockCards.TabIndex = 0;
+            // 
+            // cardStockActual
+            // 
+            this.cardStockActual.BackColor = System.Drawing.Color.White;
+            this.cardStockActual.BorderRadius = 10;
+            this.cardStockActual.FillColor = System.Drawing.Color.White;
+            this.cardStockActual.Location = new System.Drawing.Point(0, 0);
+            this.cardStockActual.Margin = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.cardStockActual.Name = "cardStockActual";
+            this.cardStockActual.Padding = new System.Windows.Forms.Padding(16);
+            this.cardStockActual.ShadowDecoration.Enabled = true;
+            this.cardStockActual.Size = new System.Drawing.Size(190, 80);
+            this.cardStockActual.TabIndex = 0;
+            this.cardStockActual.Controls.Add(this.lblStockActualValue);
+            this.cardStockActual.Controls.Add(this.lblStockActualTitle);
+            // 
+            // lblStockActualValue
+            // 
+            this.lblStockActualValue.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblStockActualValue.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this.lblStockActualValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+            this.lblStockActualValue.Location = new System.Drawing.Point(16, 32);
+            this.lblStockActualValue.Name = "lblStockActualValue";
+            this.lblStockActualValue.Size = new System.Drawing.Size(158, 32);
+            this.lblStockActualValue.TabIndex = 1;
+            this.lblStockActualValue.Text = "0";
+            this.lblStockActualValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblStockActualTitle
+            // 
+            this.lblStockActualTitle.AutoSize = true;
+            this.lblStockActualTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblStockActualTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblStockActualTitle.Location = new System.Drawing.Point(13, 12);
+            this.lblStockActualTitle.Name = "lblStockActualTitle";
+            this.lblStockActualTitle.Size = new System.Drawing.Size(80, 15);
+            this.lblStockActualTitle.TabIndex = 0;
+            this.lblStockActualTitle.Text = "STOCK ACTUAL";
+            // 
+            // cardStockMin
+            // 
+            this.cardStockMin.BackColor = System.Drawing.Color.White;
+            this.cardStockMin.BorderRadius = 10;
+            this.cardStockMin.FillColor = System.Drawing.Color.White;
+            this.cardStockMin.Location = new System.Drawing.Point(205, 0);
+            this.cardStockMin.Margin = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.cardStockMin.Name = "cardStockMin";
+            this.cardStockMin.Padding = new System.Windows.Forms.Padding(16);
+            this.cardStockMin.ShadowDecoration.Enabled = true;
+            this.cardStockMin.Size = new System.Drawing.Size(190, 80);
+            this.cardStockMin.TabIndex = 1;
+            this.cardStockMin.Controls.Add(this.lblStockMinValue);
+            this.cardStockMin.Controls.Add(this.lblStockMinTitle);
+            // 
+            // lblStockMinValue
+            // 
+            this.lblStockMinValue.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblStockMinValue.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this.lblStockMinValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(130)))), ((int)(((byte)(12)))));
+            this.lblStockMinValue.Location = new System.Drawing.Point(16, 32);
+            this.lblStockMinValue.Name = "lblStockMinValue";
+            this.lblStockMinValue.Size = new System.Drawing.Size(158, 32);
+            this.lblStockMinValue.TabIndex = 1;
+            this.lblStockMinValue.Text = "0";
+            this.lblStockMinValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblStockMinTitle
+            // 
+            this.lblStockMinTitle.AutoSize = true;
+            this.lblStockMinTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblStockMinTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblStockMinTitle.Location = new System.Drawing.Point(13, 12);
+            this.lblStockMinTitle.Name = "lblStockMinTitle";
+            this.lblStockMinTitle.Size = new System.Drawing.Size(85, 15);
+            this.lblStockMinTitle.TabIndex = 0;
+            this.lblStockMinTitle.Text = "STOCK MÍNIMO";
+            // 
+            // cardStockMax
+            // 
+            this.cardStockMax.BackColor = System.Drawing.Color.White;
+            this.cardStockMax.BorderRadius = 10;
+            this.cardStockMax.FillColor = System.Drawing.Color.White;
+            this.cardStockMax.Location = new System.Drawing.Point(410, 0);
+            this.cardStockMax.Margin = new System.Windows.Forms.Padding(0, 0, 15, 0);
+            this.cardStockMax.Name = "cardStockMax";
+            this.cardStockMax.Padding = new System.Windows.Forms.Padding(16);
+            this.cardStockMax.ShadowDecoration.Enabled = true;
+            this.cardStockMax.Size = new System.Drawing.Size(190, 80);
+            this.cardStockMax.TabIndex = 2;
+            this.cardStockMax.Controls.Add(this.lblStockMaxValue);
+            this.cardStockMax.Controls.Add(this.lblStockMaxTitle);
+            // 
+            // lblStockMaxValue
+            // 
+            this.lblStockMaxValue.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblStockMaxValue.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this.lblStockMaxValue.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(39)))), ((int)(((byte)(174)))), ((int)(((byte)(96)))));
+            this.lblStockMaxValue.Location = new System.Drawing.Point(16, 32);
+            this.lblStockMaxValue.Name = "lblStockMaxValue";
+            this.lblStockMaxValue.Size = new System.Drawing.Size(158, 32);
+            this.lblStockMaxValue.TabIndex = 1;
+            this.lblStockMaxValue.Text = "0";
+            this.lblStockMaxValue.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // lblStockMaxTitle
+            // 
+            this.lblStockMaxTitle.AutoSize = true;
+            this.lblStockMaxTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblStockMaxTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblStockMaxTitle.Location = new System.Drawing.Point(13, 12);
+            this.lblStockMaxTitle.Name = "lblStockMaxTitle";
+            this.lblStockMaxTitle.Size = new System.Drawing.Size(90, 15);
+            this.lblStockMaxTitle.TabIndex = 0;
+            this.lblStockMaxTitle.Text = "STOCK MÁXIMO";
+            // 
+            // dgvStockMovimientos
+            // 
+            this.dgvStockMovimientos.AllowUserToAddRows = false;
+            this.dgvStockMovimientos.AllowUserToDeleteRows = false;
+            this.dgvStockMovimientos.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvStockMovimientos.BackgroundColor = System.Drawing.Color.White;
+            this.dgvStockMovimientos.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvStockMovimientos.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(241)))), ((int)(((byte)(243)))));
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.dgvStockMovimientos.DefaultCellStyle = dataGridViewCellStyle5;
+            this.dgvStockMovimientos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvStockMovimientos.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
+            this.dgvStockMovimientos.Location = new System.Drawing.Point(3, 93);
+            this.dgvStockMovimientos.Name = "dgvStockMovimientos";
+            this.dgvStockMovimientos.RowHeadersVisible = false;
+            this.dgvStockMovimientos.RowTemplate.Height = 32;
+            this.dgvStockMovimientos.Size = new System.Drawing.Size(960, 52);
+            this.dgvStockMovimientos.TabIndex = 1;
+            this.dgvStockMovimientos.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colStockFecha,
+            this.colStockTipo,
+            this.colStockCantidad,
+            this.colStockSaldo});
+            this.dgvStockMovimientos.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
+            this.dgvStockMovimientos.ThemeStyle.BackColor = System.Drawing.Color.White;
+            this.dgvStockMovimientos.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
+            this.dgvStockMovimientos.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.dgvStockMovimientos.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.dgvStockMovimientos.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.dgvStockMovimientos.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.DimGray;
+            this.dgvStockMovimientos.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
+            this.dgvStockMovimientos.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dgvStockMovimientos.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.dgvStockMovimientos.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.dgvStockMovimientos.ThemeStyle.RowsStyle.Height = 32;
+            this.dgvStockMovimientos.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(241)))), ((int)(((byte)(243)))));
+            this.dgvStockMovimientos.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            // 
+            // colStockFecha
+            // 
+            this.colStockFecha.HeaderText = "FECHA";
+            this.colStockFecha.Name = "colStockFecha";
+            // 
+            // colStockTipo
+            // 
+            this.colStockTipo.HeaderText = "MOVIMIENTO";
+            this.colStockTipo.Name = "colStockTipo";
+            // 
+            // colStockCantidad
+            // 
+            this.colStockCantidad.HeaderText = "CANTIDAD";
+            this.colStockCantidad.Name = "colStockCantidad";
+            // 
+            // colStockSaldo
+            // 
+            this.colStockSaldo.HeaderText = "SALDO";
+            this.colStockSaldo.Name = "colStockSaldo";
             // 
             // tabCaducidad
             // 
-            this.tabCaducidad.Location = new System.Drawing.Point(4, 84);
+            this.tabCaducidad.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabCaducidad.Controls.Add(this.tableLayoutCaducidad);
+            this.tabCaducidad.Location = new System.Drawing.Point(4, 44);
             this.tabCaducidad.Name = "tabCaducidad";
-            this.tabCaducidad.Size = new System.Drawing.Size(783, 132);
-            this.tabCaducidad.TabIndex = 6;
+            this.tabCaducidad.Padding = new System.Windows.Forms.Padding(12);
+            this.tabCaducidad.Size = new System.Drawing.Size(990, 172);
+            this.tabCaducidad.TabIndex = 4;
             this.tabCaducidad.Text = "CADUCIDAD";
-            this.tabCaducidad.UseVisualStyleBackColor = true;
+            this.tabCaducidad.UseVisualStyleBackColor = false;
             // 
-            // tabCodigos
+            // tableLayoutCaducidad
             // 
-            this.tabCodigos.Location = new System.Drawing.Point(4, 84);
-            this.tabCodigos.Name = "tabCodigos";
-            this.tabCodigos.Size = new System.Drawing.Size(783, 132);
-            this.tabCodigos.TabIndex = 7;
-            this.tabCodigos.Text = "CÓDIGOS";
-            this.tabCodigos.UseVisualStyleBackColor = true;
+            this.tableLayoutCaducidad.ColumnCount = 1;
+            this.tableLayoutCaducidad.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutCaducidad.Controls.Add(this.panelCaducidadFiltro, 0, 0);
+            this.tableLayoutCaducidad.Controls.Add(this.dgvCaducidades, 0, 1);
+            this.tableLayoutCaducidad.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutCaducidad.Location = new System.Drawing.Point(12, 12);
+            this.tableLayoutCaducidad.Name = "tableLayoutCaducidad";
+            this.tableLayoutCaducidad.RowCount = 2;
+            this.tableLayoutCaducidad.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 72F));
+            this.tableLayoutCaducidad.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutCaducidad.Size = new System.Drawing.Size(966, 148);
+            this.tableLayoutCaducidad.TabIndex = 0;
+            // 
+            // panelCaducidadFiltro
+            // 
+            this.panelCaducidadFiltro.BorderRadius = 10;
+            this.panelCaducidadFiltro.Controls.Add(this.btnAgregarLote);
+            this.panelCaducidadFiltro.Controls.Add(this.btnFiltrarCaducidad);
+            this.panelCaducidadFiltro.Controls.Add(this.dtpCaducidadHasta);
+            this.panelCaducidadFiltro.Controls.Add(this.lblCaducidadHasta);
+            this.panelCaducidadFiltro.Controls.Add(this.dtpCaducidadDesde);
+            this.panelCaducidadFiltro.Controls.Add(this.lblCaducidadDesde);
+            this.panelCaducidadFiltro.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelCaducidadFiltro.FillColor = System.Drawing.Color.White;
+            this.panelCaducidadFiltro.Location = new System.Drawing.Point(3, 3);
+            this.panelCaducidadFiltro.Name = "panelCaducidadFiltro";
+            this.panelCaducidadFiltro.Padding = new System.Windows.Forms.Padding(18);
+            this.panelCaducidadFiltro.ShadowDecoration.Enabled = true;
+            this.panelCaducidadFiltro.Size = new System.Drawing.Size(960, 66);
+            this.panelCaducidadFiltro.TabIndex = 0;
+            // 
+            // btnAgregarLote
+            // 
+            this.btnAgregarLote.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAgregarLote.BorderRadius = 6;
+            this.btnAgregarLote.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+            this.btnAgregarLote.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnAgregarLote.ForeColor = System.Drawing.Color.White;
+            this.btnAgregarLote.Location = new System.Drawing.Point(826, 16);
+            this.btnAgregarLote.Name = "btnAgregarLote";
+            this.btnAgregarLote.Size = new System.Drawing.Size(118, 32);
+            this.btnAgregarLote.TabIndex = 5;
+            this.btnAgregarLote.Text = "+ Agregar lote";
+            // 
+            // btnFiltrarCaducidad
+            // 
+            this.btnFiltrarCaducidad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnFiltrarCaducidad.BorderRadius = 6;
+            this.btnFiltrarCaducidad.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(153)))), ((int)(((byte)(102)))));
+            this.btnFiltrarCaducidad.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnFiltrarCaducidad.ForeColor = System.Drawing.Color.White;
+            this.btnFiltrarCaducidad.Location = new System.Drawing.Point(702, 16);
+            this.btnFiltrarCaducidad.Name = "btnFiltrarCaducidad";
+            this.btnFiltrarCaducidad.Size = new System.Drawing.Size(118, 32);
+            this.btnFiltrarCaducidad.TabIndex = 4;
+            this.btnFiltrarCaducidad.Text = "Filtrar";
+            // 
+            // dtpCaducidadHasta
+            // 
+            this.dtpCaducidadHasta.BorderRadius = 6;
+            this.dtpCaducidadHasta.Checked = true;
+            this.dtpCaducidadHasta.FillColor = System.Drawing.Color.White;
+            this.dtpCaducidadHasta.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.dtpCaducidadHasta.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpCaducidadHasta.Location = new System.Drawing.Point(352, 30);
+            this.dtpCaducidadHasta.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
+            this.dtpCaducidadHasta.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
+            this.dtpCaducidadHasta.Name = "dtpCaducidadHasta";
+            this.dtpCaducidadHasta.Size = new System.Drawing.Size(160, 24);
+            this.dtpCaducidadHasta.TabIndex = 3;
+            this.dtpCaducidadHasta.Value = System.DateTime.Today;
+            // 
+            // lblCaducidadHasta
+            // 
+            this.lblCaducidadHasta.AutoSize = true;
+            this.lblCaducidadHasta.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblCaducidadHasta.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblCaducidadHasta.Location = new System.Drawing.Point(349, 12);
+            this.lblCaducidadHasta.Name = "lblCaducidadHasta";
+            this.lblCaducidadHasta.Size = new System.Drawing.Size(118, 15);
+            this.lblCaducidadHasta.TabIndex = 2;
+            this.lblCaducidadHasta.Text = "Caducan hasta el día";
+            // 
+            // dtpCaducidadDesde
+            // 
+            this.dtpCaducidadDesde.BorderRadius = 6;
+            this.dtpCaducidadDesde.Checked = true;
+            this.dtpCaducidadDesde.FillColor = System.Drawing.Color.White;
+            this.dtpCaducidadDesde.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.dtpCaducidadDesde.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpCaducidadDesde.Location = new System.Drawing.Point(21, 30);
+            this.dtpCaducidadDesde.MaxDate = new System.DateTime(9998, 12, 31, 0, 0, 0, 0);
+            this.dtpCaducidadDesde.MinDate = new System.DateTime(1753, 1, 1, 0, 0, 0, 0);
+            this.dtpCaducidadDesde.Name = "dtpCaducidadDesde";
+            this.dtpCaducidadDesde.Size = new System.Drawing.Size(160, 24);
+            this.dtpCaducidadDesde.TabIndex = 1;
+            this.dtpCaducidadDesde.Value = System.DateTime.Today;
+            // 
+            // lblCaducidadDesde
+            // 
+            this.lblCaducidadDesde.AutoSize = true;
+            this.lblCaducidadDesde.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblCaducidadDesde.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(105)))), ((int)(((byte)(117)))));
+            this.lblCaducidadDesde.Location = new System.Drawing.Point(18, 12);
+            this.lblCaducidadDesde.Name = "lblCaducidadDesde";
+            this.lblCaducidadDesde.Size = new System.Drawing.Size(133, 15);
+            this.lblCaducidadDesde.TabIndex = 0;
+            this.lblCaducidadDesde.Text = "Caducan a partir del día";
+            // 
+            // dgvCaducidades
+            // 
+            this.dgvCaducidades.AllowUserToAddRows = false;
+            this.dgvCaducidades.AllowUserToDeleteRows = false;
+            this.dgvCaducidades.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvCaducidades.BackgroundColor = System.Drawing.Color.White;
+            this.dgvCaducidades.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dgvCaducidades.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 9F);
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(241)))), ((int)(((byte)(243)))));
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.dgvCaducidades.DefaultCellStyle = dataGridViewCellStyle6;
+            this.dgvCaducidades.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvCaducidades.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
+            this.dgvCaducidades.Location = new System.Drawing.Point(3, 75);
+            this.dgvCaducidades.Name = "dgvCaducidades";
+            this.dgvCaducidades.RowHeadersVisible = false;
+            this.dgvCaducidades.RowTemplate.Height = 32;
+            this.dgvCaducidades.Size = new System.Drawing.Size(960, 70);
+            this.dgvCaducidades.TabIndex = 1;
+            this.dgvCaducidades.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.colCaducidadLote,
+            this.colCaducidadFecha,
+            this.colCaducidadCantidad,
+            this.colCaducidadEstado});
+            this.dgvCaducidades.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
+            this.dgvCaducidades.ThemeStyle.BackColor = System.Drawing.Color.White;
+            this.dgvCaducidades.ThemeStyle.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
+            this.dgvCaducidades.ThemeStyle.HeaderStyle.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.dgvCaducidades.ThemeStyle.HeaderStyle.BorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.dgvCaducidades.ThemeStyle.HeaderStyle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.dgvCaducidades.ThemeStyle.HeaderStyle.ForeColor = System.Drawing.Color.DimGray;
+            this.dgvCaducidades.ThemeStyle.RowsStyle.BackColor = System.Drawing.Color.White;
+            this.dgvCaducidades.ThemeStyle.RowsStyle.BorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
+            this.dgvCaducidades.ThemeStyle.RowsStyle.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.dgvCaducidades.ThemeStyle.RowsStyle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            this.dgvCaducidades.ThemeStyle.RowsStyle.Height = 32;
+            this.dgvCaducidades.ThemeStyle.RowsStyle.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(239)))), ((int)(((byte)(241)))), ((int)(((byte)(243)))));
+            this.dgvCaducidades.ThemeStyle.RowsStyle.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
+            // 
+            // colCaducidadLote
+            // 
+            this.colCaducidadLote.HeaderText = "LOTE";
+            this.colCaducidadLote.Name = "colCaducidadLote";
+            // 
+            // colCaducidadFecha
+            // 
+            this.colCaducidadFecha.HeaderText = "FECHA CADUCIDAD";
+            this.colCaducidadFecha.Name = "colCaducidadFecha";
+            // 
+            // colCaducidadCantidad
+            // 
+            this.colCaducidadCantidad.HeaderText = "CANTIDAD";
+            this.colCaducidadCantidad.Name = "colCaducidadCantidad";
+            // 
+            // colCaducidadEstado
+            // 
+            this.colCaducidadEstado.HeaderText = "ESTADO";
+            this.colCaducidadEstado.Name = "colCaducidadEstado";
             // 
             // btnSalir
             // 
@@ -1170,6 +1815,29 @@ namespace LogiPharm.Presentacion
             this.tabPrecios.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvPrecios)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.tabPerchas.ResumeLayout(false);
+            this.tableLayoutPerchas.ResumeLayout(false);
+            this.panelPerchaCard.ResumeLayout(false);
+            this.panelPerchaCard.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numPerchaNivel)).EndInit();
+            this.panelBandejaCard.ResumeLayout(false);
+            this.panelBandejaCard.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numBandejaCapacidad)).EndInit();
+            this.tabStock.ResumeLayout(false);
+            this.tableLayoutStock.ResumeLayout(false);
+            this.flowStockCards.ResumeLayout(false);
+            this.cardStockActual.ResumeLayout(false);
+            this.cardStockActual.PerformLayout();
+            this.cardStockMin.ResumeLayout(false);
+            this.cardStockMin.PerformLayout();
+            this.cardStockMax.ResumeLayout(false);
+            this.cardStockMax.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvStockMovimientos)).EndInit();
+            this.tabCaducidad.ResumeLayout(false);
+            this.tableLayoutCaducidad.ResumeLayout(false);
+            this.panelCaducidadFiltro.ResumeLayout(false);
+            this.panelCaducidadFiltro.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvCaducidades)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStockMinimo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numStockMaximo)).EndInit();
             this.ResumeLayout(false);
@@ -1220,29 +1888,19 @@ namespace LogiPharm.Presentacion
         private Guna.UI2.WinForms.Guna2ComboBox cboClasificacionABC;
         private System.Windows.Forms.Label label15;
         private Guna.UI2.WinForms.Guna2TextBox txtObservaciones;
-        private System.Windows.Forms.TabPage tabPlanesComerciales;
         private System.Windows.Forms.TabPage tabPerchas;
-        private System.Windows.Forms.TabPage tabProveedores;
         private System.Windows.Forms.TabPage tabStock;
         private System.Windows.Forms.TabPage tabCaducidad;
-        private System.Windows.Forms.TabPage tabCodigos;
         private Guna.UI2.WinForms.Guna2DataGridView dgvImpuestos;
         private System.Windows.Forms.DataGridViewComboBoxColumn colImpuesto;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colAplicaCompra;
         private System.Windows.Forms.DataGridViewCheckBoxColumn colAplicaVenta;
         // --- INICIO: NUEVAS DECLARACIONES PARA PESTAÑA PRECIOS ---
+        private Guna.UI2.WinForms.Guna2Panel panelPreciosWrapper;
+        private System.Windows.Forms.Label lblPreciosHint;
+        private System.Windows.Forms.Label lblPreciosTitle;
         private Guna.UI2.WinForms.Guna2Button btnAgregarPrecio;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Label labelHeaderPVP;
-        private System.Windows.Forms.Label labelHeaderCostoPonderado;
-        private System.Windows.Forms.Label labelHeaderUltimoCosto;
-        private System.Windows.Forms.Label labelSubPVP;
-        private System.Windows.Forms.Label labelSubPvpUnidad;
-        private System.Windows.Forms.Label labelSubCostoPonderadoCaja;
-        private System.Windows.Forms.Label labelSubCostoPonderadoUnidad;
-        private System.Windows.Forms.Label labelSubCostoCaja;
-        private System.Windows.Forms.Label labelSubCostoUnidad;
-        private System.Windows.Forms.Label labelSubUnidadNegocio;
         private Guna.UI2.WinForms.Guna2DataGridView dgvPrecios;
         private System.Windows.Forms.DataGridViewTextBoxColumn colUnidadNegocio;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCostoUnidad;
@@ -1251,5 +1909,55 @@ namespace LogiPharm.Presentacion
         private System.Windows.Forms.DataGridViewTextBoxColumn colCostoPonderadoCaja;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPvpUnidad;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPvp;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPerchas;
+        private Guna.UI2.WinForms.Guna2Panel panelPerchaCard;
+        private System.Windows.Forms.Label lblPerchaTitle;
+        private System.Windows.Forms.Label lblPerchaHint;
+        private System.Windows.Forms.Label lblPerchaUbicacion;
+        private Guna.UI2.WinForms.Guna2TextBox txtPerchaUbicacion;
+        private System.Windows.Forms.Label lblPerchaNivel;
+        private Guna.UI2.WinForms.Guna2NumericUpDown numPerchaNivel;
+        private System.Windows.Forms.Label lblPerchaReferencia;
+        private Guna.UI2.WinForms.Guna2TextBox txtPerchaReferencia;
+        private Guna.UI2.WinForms.Guna2Button btnGuardarPercha;
+        private Guna.UI2.WinForms.Guna2Panel panelBandejaCard;
+        private System.Windows.Forms.Label lblBandejaTitle;
+        private System.Windows.Forms.Label lblBandejaHint;
+        private System.Windows.Forms.Label lblBandejaCodigo;
+        private Guna.UI2.WinForms.Guna2TextBox txtBandejaCodigo;
+        private System.Windows.Forms.Label lblBandejaSeccion;
+        private Guna.UI2.WinForms.Guna2ComboBox cboBandejaSeccion;
+        private System.Windows.Forms.Label lblBandejaCapacidad;
+        private Guna.UI2.WinForms.Guna2NumericUpDown numBandejaCapacidad;
+        private Guna.UI2.WinForms.Guna2Button btnGuardarBandeja;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutStock;
+        private System.Windows.Forms.FlowLayoutPanel flowStockCards;
+        private Guna.UI2.WinForms.Guna2Panel cardStockActual;
+        private System.Windows.Forms.Label lblStockActualValue;
+        private System.Windows.Forms.Label lblStockActualTitle;
+        private Guna.UI2.WinForms.Guna2Panel cardStockMin;
+        private System.Windows.Forms.Label lblStockMinValue;
+        private System.Windows.Forms.Label lblStockMinTitle;
+        private Guna.UI2.WinForms.Guna2Panel cardStockMax;
+        private System.Windows.Forms.Label lblStockMaxValue;
+        private System.Windows.Forms.Label lblStockMaxTitle;
+        private Guna.UI2.WinForms.Guna2DataGridView dgvStockMovimientos;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colStockFecha;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colStockTipo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colStockCantidad;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colStockSaldo;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutCaducidad;
+        private Guna.UI2.WinForms.Guna2Panel panelCaducidadFiltro;
+        private System.Windows.Forms.Label lblCaducidadDesde;
+        private Guna.UI2.WinForms.Guna2DateTimePicker dtpCaducidadDesde;
+        private System.Windows.Forms.Label lblCaducidadHasta;
+        private Guna.UI2.WinForms.Guna2DateTimePicker dtpCaducidadHasta;
+        private Guna.UI2.WinForms.Guna2Button btnFiltrarCaducidad;
+        private Guna.UI2.WinForms.Guna2Button btnAgregarLote;
+        private Guna.UI2.WinForms.Guna2DataGridView dgvCaducidades;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCaducidadLote;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCaducidadFecha;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCaducidadCantidad;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCaducidadEstado;
     }
 }
