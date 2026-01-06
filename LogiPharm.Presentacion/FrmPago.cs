@@ -38,6 +38,33 @@ namespace LogiPharm.Presentacion
             _cliente = cliente;
             _productos = productos;
             Resultado = DialogResult.Cancel;
+            
+            // Habilitar cierre con tecla ESC
+            this.KeyPreview = true;
+            this.KeyDown += FrmPago_KeyDown;
+        }
+
+        private void FrmPago_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                var result = MessageBox.Show(
+                    "Seguro que deseas cancelar el cobro?",
+                    "Cancelar Pago",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+                
+                if (result == DialogResult.Yes)
+                {
+                    this.Resultado = DialogResult.Cancel;
+                    this.Close();
+                }
+            }
+            else if (e.KeyCode == Keys.F12 && btnCobrarImprimir.Enabled)
+            {
+                // Atajo de teclado F12 para cobrar rápidamente
+                btnCobrarImprimir_Click(this, EventArgs.Empty);
+            }
         }
 
         private void FrmPago_Load(object sender, EventArgs e)
