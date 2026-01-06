@@ -111,5 +111,34 @@ namespace LogiPharm.Datos
             }
             return filasAfectadas > 0;
         }
+
+        /// <summary>
+        /// Lista todos los proveedores activos para combobox
+        /// </summary>
+        public DataTable ListarProveedoresActivos()
+        {
+            DataTable tabla = new DataTable();
+            using (MySqlConnection cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    string query = @"
+                        SELECT id, ruc, razonSocial, nombreComercial, direccion, telefono, email
+                        FROM proveedores
+                        WHERE anulado = 0
+                        ORDER BY razonSocial ASC;";
+
+                    MySqlCommand cmd = new MySqlCommand(query, cn);
+                    MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                    da.Fill(tabla);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al listar proveedores activos: " + ex.Message);
+                }
+            }
+            return tabla;
+        }
     }
 }

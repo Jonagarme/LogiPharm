@@ -1,6 +1,7 @@
 ﻿using MySqlConnector;
 using System;
 using System.Data;
+using System.Linq;
 using LogiPharm.Entidades;
 using System.Collections.Generic;
 
@@ -651,6 +652,138 @@ namespace LogiPharm.Datos
                     return Convert.ToInt32(obj);
                 }
             }
+        }
+
+        // ===== MÉTODOS PARA BÚSQUEDA DE PRODUCTOS SIMILARES =====
+        
+        /// <summary>
+        /// Calcula la distancia de Levenshtein entre dos cadenas (número de ediciones necesarias)
+        /// </summary>
+        private static int CalcularLevenshtein(string s1, string s2)
+        {
+            if (string.IsNullOrEmpty(s1)) return s2?.Length ?? 0;
+            if (string.IsNullOrEmpty(s2)) return s1.Length;
+
+            int[,] d = new int[s1.Length + 1, s2.Length + 1];
+
+            for (int i = 0; i <= s1.Length; i++)
+                d[i, 0] = i;
+            for (int j = 0; j <= s2.Length; j++)
+                d[0, j] = j;
+
+            for (int i = 1; i <= s1.Length; i++)
+            {
+                for (int j = 1; j <= s2.Length; j++)
+                {
+                    int cost = (s2[j - 1] == s1[i - 1]) ? 0 : 1;
+                    d[i, j] = Math.Min(Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1), d[i - 1, j - 1] + cost);
+                }
+            }
+
+            return d[s1.Length, s2.Length];
+        }
+
+        /// <summary>
+        /// Calcula el porcentaje de similitud entre dos cadenas (0-100%)
+        /// </summary>
+        public static double CalcularSimilitud(string s1, string s2)
+        {
+            if (string.IsNullOrEmpty(s1) || string.IsNullOrEmpty(s2))
+                return 0;
+
+            // Normalizar: mayúsculas y quitar espacios extras
+            s1 = s1.ToUpper().Trim();
+            s2 = s2.ToUpper().Trim();
+
+            if (s1 == s2) return 100;
+
+            int distancia = CalcularLevenshtein(s1, s2);
+            int longitudMaxima = Math.Max(s1.Length, s2.Length);
+            
+            if (longitudMaxima == 0) return 100;
+
+            double similitud = (1.0 - (double)distancia / longitudMaxima) * 100;
+            return Math.Round(similitud, 2);
+        }
+
+        /// <summary>
+        /// Busca productos similares por nombre o código con un umbral de similitud mínimo
+        /// </summary>
+        public List<ProductoSimilar> BuscarProductosSimilares(string criterio, double umbralSimilitud = 50.0, int maxResultados = 10)
+        {
+            var productosSimilares = new List<ProductoSimilar>();
+            
+            if (string.IsNullOrWhiteSpace(criterio))
+                return productosSimilares;
+
+            using (MySqlConnection cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    // Buscamos productos activos que tengan alguna coincidencia parcial
+                    string query = @"
+                        SELECT id, codigoPrincipal, nombre, stock, precioVenta 
+                        FROM productos 
+                        WHERE anulado = 0 AND activo = 1
+                        ORDER BY nombre ASC
+                        LIMIT 500;"; // Limitamos para no sobrecargar
+
+                    MySqlCommand cmd = new MySqlCommand(query, cn);
+
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string nombre = reader["nombre"].ToString();
+                            string codigo = reader["codigoPrincipal"].ToString();
+
+                            // Calculamos similitud por nombre y código
+                            double similitudNombre = CalcularSimilitud(criterio, nombre);
+                            double similitudCodigo = CalcularSimilitud(criterio, codigo);
+                            
+                            // Tomamos la mayor similitud
+                            double similitudMaxima = Math.Max(similitudNombre, similitudCodigo);
+
+                            if (similitudMaxima >= umbralSimilitud)
+                            {
+                                productosSimilares.Add(new ProductoSimilar
+                                {
+                                    Id = Convert.ToInt64(reader["id"]),
+                                    CodigoPrincipal = codigo,
+                                    Nombre = nombre,
+                                    Stock = Convert.ToDecimal(reader["stock"]),
+                                    PrecioVenta = Convert.ToDecimal(reader["precioVenta"]),
+                                    PorcentajeSimilitud = similitudMaxima
+                                });
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al buscar productos similares: " + ex.Message);
+                }
+            }
+
+            // Ordenar por similitud descendente y tomar los mejores resultados
+            return productosSimilares
+                .OrderByDescending(p => p.PorcentajeSimilitud)
+                .Take(maxResultados)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Clase auxiliar para productos similares con porcentaje de coincidencia
+        /// </summary>
+        public class ProductoSimilar
+        {
+            public long Id { get; set; }
+            public string CodigoPrincipal { get; set; }
+            public string Nombre { get; set; }
+            public decimal Stock { get; set; }
+            public decimal PrecioVenta { get; set; }
+            public double PorcentajeSimilitud { get; set; }
         }
     }
 }
