@@ -14,6 +14,23 @@ namespace LogiPharm.Presentacion
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
             this.Text = "Inicio de Sesión - LogiPharm";
+            
+            // Configurar Enter para iniciar sesión
+            this.AcceptButton = btnLogin;
+            
+            // Agregar manejadores de tecla Enter para cada textbox
+            txtUsuario.KeyDown += Txt_KeyDown;
+            txtClave.KeyDown += Txt_KeyDown;
+        }
+
+        private void Txt_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                BtnLogin_Click(sender, e);
+            }
         }
 
         private void BtnLogin_Click(object sender, EventArgs e)
@@ -47,6 +64,8 @@ namespace LogiPharm.Presentacion
             else
             {
                 lblMensaje.Text = "Usuario o contraseña incorrectos.";
+                txtClave.Clear();
+                txtClave.Focus();
             }
         }
 
