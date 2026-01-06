@@ -13,33 +13,67 @@ namespace LogiPharm.Datos
     public class DFacturacion
     {
         // Método para listar las facturas desde tu base de datos
-        public DataTable ListarFacturas(DateTime fechaInicio, DateTime fechaFin, string textoBusqueda)
+        public DataTable ListarFacturas(DateTime fechaInicio, DateTime fechaFin, string textoBusqueda, 
+            int? idCaja = null, string tipoDocumento = null, string estado = null, 
+            string estadoSRI = null, int? idCajero = null)
         {
             using (var cn = new MySqlConnection(Conexion.cadena))
             {
                 string sql = @"
                 SELECT 
                     fv.id AS Id,
-                    fv.numeroFactura AS Factura,         -- << AÑADIDO
+                    fv.numeroFactura AS Factura,
                     fv.numeroAutorizacion AS Autorizacion,
-                    c.nombres AS Cliente,
+                    COALESCE(NULLIF(c.razonSocial,''), TRIM(CONCAT(IFNULL(c.nombres,''),' ',IFNULL(c.apellidos,'')))) AS Cliente,
                     fv.total AS Total,
                     fv.estado AS Estado,
                     fv.numeroAutorizacion AS ClaveAcceso
                 FROM facturas_venta fv
                 JOIN clientes c ON fv.idCliente = c.id
+                LEFT JOIN cierres_caja cc ON fv.idCierreCaja = cc.id
                 WHERE 
                     DATE(fv.fechaEmision) BETWEEN @fechaInicio AND @fechaFin
-                    AND (c.nombres LIKE @busqueda 
+                    AND (COALESCE(c.razonSocial, CONCAT(c.nombres, ' ', c.apellidos)) LIKE @busqueda 
                          OR fv.numeroFactura LIKE @busqueda 
-                         OR fv.numeroAutorizacion LIKE @busqueda)
-                ORDER BY fv.fechaEmision DESC;";
+                         OR fv.numeroAutorizacion LIKE @busqueda)";
+
+                // Filtro por Caja
+                if (idCaja.HasValue && idCaja.Value > 0)
+                    sql += " AND cc.idCaja = @idCaja";
+
+                // Filtro por Estado
+                if (!string.IsNullOrWhiteSpace(estado) && estado != "TODOS")
+                    sql += " AND fv.estado = @estado";
+
+                // Filtro por Estado SRI
+                if (!string.IsNullOrWhiteSpace(estadoSRI) && estadoSRI != "TODOS")
+                {
+                    if (estadoSRI == "AUTORIZADO")
+                        sql += " AND fv.numeroAutorizacion IS NOT NULL AND fv.numeroAutorizacion != ''";
+                    else if (estadoSRI == "SIN AUTORIZAR")
+                        sql += " AND (fv.numeroAutorizacion IS NULL OR fv.numeroAutorizacion = '')";
+                }
+
+                // Filtro por Cajero
+                if (idCajero.HasValue && idCajero.Value > 0)
+                    sql += " AND fv.idUsuario = @idCajero";
+
+                sql += " ORDER BY fv.fechaEmision DESC;";
 
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
                     cmd.Parameters.AddWithValue("@fechaInicio", fechaInicio.Date);
                     cmd.Parameters.AddWithValue("@fechaFin", fechaFin.Date);
                     cmd.Parameters.AddWithValue("@busqueda", $"%{textoBusqueda}%");
+
+                    if (idCaja.HasValue && idCaja.Value > 0)
+                        cmd.Parameters.AddWithValue("@idCaja", idCaja.Value);
+
+                    if (!string.IsNullOrWhiteSpace(estado) && estado != "TODOS")
+                        cmd.Parameters.AddWithValue("@estado", estado);
+
+                    if (idCajero.HasValue && idCajero.Value > 0)
+                        cmd.Parameters.AddWithValue("@idCajero", idCajero.Value);
 
                     var dt = new DataTable();
                     new MySqlDataAdapter(cmd).Fill(dt);
@@ -234,6 +268,96 @@ namespace LogiPharm.Datos
                     var obj = cmd.ExecuteScalar();
                     return obj == null || obj == DBNull.Value ? null : Convert.ToString(obj);
                 }
+            }
+        }
+
+        // Obtener lista de cajas para el filtro
+        public DataTable ObtenerCajas()
+        {
+            using (var cn = new MySqlConnection(Conexion.cadena))
+            {
+                string sql = @"
+                    SELECT id, nombre, codigo 
+                    FROM cajas 
+                    WHERE activa = 1 
+                    ORDER BY nombre;";
+                
+                var dt = new DataTable();
+                using (var da = new MySqlDataAdapter(sql, cn))
+                {
+                    da.Fill(dt);
+                }
+                
+                // Agregar opción "TODAS"
+                var row = dt.NewRow();
+                row["id"] = 0;
+                row["nombre"] = "TODAS";
+                row["codigo"] = "";
+                dt.Rows.InsertAt(row, 0);
+                
+                return dt;
+            }
+        }
+
+        // Obtener lista de cajeros (usuarios) para el filtro
+        public DataTable ObtenerCajeros()
+        {
+            using (var cn = new MySqlConnection(Conexion.cadena))
+            {
+                string sql = @"
+                    SELECT DISTINCT u.id, u.nombreUsuario 
+                    FROM usuarios u
+                    INNER JOIN facturas_venta fv ON fv.idUsuario = u.id
+                    WHERE u.anulado = 0
+                    ORDER BY u.nombreUsuario;";
+                
+                var dt = new DataTable();
+                using (var da = new MySqlDataAdapter(sql, cn))
+                {
+                    da.Fill(dt);
+                }
+                
+                // Agregar opción "TODOS"
+                var row = dt.NewRow();
+                row["id"] = 0;
+                row["nombreUsuario"] = "TODOS";
+                dt.Rows.InsertAt(row, 0);
+                
+                return dt;
+            }
+        }
+
+        // ✨ NUEVO MÉTODO: Reenvía una factura al SRI usando la clave de acceso
+        public async Task<RespuestaReenvioApi> ReenviarFacturaAlSri(string claveAcceso)
+        {
+            if (string.IsNullOrEmpty(claveAcceso))
+            {
+                throw new ArgumentException("La clave de acceso no puede estar vacía.");
+            }
+
+            string apiUrl = $"http://127.0.0.1:5001/api/reenviar/{claveAcceso}";
+
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsync(apiUrl, null);
+                string jsonResponse = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    // Intenta parsear el error
+                    try
+                    {
+                        var errorObj = JsonConvert.DeserializeObject<dynamic>(jsonResponse);
+                        string errorMsg = errorObj?.error ?? "Error desconocido";
+                        throw new Exception($"Error al reenviar factura: {errorMsg}");
+                    }
+                    catch
+                    {
+                        throw new Exception($"Error al reenviar factura: {response.ReasonPhrase}\n{jsonResponse}");
+                    }
+                }
+
+                return JsonConvert.DeserializeObject<RespuestaReenvioApi>(jsonResponse);
             }
         }
     }
