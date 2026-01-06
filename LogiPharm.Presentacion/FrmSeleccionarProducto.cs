@@ -18,6 +18,10 @@ namespace LogiPharm.Presentacion
         {
             InitializeComponent();
             _terminoBusquedaInicial = terminoBusqueda;
+            
+            // Habilitar cierre con tecla ESC
+            this.KeyPreview = true;
+            this.KeyDown += FrmSeleccionarProducto_KeyDown;
         }
 
         // Constructor para lista predefinida
@@ -25,6 +29,25 @@ namespace LogiPharm.Presentacion
         {
             InitializeComponent();
             _listaProductos = productos;
+            
+            // Habilitar cierre con tecla ESC
+            this.KeyPreview = true;
+            this.KeyDown += FrmSeleccionarProducto_KeyDown;
+        }
+
+        private void FrmSeleccionarProducto_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                this.DialogResult = DialogResult.Cancel;
+                this.Close();
+            }
+            else if (e.KeyCode == Keys.Enter && !txtBuscar.Focused)
+            {
+                // Permitir Enter para seleccionar el producto (cuando no está en el campo de búsqueda)
+                e.Handled = true;
+                SeleccionarProducto();
+            }
         }
 
         private void FrmSeleccionarProducto_Load(object sender, EventArgs e)

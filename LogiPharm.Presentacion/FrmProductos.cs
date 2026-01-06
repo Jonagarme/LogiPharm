@@ -129,7 +129,26 @@ namespace LogiPharm.Presentacion
         private void CerrarPanelEdicion() => splitContainer1.Panel2Collapsed = true;
 
         // --- Menús ---
-        private void menuNuevoProducto_Click(object sender, EventArgs e) => AbrirPanelEdicion();
+        private async void menuNuevoProducto_Click(object sender, EventArgs e)
+        {
+            // Abrir FrmEditarProducto en modo creación (sin ID)
+            using (var frm = new FrmEditarProducto())
+            {
+                // Auditoría: VISUALIZAR formulario nuevo
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, "Abrir formulario nuevo producto", null, Environment.MachineName, "UI"); } catch { }
+
+                DialogResult resultado = frm.ShowDialog();
+                if (resultado == DialogResult.OK)
+                {
+                    await ResetearListadoAsync(_criterioActual);
+                    MessageBox.Show("Producto creado exitosamente. Lista actualizada.", "Éxito",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Auditoría: CREAR
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "CREAR", "productos", null, "Producto creado desde editor", null, Environment.MachineName, "UI"); } catch { }
+                }
+            }
+        }
 
         private void menuNuevaCategoria_Click(object sender, EventArgs e)
         {
@@ -475,6 +494,14 @@ namespace LogiPharm.Presentacion
         {
             if (_isLoading || _allLoaded) return;
             _isLoading = true;
+
+            // Guardar posición del scroll antes de cargar
+            int firstDisplayedRow = -1;
+            if (DgvListado.FirstDisplayedScrollingRowIndex >= 0 && !esPrimera)
+            {
+                firstDisplayedRow = DgvListado.FirstDisplayedScrollingRowIndex;
+            }
+
             try
             {
                 DataTable pagina;
@@ -498,6 +525,9 @@ namespace LogiPharm.Presentacion
                     _tablaProductos.Locale = System.Globalization.CultureInfo.CurrentCulture;
                 }
 
+                // Desuscribir eventos temporalmente para evitar disparos durante la carga
+                DgvListado.Scroll -= DgvListado_Scroll;
+                
                 foreach (DataRow r in pagina.Rows)
                 {
                     _tablaProductos.ImportRow(r);
@@ -515,12 +545,25 @@ namespace LogiPharm.Presentacion
                 }
                 else
                 {
-                    // Notificar cambios
+                    // Notificar cambios sin perder posición
                     var cm = (CurrencyManager)BindingContext[DgvListado.DataSource];
                     cm.Refresh();
                 }
 
                 lblTotal.Text = $"Total: {_totalRegistros} | Mostrando: {DgvListado.Rows.Count}";
+
+                // Restaurar posición del scroll
+                if (firstDisplayedRow >= 0 && firstDisplayedRow < DgvListado.Rows.Count)
+                {
+                    try
+                    {
+                        DgvListado.FirstDisplayedScrollingRowIndex = firstDisplayedRow;
+                    }
+                    catch { /* ignorar si la fila ya no existe */ }
+                }
+
+                // Reactivar eventos
+                DgvListado.Scroll += DgvListado_Scroll;
 
                 // Prefetch: si faltan <=10 filas para llegar al final, comenzar siguiente carga en background
                 if (!_allLoaded && DgvListado.RowCount - (DgvListado.FirstDisplayedScrollingRowIndex + DgvListado.DisplayedRowCount(false)) <= 10)
@@ -536,6 +579,9 @@ namespace LogiPharm.Presentacion
             finally
             {
                 _isLoading = false;
+                // Asegurar que el evento está conectado
+                DgvListado.Scroll -= DgvListado_Scroll;
+                DgvListado.Scroll += DgvListado_Scroll;
             }
         }
 
