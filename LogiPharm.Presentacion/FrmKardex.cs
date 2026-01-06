@@ -42,10 +42,11 @@ namespace LogiPharm.Presentacion
 
         private void txtProducto_KeyDown(object sender, KeyEventArgs e)
         {
-            // Si el usuario presiona Enter, iniciamos la búsqueda
+            // Si el usuario presiona Enter, abrimos el modal de productos
             if (e.KeyCode == Keys.Enter)
             {
-                BuscarProducto();
+                e.SuppressKeyPress = true; // Evita el sonido de "ding"
+                AbrirModalProductos();
             }
         }
 
@@ -63,13 +64,14 @@ namespace LogiPharm.Presentacion
             }
         }
 
-        private void BuscarProducto()
+        private void AbrirModalProductos()
         {
             string textoBuscado = txtProducto.Text.Trim();
+            
+            // Si está vacío, buscamos todos los productos (usamos "%" como comodín)
             if (string.IsNullOrEmpty(textoBuscado))
             {
-                MessageBox.Show("Por favor, ingrese un código o nombre de producto para buscar.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
+                textoBuscado = "%";
             }
 
             try
@@ -77,33 +79,35 @@ namespace LogiPharm.Presentacion
                 DProductos d_Productos = new DProductos();
                 List<EProducto> productosEncontrados = d_Productos.BuscarProductosActivos(textoBuscado);
 
-                if (productosEncontrados.Count == 1)
-                {
-                    _productoSeleccionado = productosEncontrados[0];
-                    CargarKardex();
-                }
-                else if (productosEncontrados.Count > 1)
-                {
-                    using (var frm = new FrmSeleccionarProducto(productosEncontrados))
-                    {
-                        if (frm.ShowDialog() == DialogResult.OK)
-                        {
-                            _productoSeleccionado = frm.ProductoSeleccionado;
-                            CargarKardex();
-                        }
-                    }
-                }
-                else
+                if (productosEncontrados.Count == 0)
                 {
                     MessageBox.Show("No se encontraron productos con ese criterio.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     _productoSeleccionado = null;
                     LimpiarVista();
+                    return;
+                }
+
+                // Siempre abrimos el modal, incluso si hay un solo resultado
+                using (var frm = new FrmSeleccionarProducto(productosEncontrados))
+                {
+                    if (frm.ShowDialog() == DialogResult.OK && frm.ProductoSeleccionado != null)
+                    {
+                        _productoSeleccionado = frm.ProductoSeleccionado;
+                        txtProducto.Text = _productoSeleccionado.CodigoPrincipal;
+                        CargarKardex();
+                    }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error en Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void BuscarProducto()
+        {
+            // Este método ahora simplemente llama al modal
+            AbrirModalProductos();
         }
 
         private void CargarKardex()

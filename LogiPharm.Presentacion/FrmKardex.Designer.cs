@@ -174,6 +174,7 @@
             this.txtProducto.SelectedText = "";
             this.txtProducto.Size = new System.Drawing.Size(190, 36);
             this.txtProducto.TabIndex = 3;
+            this.txtProducto.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtProducto_KeyDown);
             // 
             // label2
             // 
