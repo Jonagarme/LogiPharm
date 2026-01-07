@@ -38,5 +38,59 @@ namespace LogiPharm.Entidades
         public decimal CostoUnidad { get; set; }
         public decimal CostoCaja { get; set; }
         public decimal PvpUnidad { get; set; }  // opcional
+
+        // Propiedades de navegación (se llenan desde la capa de datos con JOINs)
+        public string NombreCategoria { get; set; }
+        public string NombreLaboratorio { get; set; }
+        public string NombreMarca { get; set; }
+        public string Ubicacion { get; set; } // Percha/Ubicación física
+
+        // Propiedades calculadas (solo lectura)
+        public decimal MargenPorcentaje
+        {
+            get
+            {
+                if (CostoUnidad == 0) return 0;
+                return ((PrecioVenta - CostoUnidad) / CostoUnidad) * 100;
+            }
+        }
+
+        public decimal MargenValor
+        {
+            get { return PrecioVenta - CostoUnidad; }
+        }
+
+        public int DiasParaVencer
+        {
+            get
+            {
+                if (FechaVencimiento == DateTime.MinValue) return int.MaxValue;
+                return (FechaVencimiento - DateTime.Now).Days;
+            }
+        }
+
+        public string EstadoVencimiento
+        {
+            get
+            {
+                int dias = DiasParaVencer;
+                if (dias < 0) return "VENCIDO";
+                if (dias <= 30) return "CRÍTICO";
+                if (dias <= 90) return "PRÓXIMO";
+                if (dias <= 180) return "ADVERTENCIA";
+                return "OK";
+            }
+        }
+
+        public string EstadoStock
+        {
+            get
+            {
+                if (Stock <= 0) return "SIN STOCK";
+                if (Stock <= StockMinimo) return "BAJO";
+                if (Stock >= StockMaximo) return "EXCESO";
+                return "NORMAL";
+            }
+        }
     }
 }

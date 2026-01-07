@@ -29,7 +29,21 @@
             this.dgvProductos = new Guna.UI2.WinForms.Guna2DataGridView();
             this.colCodigo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colNombre = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colStock = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colCategoria = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colUbicacion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colPrecio = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lblCategoriaTitulo = new System.Windows.Forms.Label();
+            this.lblCategoria = new System.Windows.Forms.Label();
+            this.lblLaboratorioTitulo = new System.Windows.Forms.Label();
+            this.lblLaboratorio = new System.Windows.Forms.Label();
+            this.lblUbicacionTitulo = new System.Windows.Forms.Label();
+            this.lblUbicacion = new System.Windows.Forms.Label();
+            this.lblCostoTitulo = new System.Windows.Forms.Label();
+            this.lblCosto = new System.Windows.Forms.Label();
+            this.lblMargenTitulo = new System.Windows.Forms.Label();
+            this.lblMargen = new System.Windows.Forms.Label();
+            this.panelVencimiento = new Guna.UI2.WinForms.Guna2Panel();
             this.btnAceptar = new Guna.UI2.WinForms.Guna2Button();
             this.btnCancelar = new Guna.UI2.WinForms.Guna2Button();
             this.txtBuscar = new Guna.UI2.WinForms.Guna2TextBox();
@@ -118,6 +132,9 @@
             this.dgvProductos.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colCodigo,
             this.colNombre,
+            this.colStock,
+            this.colCategoria,
+            this.colUbicacion,
             this.colPrecio});
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.White;
@@ -173,6 +190,33 @@
             this.colNombre.HeaderText = "Nombre";
             this.colNombre.Name = "colNombre";
             this.colNombre.ReadOnly = true;
+            // 
+            // colStock
+            // 
+            this.colStock.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colStock.DataPropertyName = "Stock";
+            this.colStock.HeaderText = "Stock";
+            this.colStock.Name = "colStock";
+            this.colStock.ReadOnly = true;
+            this.colStock.Width = 65;
+            // 
+            // colCategoria
+            // 
+            this.colCategoria.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colCategoria.DataPropertyName = "NombreCategoria";
+            this.colCategoria.HeaderText = "Categoría";
+            this.colCategoria.Name = "colCategoria";
+            this.colCategoria.ReadOnly = true;
+            this.colCategoria.Width = 89;
+            // 
+            // colUbicacion
+            // 
+            this.colUbicacion.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.colUbicacion.DataPropertyName = "Ubicacion";
+            this.colUbicacion.HeaderText = "Ubicación";
+            this.colUbicacion.Name = "colUbicacion";
+            this.colUbicacion.ReadOnly = true;
+            this.colUbicacion.Width = 87;
             // 
             // colPrecio
             // 
@@ -249,6 +293,17 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gbDetalles.BorderColor = System.Drawing.Color.Gainsboro;
             this.gbDetalles.BorderRadius = 8;
+            this.gbDetalles.Controls.Add(this.lblMargen);
+            this.gbDetalles.Controls.Add(this.lblMargenTitulo);
+            this.gbDetalles.Controls.Add(this.lblCosto);
+            this.gbDetalles.Controls.Add(this.lblCostoTitulo);
+            this.gbDetalles.Controls.Add(this.lblUbicacion);
+            this.gbDetalles.Controls.Add(this.lblUbicacionTitulo);
+            this.gbDetalles.Controls.Add(this.lblLaboratorio);
+            this.gbDetalles.Controls.Add(this.lblLaboratorioTitulo);
+            this.gbDetalles.Controls.Add(this.lblCategoria);
+            this.gbDetalles.Controls.Add(this.lblCategoriaTitulo);
+            this.gbDetalles.Controls.Add(this.panelVencimiento);
             this.gbDetalles.Controls.Add(this.lblStaticDesc);
             this.gbDetalles.Controls.Add(this.lblStaticVenc);
             this.gbDetalles.Controls.Add(this.txtFechaVencimiento);
@@ -357,6 +412,129 @@
             this.lblStockValor.Text = "99";
             this.lblStockValor.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // lblCategoriaTitulo
+            // 
+            this.lblCategoriaTitulo.AutoSize = true;
+            this.lblCategoriaTitulo.BackColor = System.Drawing.Color.Transparent;
+            this.lblCategoriaTitulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblCategoriaTitulo.Location = new System.Drawing.Point(14, 320);
+            this.lblCategoriaTitulo.Name = "lblCategoriaTitulo";
+            this.lblCategoriaTitulo.Size = new System.Drawing.Size(63, 15);
+            this.lblCategoriaTitulo.TabIndex = 5;
+            this.lblCategoriaTitulo.Text = "Categoría:";
+            // 
+            // lblCategoria
+            // 
+            this.lblCategoria.AutoSize = true;
+            this.lblCategoria.BackColor = System.Drawing.Color.Transparent;
+            this.lblCategoria.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblCategoria.Location = new System.Drawing.Point(85, 320);
+            this.lblCategoria.Name = "lblCategoria";
+            this.lblCategoria.Size = new System.Drawing.Size(16, 15);
+            this.lblCategoria.TabIndex = 6;
+            this.lblCategoria.Text = "...";
+            // 
+            // lblLaboratorioTitulo
+            // 
+            this.lblLaboratorioTitulo.AutoSize = true;
+            this.lblLaboratorioTitulo.BackColor = System.Drawing.Color.Transparent;
+            this.lblLaboratorioTitulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblLaboratorioTitulo.Location = new System.Drawing.Point(195, 320);
+            this.lblLaboratorioTitulo.Name = "lblLaboratorioTitulo";
+            this.lblLaboratorioTitulo.Size = new System.Drawing.Size(75, 15);
+            this.lblLaboratorioTitulo.TabIndex = 7;
+            this.lblLaboratorioTitulo.Text = "Laboratorio:";
+            // 
+            // lblLaboratorio
+            // 
+            this.lblLaboratorio.BackColor = System.Drawing.Color.Transparent;
+            this.lblLaboratorio.Font = new System.Drawing.Font("Segoe UI", 8.25F);
+            this.lblLaboratorio.Location = new System.Drawing.Point(195, 337);
+            this.lblLaboratorio.Name = "lblLaboratorio";
+            this.lblLaboratorio.Size = new System.Drawing.Size(153, 30);
+            this.lblLaboratorio.TabIndex = 8;
+            this.lblLaboratorio.Text = "...";
+            this.lblLaboratorio.AutoSize = false;
+            // 
+            // lblUbicacionTitulo
+            // 
+            this.lblUbicacionTitulo.AutoSize = true;
+            this.lblUbicacionTitulo.BackColor = System.Drawing.Color.Transparent;
+            this.lblUbicacionTitulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblUbicacionTitulo.Location = new System.Drawing.Point(195, 276);
+            this.lblUbicacionTitulo.Name = "lblUbicacionTitulo";
+            this.lblUbicacionTitulo.Size = new System.Drawing.Size(64, 15);
+            this.lblUbicacionTitulo.TabIndex = 9;
+            this.lblUbicacionTitulo.Text = "Ubicación:";
+            // 
+            // lblUbicacion
+            // 
+            this.lblUbicacion.AutoSize = true;
+            this.lblUbicacion.BackColor = System.Drawing.Color.Transparent;
+            this.lblUbicacion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblUbicacion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+            this.lblUbicacion.Location = new System.Drawing.Point(195, 295);
+            this.lblUbicacion.Name = "lblUbicacion";
+            this.lblUbicacion.Size = new System.Drawing.Size(65, 15);
+            this.lblUbicacion.TabIndex = 10;
+            this.lblUbicacion.Text = "PERCHA-A";
+            // 
+            // lblCostoTitulo
+            // 
+            this.lblCostoTitulo.AutoSize = true;
+            this.lblCostoTitulo.BackColor = System.Drawing.Color.Transparent;
+            this.lblCostoTitulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblCostoTitulo.Location = new System.Drawing.Point(14, 345);
+            this.lblCostoTitulo.Name = "lblCostoTitulo";
+            this.lblCostoTitulo.Size = new System.Drawing.Size(42, 15);
+            this.lblCostoTitulo.TabIndex = 11;
+            this.lblCostoTitulo.Text = "Costo:";
+            // 
+            // lblCosto
+            // 
+            this.lblCosto.AutoSize = true;
+            this.lblCosto.BackColor = System.Drawing.Color.Transparent;
+            this.lblCosto.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblCosto.Location = new System.Drawing.Point(85, 345);
+            this.lblCosto.Name = "lblCosto";
+            this.lblCosto.Size = new System.Drawing.Size(40, 15);
+            this.lblCosto.TabIndex = 12;
+            this.lblCosto.Text = "$0.00";
+            // 
+            // lblMargenTitulo
+            // 
+            this.lblMargenTitulo.AutoSize = true;
+            this.lblMargenTitulo.BackColor = System.Drawing.Color.Transparent;
+            this.lblMargenTitulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblMargenTitulo.Location = new System.Drawing.Point(195, 345);
+            this.lblMargenTitulo.Name = "lblMargenTitulo";
+            this.lblMargenTitulo.Size = new System.Drawing.Size(52, 15);
+            this.lblMargenTitulo.TabIndex = 13;
+            this.lblMargenTitulo.Text = "Margen:";
+            // 
+            // lblMargen
+            // 
+            this.lblMargen.AutoSize = true;
+            this.lblMargen.BackColor = System.Drawing.Color.Transparent;
+            this.lblMargen.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblMargen.ForeColor = System.Drawing.Color.Green;
+            this.lblMargen.Location = new System.Drawing.Point(253, 345);
+            this.lblMargen.Name = "lblMargen";
+            this.lblMargen.Size = new System.Drawing.Size(80, 15);
+            this.lblMargen.TabIndex = 14;
+            this.lblMargen.Text = "50% (+$2.50)";
+            // 
+            // panelVencimiento
+            // 
+            this.panelVencimiento.BackColor = System.Drawing.Color.Transparent;
+            this.panelVencimiento.BorderRadius = 6;
+            this.panelVencimiento.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(245)))), ((int)(((byte)(204)))));
+            this.panelVencimiento.Location = new System.Drawing.Point(17, 223);
+            this.panelVencimiento.Name = "panelVencimiento";
+            this.panelVencimiento.Size = new System.Drawing.Size(161, 24);
+            this.panelVencimiento.TabIndex = 15;
+            this.panelVencimiento.Visible = false;
+            // 
             // FrmSeleccionarProducto
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -406,6 +584,20 @@
         private System.Windows.Forms.Label lblStaticVenc;
         private System.Windows.Forms.DataGridViewTextBoxColumn colCodigo;
         private System.Windows.Forms.DataGridViewTextBoxColumn colNombre;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colStock;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colCategoria;
+        private System.Windows.Forms.DataGridViewTextBoxColumn colUbicacion;
         private System.Windows.Forms.DataGridViewTextBoxColumn colPrecio;
+        private System.Windows.Forms.Label lblCategoriaTitulo;
+        private System.Windows.Forms.Label lblCategoria;
+        private System.Windows.Forms.Label lblLaboratorioTitulo;
+        private System.Windows.Forms.Label lblLaboratorio;
+        private System.Windows.Forms.Label lblUbicacionTitulo;
+        private System.Windows.Forms.Label lblUbicacion;
+        private System.Windows.Forms.Label lblCostoTitulo;
+        private System.Windows.Forms.Label lblCosto;
+        private System.Windows.Forms.Label lblMargenTitulo;
+        private System.Windows.Forms.Label lblMargen;
+        private Guna.UI2.WinForms.Guna2Panel panelVencimiento;
     }
 }

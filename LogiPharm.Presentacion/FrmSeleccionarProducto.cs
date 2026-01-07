@@ -102,24 +102,112 @@ namespace LogiPharm.Presentacion
             {
                 gbDetalles.Text = producto.Nombre;
                 lblDescripcion.Text = !string.IsNullOrEmpty(producto.Descripcion) ? producto.Descripcion : "No hay descripción disponible.";
+                
+                // Fecha de vencimiento y alerta
                 txtFechaVencimiento.Text = producto.FechaVencimiento.ToString("dd/MM/yyyy");
-                lblStockValor.Text = producto.Stock.ToString("N2"); // Formato con 2 decimales
+                MostrarAlertaVencimiento(producto);
 
-                // Lógica de colores para el stock
-                if (producto.Stock <= producto.StockMinimo)
+                // Stock con colores
+                lblStockValor.Text = producto.Stock.ToString("N2");
+                MostrarEstadoStock(producto);
+
+                // Categoría y Laboratorio
+                lblCategoria.Text = !string.IsNullOrEmpty(producto.NombreCategoria) ? producto.NombreCategoria : "Sin categoría";
+                lblLaboratorio.Text = !string.IsNullOrEmpty(producto.NombreLaboratorio) ? producto.NombreLaboratorio : "Sin laboratorio";
+
+                // Ubicación (Percha)
+                lblUbicacion.Text = !string.IsNullOrEmpty(producto.Ubicacion) ? $"📍 {producto.Ubicacion}" : "Sin ubicar";
+
+                // Costo y Precio
+                lblCosto.Text = $"${producto.CostoUnidad:N2}";
+
+                // Margen de ganancia
+                if (producto.CostoUnidad > 0)
                 {
-                    panelStock.FillColor = Color.FromArgb(255, 235, 238); // Rojo claro
-                    lblStockValor.ForeColor = Color.FromArgb(192, 0, 0);   // Rojo oscuro
+                    lblMargen.Text = $"{producto.MargenPorcentaje:N1}% (+${producto.MargenValor:N2})";
+                    lblMargen.ForeColor = producto.MargenPorcentaje > 30 ? Color.Green : 
+                                         producto.MargenPorcentaje > 15 ? Color.Orange : Color.Red;
                 }
                 else
                 {
-                    panelStock.FillColor = Color.FromArgb(230, 245, 237); // Verde claro
-                    lblStockValor.ForeColor = Color.FromArgb(0, 100, 0);   // Verde oscuro
+                    lblMargen.Text = "N/A";
+                    lblMargen.ForeColor = Color.Gray;
                 }
             }
             else
             {
                 LimpiarDetalles();
+            }
+        }
+
+        /// <summary>
+        /// Muestra alerta visual si el producto está próximo a vencer.
+        /// </summary>
+        private void MostrarAlertaVencimiento(EProducto producto)
+        {
+            int diasRestantes = producto.DiasParaVencer;
+
+            if (diasRestantes < 0)
+            {
+                // Vencido
+                panelVencimiento.Visible = true;
+                panelVencimiento.FillColor = Color.FromArgb(255, 200, 200);
+                txtFechaVencimiento.ForeColor = Color.DarkRed;
+                txtFechaVencimiento.Font = new Font(txtFechaVencimiento.Font, FontStyle.Bold);
+            }
+            else if (diasRestantes <= 30)
+            {
+                // Crítico (menos de 1 mes)
+                panelVencimiento.Visible = true;
+                panelVencimiento.FillColor = Color.FromArgb(255, 200, 200);
+                txtFechaVencimiento.ForeColor = Color.DarkRed;
+                txtFechaVencimiento.Font = new Font(txtFechaVencimiento.Font, FontStyle.Bold);
+            }
+            else if (diasRestantes <= 90)
+            {
+                // Advertencia (menos de 3 meses)
+                panelVencimiento.Visible = true;
+                panelVencimiento.FillColor = Color.FromArgb(255, 245, 200);
+                txtFechaVencimiento.ForeColor = Color.FromArgb(160, 98, 0);
+                txtFechaVencimiento.Font = new Font(txtFechaVencimiento.Font, FontStyle.Bold);
+            }
+            else
+            {
+                // OK
+                panelVencimiento.Visible = false;
+                txtFechaVencimiento.ForeColor = Color.Black;
+                txtFechaVencimiento.Font = new Font(txtFechaVencimiento.Font, FontStyle.Regular);
+            }
+        }
+
+        /// <summary>
+        /// Muestra el estado del stock con colores.
+        /// </summary>
+        private void MostrarEstadoStock(EProducto producto)
+        {
+            if (producto.Stock <= 0)
+            {
+                panelStock.FillColor = Color.FromArgb(255, 200, 200);
+                lblStockValor.ForeColor = Color.DarkRed;
+                lblStockTexto.Text = "🚨 SIN STOCK";
+            }
+            else if (producto.Stock <= producto.StockMinimo)
+            {
+                panelStock.FillColor = Color.FromArgb(255, 235, 238);
+                lblStockValor.ForeColor = Color.FromArgb(192, 0, 0);
+                lblStockTexto.Text = $"⚠️ BAJO (Min: {producto.StockMinimo})";
+            }
+            else if (producto.Stock >= producto.StockMaximo)
+            {
+                panelStock.FillColor = Color.FromArgb(200, 230, 255);
+                lblStockValor.ForeColor = Color.FromArgb(0, 100, 200);
+                lblStockTexto.Text = $"📦 EXCESO (Max: {producto.StockMaximo})";
+            }
+            else
+            {
+                panelStock.FillColor = Color.FromArgb(230, 245, 237);
+                lblStockValor.ForeColor = Color.FromArgb(0, 100, 0);
+                lblStockTexto.Text = "✓ en Stock";
             }
         }
 
@@ -132,8 +220,17 @@ namespace LogiPharm.Presentacion
             lblDescripcion.Text = "Seleccione un producto para ver sus detalles.";
             txtFechaVencimiento.Text = "";
             lblStockValor.Text = "-";
+            lblStockTexto.Text = "en Stock";
             panelStock.FillColor = Color.Gainsboro;
             lblStockValor.ForeColor = Color.Black;
+            
+            lblCategoria.Text = "...";
+            lblLaboratorio.Text = "...";
+            lblUbicacion.Text = "...";
+            lblCosto.Text = "$0.00";
+            lblMargen.Text = "...";
+            lblMargen.ForeColor = Color.Black;
+            panelVencimiento.Visible = false;
         }
 
         // --- EVENTOS DE CONTROLES ---
