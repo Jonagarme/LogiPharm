@@ -28,6 +28,7 @@ namespace LogiPharm.Presentacion.Utilidades
                 {
                     { "Inicio", ConstruirMenuInicio(formulario) },
                     { "Ventas", ConstruirMenuVentas(formulario) },
+                    { "Caja", ConstruirMenuCaja(formulario) },
                     { "Inventario", ConstruirMenuInventario(formulario) },
                     { "Compras", ConstruirMenuCompras(formulario) },
                     { "Clientes", ConstruirMenuClientes(formulario) },
@@ -45,13 +46,13 @@ namespace LogiPharm.Presentacion.Utilidades
             switch (rolUsuario)
             {
                 case "Administrador":
-                    menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventas"], todosLosMenus["Inventario"], todosLosMenus["Compras"], todosLosMenus["Clientes"], todosLosMenus["Finanzas"], todosLosMenus["Normativas"], todosLosMenus["Seguridad"], todosLosMenus["Configuracion"], todosLosMenus["Sucursales"], todosLosMenus["Ventanas"] });
+                    menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventas"], todosLosMenus["Caja"], todosLosMenus["Inventario"], todosLosMenus["Compras"], todosLosMenus["Clientes"], todosLosMenus["Finanzas"], todosLosMenus["Normativas"], todosLosMenus["Seguridad"], todosLosMenus["Configuracion"], todosLosMenus["Sucursales"], todosLosMenus["Ventanas"] });
                     break;
                 case "Farmacéutico":
-                    menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventas"], todosLosMenus["Inventario"], todosLosMenus["Clientes"], todosLosMenus["Normativas"], todosLosMenus["Ventanas"] });
+                    menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventas"], todosLosMenus["Caja"], todosLosMenus["Inventario"], todosLosMenus["Clientes"], todosLosMenus["Normativas"], todosLosMenus["Ventanas"] });
                     break;
                 case "Cajera":
-                    menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventas"], todosLosMenus["Clientes"], todosLosMenus["Ventanas"] });
+                    menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventas"], todosLosMenus["Caja"], todosLosMenus["Clientes"], todosLosMenus["Ventanas"] });
                     break;
                 default: // Rol desconocido
                     menusParaEsteRol.AddRange(new[] { todosLosMenus["Inicio"], todosLosMenus["Ventanas"] });
@@ -127,9 +128,6 @@ namespace LogiPharm.Presentacion.Utilidades
             ToolStripMenuItem devoluciones = new ToolStripMenuItem("Devoluciones");
             devoluciones.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmDevoluciones>(formulario);
             ventas.DropDownItems.Add(devoluciones);
-            ToolStripMenuItem cierreDeCaja = new ToolStripMenuItem("Cierre de Caja");
-            cierreDeCaja.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmCierreCaja>(formulario);
-            ventas.DropDownItems.Add(cierreDeCaja);
             ToolStripMenuItem historialDeVentas = new ToolStripMenuItem("Historial de ventas");
             historialDeVentas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmHistorialVentas>(formulario);
             ventas.DropDownItems.Add(historialDeVentas);
@@ -138,6 +136,70 @@ namespace LogiPharm.Presentacion.Utilidades
             ventas.DropDownItems.Add(cotizaciones);
             ventas.DropDownItems.Add("Recetas médicas");
             return ventas;
+        }
+
+        private static ToolStripMenuItem ConstruirMenuCaja(Form formulario)
+        {
+            ToolStripMenuItem caja = new ToolStripMenuItem("💰 Caja");
+            
+            // Gestión de Cajas
+            var gestionCajas = new ToolStripMenuItem("Gestión de Cajas");
+            gestionCajas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmGestionCajas>(formulario);
+            caja.DropDownItems.Add(gestionCajas);
+            
+            caja.DropDownItems.Add(new ToolStripSeparator());
+            
+            // Operaciones de Caja
+            var aperturaCaja = new ToolStripMenuItem("Apertura de Caja");
+            aperturaCaja.Click += (s, e) =>
+            {
+                using (FrmAperturaCaja frm = new FrmAperturaCaja())
+                {
+                    frm.ShowDialog();
+                }
+            };
+            caja.DropDownItems.Add(aperturaCaja);
+            
+            var cierreCaja = new ToolStripMenuItem("Cierre de Caja");
+            cierreCaja.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmCierreCaja>(formulario);
+            caja.DropDownItems.Add(cierreCaja);
+            
+            var estadoCaja = new ToolStripMenuItem("Estado de Caja");
+            estadoCaja.Click += (s, e) =>
+            {
+                // TODO: obtener idCaja actual desde configuración/sesión.
+                const int idCajaActual = 1;
+                using (var frm = new FrmEstadoCaja(idCajaActual))
+                {
+                    frm.ShowDialog(formulario);
+                }
+            };
+            caja.DropDownItems.Add(estadoCaja);
+            
+            caja.DropDownItems.Add(new ToolStripSeparator());
+            
+            // Reportes y Cierres
+            var cierresDiarios = new ToolStripMenuItem("Cierres Diarios/Mensuales/Anuales");
+            cierresDiarios.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmReporteCierres>(formulario);
+            caja.DropDownItems.Add(cierresDiarios);
+            
+            var movimientos = new ToolStripMenuItem("Movimientos de Caja");
+            movimientos.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmMovimientosCaja>(formulario);
+            caja.DropDownItems.Add(movimientos);
+            
+            caja.DropDownItems.Add(new ToolStripSeparator());
+            
+            // Arqueo y Cuadre de Caja
+            var arqueoCaja = new ToolStripMenuItem("Arqueo de Caja");
+            arqueoCaja.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmArqueoCaja>(formulario);
+            caja.DropDownItems.Add(arqueoCaja);
+            
+            var cuadreCaja = new ToolStripMenuItem("Cuadre de Caja");
+            // El cuadre se realiza en el cierre (o puedes crear FrmCuadreCaja luego)
+            cuadreCaja.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmCierreCaja>(formulario);
+            caja.DropDownItems.Add(cuadreCaja);
+            
+            return caja;
         }
 
         private static void AbrirPuntoDeVentaConVerificacion(Form formularioPrincipal)

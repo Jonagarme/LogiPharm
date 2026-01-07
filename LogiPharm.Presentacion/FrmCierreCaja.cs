@@ -49,16 +49,20 @@ namespace LogiPharm.Presentacion
                     return;
                 }
 
-                // --- El resto del código se mantiene igual ---
+                // --- Calcular los totales del sistema ---
 
                 int idAperturaActual = Convert.ToInt32(_aperturaActual["id"]);
                 decimal saldoInicial = Convert.ToDecimal(_aperturaActual["saldoInicial"]);
 
-                decimal totalVentas = d_Cierre.ObtenerTotalVentas(idAperturaActual);
-                decimal totalEgresos = 0;
+                // ✨ CORREGIDO: Actualizamos los totales del sistema antes de mostrarlos
+                d_Cierre.ActualizarTotalesSistema(idAperturaActual);
+
+                // Obtenemos los totales actualizados
+                decimal totalIngresos = d_Cierre.CalcularIngresosSistema(idAperturaActual);
+                decimal totalEgresos = d_Cierre.CalcularEgresosSistema(idAperturaActual);
 
                 lblSaldoInicial.Text = saldoInicial.ToString("C2");
-                lblTotalIngresos.Text = totalVentas.ToString("C2");
+                lblTotalIngresos.Text = totalIngresos.ToString("C2");
                 lblTotalEgresos.Text = totalEgresos.ToString("C2");
 
                 CalcularResultadosFinales();
