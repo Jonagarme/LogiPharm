@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -10,17 +11,55 @@ namespace LogiPharm.Presentacion.Utilidades
 {
     public static class MenuHelper
     {
+        // === PALETA DE COLORES PROFESIONAL ===
+        private static class Colores
+        {
+            // Color principal - Azul profesional
+            public static readonly Color PrincipalOscuro = Color.FromArgb(41, 98, 255);
+            public static readonly Color PrincipalClaro = Color.FromArgb(56, 116, 255);
+            
+            // Color de fondo
+            public static readonly Color FondoMenu = Color.FromArgb(248, 249, 250);
+            public static readonly Color FondoMenuHover = Color.FromArgb(230, 236, 245);
+            public static readonly Color FondoMenuSeleccionado = Color.FromArgb(214, 228, 255);
+            
+            // Texto
+            public static readonly Color TextoPrincipal = Color.FromArgb(33, 37, 41);
+            public static readonly Color TextoSecundario = Color.FromArgb(108, 117, 125);
+            public static readonly Color TextoBlanco = Color.White;
+            
+            // Bordes
+            public static readonly Color Borde = Color.FromArgb(222, 226, 230);
+            public static readonly Color BordeSombra = Color.FromArgb(206, 212, 218);
+            
+            // Estados
+            public static readonly Color Exito = Color.FromArgb(40, 167, 69);
+            public static readonly Color Advertencia = Color.FromArgb(255, 193, 7);
+            public static readonly Color Peligro = Color.FromArgb(220, 53, 69);
+            public static readonly Color Info = Color.FromArgb(23, 162, 184);
+        }
+        
+        // === FUENTES ===
+        private static class Fuentes
+        {
+            public static readonly Font MenuPrincipal = new Font("Segoe UI", 9.5F, FontStyle.Regular);
+            public static readonly Font MenuDestacado = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+            public static readonly Font SubMenu = new Font("Segoe UI", 9F, FontStyle.Regular);
+            public static readonly Font Indicador = new Font("Segoe UI", 8F, FontStyle.Regular);
+        }
         public static MenuStrip ConstruirMenu(Form formulario, string rolUsuario)
         {
             MenuStrip menu = new MenuStrip
             {
                 Dock = DockStyle.Top,
-                BackColor = Color.WhiteSmoke,
-                Font = new Font("Segoe UI", 10, FontStyle.Regular),
-                // 1. Aseguramos que el overflow esté habilitado
+                BackColor = Colores.FondoMenu,
+                ForeColor = Colores.TextoPrincipal,
+                Font = Fuentes.MenuPrincipal,
                 CanOverflow = true,
-                LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow
-
+                LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow,
+                Padding = new Padding(8, 4, 8, 4),
+                RenderMode = ToolStripRenderMode.Professional,
+                Renderer = new MenuRendererProfesional()
             };
 
             // Diccionario para acceder fácilmente a cada menú por un nombre clave
@@ -62,25 +101,165 @@ namespace LogiPharm.Presentacion.Utilidades
             // 3. Añadimos los menús del rol al MenuStrip
             menu.Items.AddRange(menusParaEsteRol.ToArray());
 
-            // 4. AL FINAL, añadimos los controles de navegación anclados a la derecha
+            // 4. Agregar indicador de sesión
+            AgregarIndicadorSesion(menu);
+
+            // 5. AL FINAL, añadimos los controles de navegación anclados a la derecha
             AgregarNavegadorVentanas(menu, formulario);
 
             return menu;
         }
 
-        // Métodos privados para construir submenús
+        // === RENDERER PERSONALIZADO ===
+        private class MenuRendererProfesional : ToolStripProfessionalRenderer
+        {
+            public MenuRendererProfesional() : base(new ColoresMenuProfesional()) { }
+
+            protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
+            {
+                if (!e.Item.Selected)
+                {
+                    base.OnRenderMenuItemBackground(e);
+                    return;
+                }
+
+                Rectangle rc = new Rectangle(Point.Empty, e.Item.Size);
+                
+                // Efecto hover con gradiente sutil
+                using (LinearGradientBrush brush = new LinearGradientBrush(
+                    rc, 
+                    Colores.FondoMenuHover, 
+                    Colores.FondoMenuSeleccionado, 
+                    LinearGradientMode.Vertical))
+                {
+                    e.Graphics.FillRectangle(brush, rc);
+                }
+                
+                // Borde inferior sutil
+                using (Pen pen = new Pen(Colores.PrincipalClaro, 2))
+                {
+                    e.Graphics.DrawLine(pen, rc.Left, rc.Bottom - 1, rc.Right, rc.Bottom - 1);
+                }
+            }
+
+            protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
+            {
+                // Mejorar el renderizado del texto
+                e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                e.TextColor = e.Item.Selected ? Colores.PrincipalOscuro : Colores.TextoPrincipal;
+                base.OnRenderItemText(e);
+            }
+        }
+
+        private class ColoresMenuProfesional : ProfessionalColorTable
+        {
+            public override Color MenuItemSelected => Colores.FondoMenuHover;
+            public override Color MenuItemSelectedGradientBegin => Colores.FondoMenuHover;
+            public override Color MenuItemSelectedGradientEnd => Colores.FondoMenuSeleccionado;
+            public override Color MenuItemBorder => Colores.Borde;
+            public override Color MenuBorder => Colores.Borde;
+            public override Color MenuItemPressedGradientBegin => Colores.PrincipalClaro;
+            public override Color MenuItemPressedGradientEnd => Colores.PrincipalOscuro;
+            public override Color ToolStripDropDownBackground => Color.White;
+            public override Color ImageMarginGradientBegin => Colores.FondoMenu;
+            public override Color ImageMarginGradientMiddle => Colores.FondoMenu;
+            public override Color ImageMarginGradientEnd => Colores.FondoMenu;
+        }
+
+        // === INDICADOR DE SESIÓN ===
+        private static void AgregarIndicadorSesion(MenuStrip menu)
+        {
+            // Separador visual
+            var separador = new ToolStripSeparator
+            {
+                Alignment = ToolStripItemAlignment.Right
+            };
+
+            // Indicador de estado de caja
+            var lblCaja = new ToolStripLabel
+            {
+                Text = ObtenerTextoEstadoCaja(),
+                ForeColor = ObtenerColorEstadoCaja(),
+                Font = Fuentes.Indicador,
+                Alignment = ToolStripItemAlignment.Right,
+                Padding = new Padding(8, 0, 8, 0),
+                ToolTipText = "Estado de la caja actual"
+            };
+
+            // Indicador de usuario
+            var lblUsuario = new ToolStripLabel
+            {
+                Text = $"👤 {SesionActual.NombreUsuario} ({SesionActual.Rol})",
+                ForeColor = Colores.TextoSecundario,
+                Font = Fuentes.Indicador,
+                Alignment = ToolStripItemAlignment.Right,
+                Padding = new Padding(8, 0, 8, 0)
+            };
+
+            menu.Items.Add(lblUsuario);
+            menu.Items.Add(lblCaja);
+            menu.Items.Add(separador);
+        }
+
+        private static string ObtenerTextoEstadoCaja()
+        {
+            try
+            {
+                DCierreCaja d_Cierre = new DCierreCaja();
+                bool cajaAbierta = d_Cierre.VerificarCajaAbiertaHoy(SesionActual.IdCaja);
+                return cajaAbierta ? $"💰 {SesionActual.NombreCaja} - ABIERTA" : $"💰 {SesionActual.NombreCaja} - CERRADA";
+            }
+            catch
+            {
+                return "💰 Caja - Estado desconocido";
+            }
+        }
+
+        private static Color ObtenerColorEstadoCaja()
+        {
+            try
+            {
+                DCierreCaja d_Cierre = new DCierreCaja();
+                bool cajaAbierta = d_Cierre.VerificarCajaAbiertaHoy(SesionActual.IdCaja);
+                return cajaAbierta ? Colores.Exito : Colores.Peligro;
+            }
+            catch
+            {
+                return Colores.Advertencia;
+            }
+        }
+
+        // === MÉTODOS PARA CONSTRUIR SUBMENÚS ===
 
         private static ToolStripMenuItem ConstruirMenuInicio(Form formulario)
         {
-            var inicio = new ToolStripMenuItem("🏠 Inicio");
+            var inicio = new ToolStripMenuItem("🏠 Inicio")
+            {
+                Font = Fuentes.MenuDestacado
+            };
 
-            var mDashboard = new ToolStripMenuItem("Dashboard");
+            var mDashboard = new ToolStripMenuItem("Dashboard")
+            {
+                Font = Fuentes.SubMenu,
+                ShortcutKeys = Keys.Control | Keys.D,
+                ShowShortcutKeys = true
+            };
             mDashboard.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmDashboard>(formulario);
 
-            var mNotif = new ToolStripMenuItem("Notificaciones");
+            var mNotif = new ToolStripMenuItem("Notificaciones")
+            {
+                Font = Fuentes.SubMenu,
+                ShortcutKeys = Keys.Control | Keys.N,
+                ShowShortcutKeys = true
+            };
 
-            var mCerrar = new ToolStripMenuItem("Cerrar Sesión");
-            mCerrar.ShortcutKeys = Keys.Control | Keys.L;
+            var mCerrar = new ToolStripMenuItem("Cerrar Sesión")
+            {
+                Font = Fuentes.SubMenu,
+                ForeColor = Colores.Peligro,
+                ShortcutKeys = Keys.Control | Keys.L,
+                ShowShortcutKeys = true
+            };
             mCerrar.Click += (s, e) => CerrarSesion(formulario);
 
             inicio.DropDownItems.Add(mDashboard);
@@ -118,8 +297,17 @@ namespace LogiPharm.Presentacion.Utilidades
 
         private static ToolStripMenuItem ConstruirMenuVentas(Form formulario)
         {
-            ToolStripMenuItem ventas = new ToolStripMenuItem("🧾 Ventas y Recetas");
-            ToolStripMenuItem puntoDeVenta = new ToolStripMenuItem("Punto de venta");
+            ToolStripMenuItem ventas = new ToolStripMenuItem("🧾 Ventas y Recetas")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
+            ToolStripMenuItem puntoDeVenta = new ToolStripMenuItem("Punto de venta")
+            {
+                Font = Fuentes.MenuDestacado,
+                ForeColor = Colores.PrincipalOscuro,
+                ShortcutKeys = Keys.F2,
+                ShowShortcutKeys = true
+            };
             puntoDeVenta.Click += (s, e) => AbrirPuntoDeVentaConVerificacion(formulario);
             ventas.DropDownItems.Add(puntoDeVenta);
             ToolStripMenuItem facturacion = new ToolStripMenuItem("Facturación");
@@ -140,7 +328,10 @@ namespace LogiPharm.Presentacion.Utilidades
 
         private static ToolStripMenuItem ConstruirMenuCaja(Form formulario)
         {
-            ToolStripMenuItem caja = new ToolStripMenuItem("💰 Caja");
+            ToolStripMenuItem caja = new ToolStripMenuItem("💰 Caja")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
             
             // Gestión de Cajas
             var gestionCajas = new ToolStripMenuItem("Gestión de Cajas");
@@ -167,8 +358,7 @@ namespace LogiPharm.Presentacion.Utilidades
             var estadoCaja = new ToolStripMenuItem("Estado de Caja");
             estadoCaja.Click += (s, e) =>
             {
-                // TODO: obtener idCaja actual desde configuración/sesión.
-                const int idCajaActual = 1;
+                int idCajaActual = SesionActual.IdCaja; // Usar la caja de la sesión
                 using (var frm = new FrmEstadoCaja(idCajaActual))
                 {
                     frm.ShowDialog(formulario);
@@ -205,7 +395,7 @@ namespace LogiPharm.Presentacion.Utilidades
         private static void AbrirPuntoDeVentaConVerificacion(Form formularioPrincipal)
         {
             DCierreCaja d_Cierre = new DCierreCaja();
-            int idCajaActual = 1;
+            int idCajaActual = SesionActual.IdCaja; // Usar la caja de la sesión
             try
             {
                 bool cajaAbierta = d_Cierre.VerificarCajaAbiertaHoy(idCajaActual);
@@ -215,7 +405,7 @@ namespace LogiPharm.Presentacion.Utilidades
                 }
                 else
                 {
-                    MessageBox.Show("Debe realizar la apertura de caja para poder iniciar las ventas.", "Caja Cerrada", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Debe realizar la apertura de {SesionActual.NombreCaja} para poder iniciar las ventas.", "Caja Cerrada", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     using (FrmAperturaCaja frmApertura = new FrmAperturaCaja())
                     {
                         if (frmApertura.ShowDialog() == DialogResult.OK)
@@ -223,7 +413,7 @@ namespace LogiPharm.Presentacion.Utilidades
                             decimal montoInicial = frmApertura.MontoInicial;
                             int idUsuarioActual = SesionActual.IdUsuario;
                             d_Cierre.RegistrarApertura(montoInicial, idUsuarioActual, idCajaActual);
-                            MessageBox.Show($"Caja abierta con {montoInicial:C2}", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show($"{SesionActual.NombreCaja} abierta con {montoInicial:C2}", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             FormulariosHelper.AbrirFormulario<FrmPuntoDeVenta>(formularioPrincipal);
                         }
                     }
@@ -237,7 +427,10 @@ namespace LogiPharm.Presentacion.Utilidades
 
         private static ToolStripMenuItem ConstruirMenuInventario(Form formulario)
         {
-            ToolStripMenuItem inventario = new ToolStripMenuItem("📦 Inventario y Medicamentos");
+            ToolStripMenuItem inventario = new ToolStripMenuItem("📦 Inventario y Medicamentos")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
 
             ToolStripMenuItem productos = new ToolStripMenuItem("Productos");
             productos.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmProductos>(formulario);
@@ -281,7 +474,10 @@ namespace LogiPharm.Presentacion.Utilidades
 
         private static ToolStripMenuItem ConstruirMenuCompras(Form formulario)
         {
-            ToolStripMenuItem compras = new ToolStripMenuItem("🛒 Compras y Proveedores");
+            ToolStripMenuItem compras = new ToolStripMenuItem("🛒 Compras y Proveedores")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
             ToolStripMenuItem ordenesCompra = new ToolStripMenuItem("Órdenes de compra");
             ordenesCompra.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmOrdenesCompra>(formulario);
             compras.DropDownItems.Add(ordenesCompra);
@@ -303,7 +499,10 @@ namespace LogiPharm.Presentacion.Utilidades
 
         private static ToolStripMenuItem ConstruirMenuClientes(Form formulario)
         {
-            ToolStripMenuItem clientes = new ToolStripMenuItem("👥 Clientes");
+            ToolStripMenuItem clientes = new ToolStripMenuItem("👥 Clientes")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
             ToolStripMenuItem gestionClientes = new ToolStripMenuItem("Gestión de Clientes");
             gestionClientes.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmClientes>(formulario);
             clientes.DropDownItems.Add(gestionClientes);
@@ -314,7 +513,10 @@ namespace LogiPharm.Presentacion.Utilidades
 
         private static ToolStripMenuItem ConstruirMenuFinanzas(Form formulario)
         {
-            ToolStripMenuItem finanzas = new ToolStripMenuItem("📊 Finanzas y Reportes");
+            ToolStripMenuItem finanzas = new ToolStripMenuItem("📊 Finanzas y Reportes")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
             ToolStripMenuItem Reporteventas = new ToolStripMenuItem("Reporte de ventas");
             Reporteventas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmReporteVentas>(formulario);
             finanzas.DropDownItems.Add("CxC / CxP");
@@ -329,7 +531,10 @@ namespace LogiPharm.Presentacion.Utilidades
 
         private static ToolStripMenuItem ConstruirMenuNormativas()
         {
-            ToolStripMenuItem normativas = new ToolStripMenuItem("🏥 Normativas");
+            ToolStripMenuItem normativas = new ToolStripMenuItem("🏥 Normativas")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
             normativas.DropDownItems.Add("Control psicotrópicos");
             normativas.DropDownItems.Add("ANMAT/SRI");
             return normativas;
@@ -337,7 +542,10 @@ namespace LogiPharm.Presentacion.Utilidades
 
         private static ToolStripMenuItem ConstruirMenuSeguridad(Form formulario)
         {
-            ToolStripMenuItem seguridad = new ToolStripMenuItem("👤 Seguridad");
+            ToolStripMenuItem seguridad = new ToolStripMenuItem("👤 Seguridad")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
             ToolStripMenuItem usuarios = new ToolStripMenuItem("Usuarios");
             usuarios.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmUsuarios>(formulario);
             seguridad.DropDownItems.Add(usuarios);
@@ -352,7 +560,10 @@ namespace LogiPharm.Presentacion.Utilidades
 
         private static ToolStripMenuItem ConstruirMenuConfiguracion(Form formulario)
         {
-            ToolStripMenuItem configuracion = new ToolStripMenuItem("⚙️ Configuración");
+            ToolStripMenuItem configuracion = new ToolStripMenuItem("⚙️ Configuración")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
             ToolStripMenuItem empresa = new ToolStripMenuItem("Empresa");
             empresa.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmEmpresa>(formulario);
             configuracion.DropDownItems.Add(empresa);
@@ -361,6 +572,12 @@ namespace LogiPharm.Presentacion.Utilidades
             configuracion.DropDownItems.Add(impuestos);
             var secuencias = new ToolStripMenuItem("Secuencias");
             secuencias.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmSecuencias>(formulario);
+
+            // Subopciones de secuencias
+            var puntosEmision = new ToolStripMenuItem("Puntos de emisión");
+            puntosEmision.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmPuntosEmision>(formulario);
+            secuencias.DropDownItems.Add(puntosEmision);
+
             configuracion.DropDownItems.Add(secuencias);
             configuracion.DropDownItems.Add("Firma electrónica");
             configuracion.DropDownItems.Add("Integraciones");
@@ -369,7 +586,10 @@ namespace LogiPharm.Presentacion.Utilidades
 
         private static ToolStripMenuItem ConstruirMenuSucursales()
         {
-            ToolStripMenuItem sucursales = new ToolStripMenuItem("🏪 Sucursales");
+            ToolStripMenuItem sucursales = new ToolStripMenuItem("🏪 Sucursales")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
             sucursales.DropDownItems.Add("Gestión de Sucursales");
             sucursales.DropDownItems.Add("Transferencias internas");
             return sucursales;
@@ -378,7 +598,10 @@ namespace LogiPharm.Presentacion.Utilidades
         // === Ventanas: listado dinámico de formularios abiertos y navegación rápida ===
         private static ToolStripMenuItem ConstruirMenuVentanas(Form formulario)
         {
-            var ventanas = new ToolStripMenuItem("🗂 Ventanas");
+            var ventanas = new ToolStripMenuItem("🗂 Ventanas")
+            {
+                Font = Fuentes.MenuPrincipal
+            };
             var mAnterior = new ToolStripMenuItem("Anterior");
             mAnterior.ShortcutKeys = Keys.Control | Keys.Shift | Keys.F6;
             mAnterior.Click += (s, e) => ActivarVentanaOffset(formulario, -1);
@@ -435,24 +658,40 @@ namespace LogiPharm.Presentacion.Utilidades
             return formulario.IsMdiContainer ? formulario.ActiveMdiChild : Form.ActiveForm;
         }
 
-        // Control visual: flechas + dropdown con ventanas
+        // === NAVEGADOR DE VENTANAS ===
         private static void AgregarNavegadorVentanas(MenuStrip menu, Form formulario)
         {
-            // 1. AÑADIMOS LA PROPIEDAD 'ALIGNMENT' A CADA CONTROL
+            // Botones de navegación con estilo profesional
             var btnPrev = new ToolStripButton("◀")
             {
-                ToolTipText = "Ventana anterior",
-                Alignment = ToolStripItemAlignment.Right // <-- ANCLA A LA DERECHA
+                ToolTipText = "Ventana anterior (Ctrl+Shift+F6)",
+                Alignment = ToolStripItemAlignment.Right,
+                Font = Fuentes.MenuPrincipal,
+                ForeColor = Colores.PrincipalOscuro,
+                DisplayStyle = ToolStripItemDisplayStyle.Text,
+                AutoSize = false,
+                Width = 30
             };
+            
             var ddStack = new ToolStripDropDownButton("Ventanas")
             {
                 ToolTipText = "Ventanas abiertas",
-                Alignment = ToolStripItemAlignment.Right // <-- ANCLA A LA DERECHA
+                Alignment = ToolStripItemAlignment.Right,
+                Font = Fuentes.Indicador,
+                ForeColor = Colores.TextoSecundario,
+                DisplayStyle = ToolStripItemDisplayStyle.Text,
+                ShowDropDownArrow = true
             };
+            
             var btnNext = new ToolStripButton("▶")
             {
-                ToolTipText = "Ventana siguiente",
-                Alignment = ToolStripItemAlignment.Right // <-- ANCLA A LA DERECHA
+                ToolTipText = "Ventana siguiente (Ctrl+F6)",
+                Alignment = ToolStripItemAlignment.Right,
+                Font = Fuentes.MenuPrincipal,
+                ForeColor = Colores.PrincipalOscuro,
+                DisplayStyle = ToolStripItemDisplayStyle.Text,
+                AutoSize = false,
+                Width = 30
             };
 
             btnPrev.Click += (s, e) => ActivarVentanaOffset(formulario, -1);
