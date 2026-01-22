@@ -34,6 +34,12 @@
             this.dtpFechaExpiracion = new Guna.UI2.WinForms.Guna2DateTimePicker();
             this.label4 = new System.Windows.Forms.Label();
             this.txtCertificadoPass = new Guna.UI2.WinForms.Guna2TextBox();
+            this.txtContribuyenteEspecial = new Guna.UI2.WinForms.Guna2TextBox();
+            this.cboAmbienteSRI = new Guna.UI2.WinForms.Guna2ComboBox();
+            this.chkObligadoContabilidad = new Guna.UI2.WinForms.Guna2ToggleSwitch();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.btnSeleccionarCertificado = new Guna.UI2.WinForms.Guna2Button();
             this.txtRutaCertificado = new Guna.UI2.WinForms.Guna2TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -85,20 +91,20 @@
             this.guna2TabControl1.SelectedIndex = 0;
             this.guna2TabControl1.Size = new System.Drawing.Size(794, 394);
             this.guna2TabControl1.TabButtonHoverState.BorderColor = System.Drawing.Color.Empty;
-            this.guna2TabControl1.TabButtonHoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(245)))), ((int)(((byte)(250)))));
-            this.guna2TabControl1.TabButtonHoverState.Font = new System.Drawing.Font("Segoe UI Semibold", 10F);
-            this.guna2TabControl1.TabButtonHoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
-            this.guna2TabControl1.TabButtonHoverState.InnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
+            this.guna2TabControl1.TabButtonHoverState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(236)))), ((int)(((byte)(245)))));
+            this.guna2TabControl1.TabButtonHoverState.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.guna2TabControl1.TabButtonHoverState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(98)))), ((int)(((byte)(255)))));
+            this.guna2TabControl1.TabButtonHoverState.InnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(56)))), ((int)(((byte)(116)))), ((int)(((byte)(255)))));
             this.guna2TabControl1.TabButtonIdleState.BorderColor = System.Drawing.Color.Empty;
             this.guna2TabControl1.TabButtonIdleState.FillColor = System.Drawing.Color.White;
-            this.guna2TabControl1.TabButtonIdleState.Font = new System.Drawing.Font("Segoe UI Semibold", 10F);
-            this.guna2TabControl1.TabButtonIdleState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            this.guna2TabControl1.TabButtonIdleState.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.guna2TabControl1.TabButtonIdleState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
             this.guna2TabControl1.TabButtonIdleState.InnerColor = System.Drawing.Color.White;
             this.guna2TabControl1.TabButtonSelectedState.BorderColor = System.Drawing.Color.Empty;
             this.guna2TabControl1.TabButtonSelectedState.FillColor = System.Drawing.Color.White;
-            this.guna2TabControl1.TabButtonSelectedState.Font = new System.Drawing.Font("Segoe UI Semibold", 10F);
-            this.guna2TabControl1.TabButtonSelectedState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
-            this.guna2TabControl1.TabButtonSelectedState.InnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(123)))), ((int)(((byte)(255)))));
+            this.guna2TabControl1.TabButtonSelectedState.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.guna2TabControl1.TabButtonSelectedState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(98)))), ((int)(((byte)(255)))));
+            this.guna2TabControl1.TabButtonSelectedState.InnerColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(98)))), ((int)(((byte)(255)))));
             this.guna2TabControl1.TabButtonSize = new System.Drawing.Size(180, 40);
             this.guna2TabControl1.TabIndex = 10;
             this.guna2TabControl1.TabMenuBackColor = System.Drawing.Color.White;
@@ -233,6 +239,12 @@
             // tabPageFacturacion
             // 
             this.tabPageFacturacion.BackColor = System.Drawing.Color.White;
+            this.tabPageFacturacion.Controls.Add(this.label8);
+            this.tabPageFacturacion.Controls.Add(this.chkObligadoContabilidad);
+            this.tabPageFacturacion.Controls.Add(this.label7);
+            this.tabPageFacturacion.Controls.Add(this.cboAmbienteSRI);
+            this.tabPageFacturacion.Controls.Add(this.label5);
+            this.tabPageFacturacion.Controls.Add(this.txtContribuyenteEspecial);
             this.tabPageFacturacion.Controls.Add(this.dtpFechaExpiracion);
             this.tabPageFacturacion.Controls.Add(this.label4);
             this.tabPageFacturacion.Controls.Add(this.txtCertificadoPass);
@@ -326,13 +338,92 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Certificado Digital";
             // 
+            // txtContribuyenteEspecial
+            // 
+            this.txtContribuyenteEspecial.BorderRadius = 6;
+            this.txtContribuyenteEspecial.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtContribuyenteEspecial.DefaultText = "";
+            this.txtContribuyenteEspecial.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtContribuyenteEspecial.Location = new System.Drawing.Point(23, 280);
+            this.txtContribuyenteEspecial.Name = "txtContribuyenteEspecial";
+            this.txtContribuyenteEspecial.PasswordChar = '\0';
+            this.txtContribuyenteEspecial.PlaceholderText = "Número de Contribuyente Especial (si aplica)";
+            this.txtContribuyenteEspecial.SelectedText = "";
+            this.txtContribuyenteEspecial.Size = new System.Drawing.Size(560, 36);
+            this.txtContribuyenteEspecial.TabIndex = 6;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label5.Location = new System.Drawing.Point(20, 262);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(138, 15);
+            this.label5.TabIndex = 7;
+            this.label5.Text = "Contribuyente Especial:";
+            // 
+            // cboAmbienteSRI
+            // 
+            this.cboAmbienteSRI.BackColor = System.Drawing.Color.Transparent;
+            this.cboAmbienteSRI.BorderRadius = 6;
+            this.cboAmbienteSRI.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboAmbienteSRI.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboAmbienteSRI.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cboAmbienteSRI.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
+            this.cboAmbienteSRI.ItemHeight = 30;
+            this.cboAmbienteSRI.Items.AddRange(new object[] {
+            "Pruebas",
+            "Producción"});
+            this.cboAmbienteSRI.Location = new System.Drawing.Point(23, 350);
+            this.cboAmbienteSRI.Name = "cboAmbienteSRI";
+            this.cboAmbienteSRI.Size = new System.Drawing.Size(270, 36);
+            this.cboAmbienteSRI.TabIndex = 10;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label7.Location = new System.Drawing.Point(20, 332);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(86, 15);
+            this.label7.TabIndex = 11;
+            this.label7.Text = "Ambiente SRI:";
+            // 
+            // chkObligadoContabilidad
+            // 
+            this.chkObligadoContabilidad.CheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(98)))), ((int)(((byte)(255)))));
+            this.chkObligadoContabilidad.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(98)))), ((int)(((byte)(255)))));
+            this.chkObligadoContabilidad.CheckedState.InnerBorderColor = System.Drawing.Color.White;
+            this.chkObligadoContabilidad.CheckedState.InnerColor = System.Drawing.Color.White;
+            this.chkObligadoContabilidad.Location = new System.Drawing.Point(313, 350);
+            this.chkObligadoContabilidad.Name = "chkObligadoContabilidad";
+            this.chkObligadoContabilidad.Size = new System.Drawing.Size(50, 25);
+            this.chkObligadoContabilidad.TabIndex = 12;
+            this.chkObligadoContabilidad.UncheckedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            this.chkObligadoContabilidad.UncheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(125)))), ((int)(((byte)(137)))), ((int)(((byte)(149)))));
+            this.chkObligadoContabilidad.UncheckedState.InnerBorderColor = System.Drawing.Color.White;
+            this.chkObligadoContabilidad.UncheckedState.InnerColor = System.Drawing.Color.White;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.label8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.label8.Location = new System.Drawing.Point(369, 355);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(175, 15);
+            this.label8.TabIndex = 13;
+            this.label8.Text = "Obligado a llevar Contabilidad";
+            // 
             // btnCancelar
             // 
             this.btnCancelar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancelar.BorderRadius = 8;
-            this.btnCancelar.FillColor = System.Drawing.Color.Gainsboro;
-            this.btnCancelar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold);
-            this.btnCancelar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.btnCancelar.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.btnCancelar.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.btnCancelar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
             this.btnCancelar.Location = new System.Drawing.Point(571, 477);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(120, 40);
@@ -343,7 +434,8 @@
             // 
             this.btnGuardar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGuardar.BorderRadius = 8;
-            this.btnGuardar.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold);
+            this.btnGuardar.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(98)))), ((int)(((byte)(255)))));
+            this.btnGuardar.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.btnGuardar.ForeColor = System.Drawing.Color.White;
             this.btnGuardar.Location = new System.Drawing.Point(697, 477);
             this.btnGuardar.Name = "btnGuardar";
@@ -434,5 +526,11 @@
         private Guna.UI2.WinForms.Guna2TextBox txtCertificadoPass;
         private Guna.UI2.WinForms.Guna2DateTimePicker dtpFechaExpiracion;
         private System.Windows.Forms.Label label4;
+        private Guna.UI2.WinForms.Guna2TextBox txtContribuyenteEspecial;
+        private Guna.UI2.WinForms.Guna2ComboBox cboAmbienteSRI;
+        private Guna.UI2.WinForms.Guna2ToggleSwitch chkObligadoContabilidad;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
     }
 }

@@ -17,11 +17,82 @@ namespace LogiPharm.Presentacion
         public FrmEmpresa()
         {
             InitializeComponent();
+            
+            // ✨ APLICAR ESTILOS PROFESIONALES
+            ConfigurarEstilosProfesionales();
+            
             this.Load += FrmEmpresa_Load;
             this.btnGuardar.Click += btnGuardar_Click;
             this.btnCambiarLogo.Click += btnCambiarLogo_Click;
             this.btnCancelar.Click += (s, e) => this.Close();
             this.btnSeleccionarCertificado.Click += btnSeleccionarCertificado_Click;
+        }
+        
+        // ========================================
+        // CONFIGURACIÓN DE ESTILOS PROFESIONALES
+        // ========================================
+        private void ConfigurarEstilosProfesionales()
+        {
+            // === FORMULARIO ===
+            this.BackColor = EstilosHelper.Colores.FondoSecundario;
+            guna2Panel1.BackColor = EstilosHelper.Colores.FondoPrimario;
+            
+            // === TÍTULO ===
+            label1.Font = EstilosHelper.Fuentes.TituloGrande;
+            label1.ForeColor = EstilosHelper.Colores.TextoPrincipal;
+            
+            // === TAB CONTROL - AZUL PROFESIONAL ===
+            // Tab seleccionado
+            guna2TabControl1.TabButtonSelectedState.FillColor = Color.White;
+            guna2TabControl1.TabButtonSelectedState.ForeColor = EstilosHelper.Colores.PrincipalOscuro;
+            guna2TabControl1.TabButtonSelectedState.InnerColor = EstilosHelper.Colores.PrincipalOscuro;
+            guna2TabControl1.TabButtonSelectedState.Font = EstilosHelper.Fuentes.TextoNormalBold;
+            
+            // Tab hover
+            guna2TabControl1.TabButtonHoverState.FillColor = EstilosHelper.Colores.FondoHover;
+            guna2TabControl1.TabButtonHoverState.ForeColor = EstilosHelper.Colores.PrincipalOscuro;
+            guna2TabControl1.TabButtonHoverState.InnerColor = EstilosHelper.Colores.PrincipalClaro;
+            guna2TabControl1.TabButtonHoverState.Font = EstilosHelper.Fuentes.TextoNormal;
+            
+            // Tab inactivo
+            guna2TabControl1.TabButtonIdleState.FillColor = Color.White;
+            guna2TabControl1.TabButtonIdleState.ForeColor = EstilosHelper.Colores.TextoSecundario;
+            guna2TabControl1.TabButtonIdleState.InnerColor = Color.White;
+            guna2TabControl1.TabButtonIdleState.Font = EstilosHelper.Fuentes.TextoNormal;
+            
+            // === BOTÓN GUARDAR - AZUL PROFESIONAL ===
+            btnGuardar.FillColor = EstilosHelper.Colores.PrincipalOscuro;
+            btnGuardar.Font = EstilosHelper.Fuentes.TextoNormalBold;
+            btnGuardar.ForeColor = EstilosHelper.Colores.TextoBlanco;
+            
+            // === BOTÓN CANCELAR - GRIS ===
+            btnCancelar.FillColor = EstilosHelper.Colores.FondoSecundario;
+            btnCancelar.Font = EstilosHelper.Fuentes.TextoNormal;
+            btnCancelar.ForeColor = EstilosHelper.Colores.TextoPrincipal;
+            
+            // === LABELS DE SECCIÓN ===
+            label2.Font = EstilosHelper.Fuentes.SubTitulo;
+            label2.ForeColor = EstilosHelper.Colores.TextoPrincipal;
+            
+            label4.Font = EstilosHelper.Fuentes.TextoPequeño;
+            label4.ForeColor = EstilosHelper.Colores.TextoSecundario;
+            
+            // === TEXTBOXES ===
+            foreach (Control control in tabPageDatosGenerales.Controls)
+            {
+                if (control is Guna.UI2.WinForms.Guna2TextBox txt)
+                {
+                    txt.Font = EstilosHelper.Fuentes.TextoNormal;
+                }
+            }
+            
+            foreach (Control control in tabPageFacturacion.Controls)
+            {
+                if (control is Guna.UI2.WinForms.Guna2TextBox txt)
+                {
+                    txt.Font = EstilosHelper.Fuentes.TextoNormal;
+                }
+            }
         }
 
         private void FrmEmpresa_Load(object sender, EventArgs e)
@@ -57,12 +128,17 @@ namespace LogiPharm.Presentacion
                 txtTelefono.Text = _empresaActual.Telefono;
                 txtEmail.Text = _empresaActual.Email;
 
-                // ✅ LÍNEAS MOVIDAS AQUÍ: Ahora se cargan los datos del certificado de forma segura.
+                // ✅ Cargar datos del certificado
                 txtRutaCertificado.Text = _empresaActual.CertificadoP12Path;
                 if (_empresaActual.CertificadoFechaExpiracion.HasValue)
                 {
                     dtpFechaExpiracion.Value = _empresaActual.CertificadoFechaExpiracion.Value;
                 }
+
+                // ✅ NUEVOS CAMPOS - Información Fiscal
+                txtContribuyenteEspecial.Text = _empresaActual.ContribuyenteEspecial ?? "";
+                cboAmbienteSRI.SelectedItem = _empresaActual.AmbienteSRI ?? "Pruebas";
+                chkObligadoContabilidad.Checked = _empresaActual.ObligadoContabilidad;
 
                 if (_empresaActual.Logo != null && _empresaActual.Logo.Length > 0)
                 {
@@ -121,6 +197,11 @@ namespace LogiPharm.Presentacion
                 _empresaActual.DireccionMatriz = txtDireccion.Text;
                 _empresaActual.Telefono = txtTelefono.Text;
                 _empresaActual.Email = txtEmail.Text;
+
+                // ✅ NUEVOS CAMPOS - Información Fiscal (comentados hasta agregar controles)
+                _empresaActual.ContribuyenteEspecial = txtContribuyenteEspecial.Text;
+                _empresaActual.AmbienteSRI = cboAmbienteSRI.SelectedItem?.ToString();
+                _empresaActual.ObligadoContabilidad = chkObligadoContabilidad.Checked;
 
                 // Convertimos la imagen a byte[] para guardarla
                 if (picLogo.Image != null)

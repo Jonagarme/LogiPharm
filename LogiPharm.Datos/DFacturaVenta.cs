@@ -111,6 +111,10 @@ namespace LogiPharm.Datos
 
                         // --- 4. Si todo salió bien, confirma la transacción ---
                         tran.Commit();
+
+                        // ✨ NUEVO: Actualizar los totales del cierre de caja después de guardar la venta
+                        DCierreCaja d_Cierre = new DCierreCaja();
+                        d_Cierre.ActualizarTotalesSistema(idCierreCaja);
                     }
                     catch (Exception)
                     {

@@ -17,15 +17,25 @@ namespace LogiPharm.Presentacion
         private List<VentaEnEspera> _ventasEnEspera = new List<VentaEnEspera>();
         private VentaEnEspera _ventaActual;
 
+        private DataTable _dtPuntosEmision;
+        private int _idPuntoEmisionActual;
+
 
         private int _hoverRow = -1, _hoverCol = -1;
+		private int _hoverRowFull = -1;
         private const double PanelDerechoPct = 0.32; // 32% del ancho
         private const int PanelDerechoMin = 320;
         private const int PanelDerechoMax = 520;
 
+		private readonly ToolTip _toolTip = new ToolTip();
+
         public FrmPuntoDeVenta()
         {
             InitializeComponent();
+
+			ConfigurarGridHibrido();
+			ConfigurarTooltips();
+            
             this.Resize += Frm_Resize_Adaptativo;
 
             this.dgvDetalleVenta.CellEndEdit += dgvDetalleVenta_CellEndEdit;
@@ -35,11 +45,15 @@ namespace LogiPharm.Presentacion
             dgvDetalleVenta.EditingControlShowing += Dgv_EditingControlShowing;
             this.Shown += FrmPuntoDeVenta_Shown;
 
+            if (this.cboPuntoEmision != null)
+                this.cboPuntoEmision.SelectedIndexChanged += cboPuntoEmision_SelectedIndexChanged;
+
             // Pintado custom + hover + tooltips
             this.dgvDetalleVenta.CellPainting += dgvDetalleVenta_CellPainting;
             this.dgvDetalleVenta.CellMouseMove += dgvDetalleVenta_CellMouseMove;
             this.dgvDetalleVenta.CellMouseLeave += dgvDetalleVenta_CellMouseLeave;
             this.dgvDetalleVenta.CellToolTipTextNeeded += dgvDetalleVenta_CellToolTipTextNeeded;
+			this.dgvDetalleVenta.RowPrePaint += dgvDetalleVenta_RowPrePaint;
 
             // Evita el “X” rojo cuando la celda no tiene imagen
             colEliminar.DefaultCellStyle.NullValue = null;
@@ -54,16 +68,171 @@ namespace LogiPharm.Presentacion
             colInfo.Width = 72;
             colInfo.Resizable = DataGridViewTriState.False;
 
-            // Altura uniforme de filas (ya lo tienes)
+            // Altura uniforme de filas (ajustada para el padding)
             dgvDetalleVenta.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
             dgvDetalleVenta.AllowUserToResizeRows = false;
             dgvDetalleVenta.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
-            dgvDetalleVenta.RowTemplate.Height = 38;
+            dgvDetalleVenta.RowTemplate.Height = 40; // Aumentado a 40 para coincidir con el Designer
             dgvDetalleVenta.DataBindingComplete += (s, e) => AjustarAlturas();
             dgvDetalleVenta.RowsAdded += (s, e) => AjustarAlturas();
 
+			this.dgvDetalleVenta.CellFormatting += dgvDetalleVenta_CellFormatting;
+
 
         }
+
+		private void ConfigurarTooltips()
+		{
+			_toolTip.AutoPopDelay = 8000;
+			_toolTip.InitialDelay = 400;
+			_toolTip.ReshowDelay = 200;
+			_toolTip.ShowAlways = true;
+
+			if (btnNuevo != null) _toolTip.SetToolTip(btnNuevo, "Nueva venta (Shift+F2)");
+			if (btnFacturas != null) _toolTip.SetToolTip(btnFacturas, "Ver facturas (F3)");
+			if (btnPagar != null) _toolTip.SetToolTip(btnPagar, "Cobrar / Pagar (F4)");
+			if (btnKardex != null) _toolTip.SetToolTip(btnKardex, "Calculadora (F8)");
+			if (btnDescuento != null) _toolTip.SetToolTip(btnDescuento, "Descuento (F7)");
+			if (btnRecargas != null) _toolTip.SetToolTip(btnRecargas, "Recargas (F10)");
+			if (btnDocumento != null) _toolTip.SetToolTip(btnDocumento, "Documento (F11)");
+			//if (btnIncrementar != null) _toolTip.SetToolTip(btnIncrementar, "Incrementar (F12)");
+		}
+
+		private void ConfigurarGridHibrido()
+		{
+			if (dgvDetalleVenta == null) return;
+
+			dgvDetalleVenta.MultiSelect = false;
+			dgvDetalleVenta.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+			dgvDetalleVenta.ShowCellToolTips = true;
+			dgvDetalleVenta.AllowUserToResizeColumns = true;
+			dgvDetalleVenta.AllowUserToOrderColumns = false;
+			dgvDetalleVenta.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+			dgvDetalleVenta.ScrollBars = ScrollBars.Both;
+			dgvDetalleVenta.StandardTab = true;
+			dgvDetalleVenta.EditMode = DataGridViewEditMode.EditOnEnter;
+
+			// Alineación / formato tipo ERP
+			AplicarFormatoColumna("colCantidad", "N2", DataGridViewContentAlignment.MiddleRight);
+			AplicarFormatoColumna("colPrecio", "N2", DataGridViewContentAlignment.MiddleRight);
+			AplicarFormatoColumna("colPFinal", "N2", DataGridViewContentAlignment.MiddleRight);
+			AplicarFormatoColumna("colPorcentaje", "N2", DataGridViewContentAlignment.MiddleRight);
+			AplicarFormatoColumna("colDscto", "N2", DataGridViewContentAlignment.MiddleRight);
+			AplicarFormatoColumna("colIVA", "N2", DataGridViewContentAlignment.MiddleRight);
+			AplicarFormatoColumna("colSubtotal", "N2", DataGridViewContentAlignment.MiddleRight);
+			AplicarFormatoColumna("colTotal", "N2", DataGridViewContentAlignment.MiddleRight);
+
+			// Mantener legibilidad - colProducto NO se congela para poder usar Fill
+			if (dgvDetalleVenta.Columns["colProducto"] != null)
+			{
+				dgvDetalleVenta.Columns["colProducto"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+				dgvDetalleVenta.Columns["colProducto"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+			}
+			if (dgvDetalleVenta.Columns["colCodigo"] != null)
+			{
+				dgvDetalleVenta.Columns["colCodigo"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+			}
+
+			// Congelar solo columnas con ancho fijo
+			try
+			{
+				if (dgvDetalleVenta.Columns["colEliminar"] != null) dgvDetalleVenta.Columns["colEliminar"].Frozen = true;
+				if (dgvDetalleVenta.Columns["colCodigo"] != null) dgvDetalleVenta.Columns["colCodigo"].Frozen = true;
+			}
+			catch { }
+
+			// Evitar edición accidental (solo cantidad y descuento si están visibles)
+			SetReadOnly("colCodigo", false);   // se ingresa código
+			SetReadOnly("colProducto", false); // se permite buscar/editar texto
+			SetReadOnly("colCantidad", false);
+			SetReadOnly("colDscto", false);
+			SetReadOnly("colPrecio", true);
+			SetReadOnly("colIVA", true);
+			SetReadOnly("colSubtotal", true);
+			SetReadOnly("colTotal", true);
+		}
+
+		private void AplicarFormatoColumna(string colName, string format, DataGridViewContentAlignment align)
+		{
+			var col = dgvDetalleVenta.Columns[colName];
+			if (col == null) return;
+			col.DefaultCellStyle.Format = format;
+			col.DefaultCellStyle.Alignment = align;
+		}
+
+		private void SetReadOnly(string colName, bool readOnly)
+		{
+			var col = dgvDetalleVenta.Columns[colName];
+			if (col == null) return;
+			col.ReadOnly = readOnly;
+		}
+
+        // ========================================
+        // CONFIGURACIÓN DE ESTILOS PROFESIONALES
+        // ========================================
+        private void ConfigurarEstilosProfesionales()
+        {
+            // === COLORES AZULES TIPO IMAGEN ===
+            Color azulPrincipal = Color.FromArgb(0, 123, 195);  // Azul profesional
+            Color azulOscuro = Color.FromArgb(0, 86, 137);      // Azul más oscuro
+            Color verdeAccion = Color.FromArgb(76, 175, 80);    // Verde para acciones
+            
+            // === BOTONES CON COLORES AZULES ===
+            btnPagar.FillColor = verdeAccion;
+            btnPagar.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            
+            btnNuevo.FillColor = azulPrincipal;
+            btnFacturas.FillColor = azulPrincipal;
+            if (btnKardex != null) btnKardex.FillColor = Color.FromArgb(0, 172, 193); // Color calculadora
+            //btnMedico.FillColor = azulOscuro;
+            btnDescuento.FillColor = Color.FromArgb(255, 152, 0); // Naranja para destacar
+            btnRecargas.FillColor = azulOscuro;
+            btnDocumento.FillColor = azulOscuro;
+           // btnIncrementar.FillColor = azulOscuro;
+
+            AplicarEstadoBoton(btnPagar);
+            AplicarEstadoBoton(btnNuevo);
+            AplicarEstadoBoton(btnFacturas);
+            AplicarEstadoBoton(btnDescuento);
+            AplicarEstadoBoton(btnKardex);
+            //AplicarEstadoBoton(btnMedico);
+            AplicarEstadoBoton(btnRecargas);
+            AplicarEstadoBoton(btnDocumento);
+            //AplicarEstadoBoton(btnIncrementar);
+
+            // === PANELES DE TOTALES - AZUL PROFESIONAL ===
+            guna2Panel2.FillColor = azulPrincipal;
+            guna2Panel3.FillColor = azulPrincipal;
+            guna2Panel4.FillColor = azulOscuro;
+
+            // === LABELS DE TOTALES (colores secundarios) ===
+            if (label19 != null) label19.ForeColor = Color.FromArgb(66, 66, 66);
+            if (label21 != null) label21.ForeColor = Color.FromArgb(66, 66, 66);
+            if (label22 != null) label22.ForeColor = Color.FromArgb(66, 66, 66);
+            if (label23 != null) label23.ForeColor = Color.FromArgb(66, 66, 66);
+
+            // === LABELS SUPERIORES ===
+            if (label1 != null) label1.ForeColor = Color.FromArgb(66, 66, 66);
+            if (label2 != null) label2.ForeColor = Color.FromArgb(66, 66, 66);
+            if (label3 != null) label3.ForeColor = Color.FromArgb(66, 66, 66);
+            
+            // === PANEL SUPERIOR AZUL ===
+            panelTop.BackColor = Color.FromArgb(240, 245, 250);
+        }
+
+		private void AplicarEstadoBoton(Guna.UI2.WinForms.Guna2Button btn)
+		{
+			if (btn == null) return;
+
+			btn.Font = btn.Font ?? new Font("Segoe UI", 9F, FontStyle.Bold);
+			btn.HoverState.FillColor = ControlPaint.Light(btn.FillColor, 0.10f);
+			btn.PressedColor = ControlPaint.Dark(btn.FillColor, 0.15f);
+			btn.Animated = true;
+			btn.DisabledState.FillColor = Color.FromArgb(220, 220, 220);
+			btn.DisabledState.ForeColor = Color.FromArgb(140, 140, 140);
+			btn.DisabledState.BorderColor = Color.FromArgb(200, 200, 200);
+			btn.DisabledState.CustomBorderColor = Color.FromArgb(200, 200, 200);
+		}
 
         private void Frm_Resize_Adaptativo(object sender, EventArgs e)
         {
@@ -97,6 +266,23 @@ namespace LogiPharm.Presentacion
 
         private void FrmPuntoDeVenta_Load(object sender, EventArgs e)
         {
+            // ✨ APLICAR ESTILOS PROFESIONALES (después del diseñador)
+            ConfigurarEstilosProfesionales();
+
+            dgvDetalleVenta.ReadOnly = false;
+            dgvDetalleVenta.EditMode = DataGridViewEditMode.EditOnEnter;
+            dgvDetalleVenta.Columns["colCodigo"].ReadOnly = false;
+            dgvDetalleVenta.Columns["colProducto"].ReadOnly = false;
+            dgvDetalleVenta.Columns["colCantidad"].ReadOnly = false;
+            dgvDetalleVenta.Columns["colDscto"].ReadOnly = false;
+
+
+            // ✨ Forzar configuración visual del grid (lo que el Designer no puede hacer)
+            dgvDetalleVenta.EnableHeadersVisualStyles = false;
+            dgvDetalleVenta.BorderStyle = BorderStyle.FixedSingle;
+            dgvDetalleVenta.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvDetalleVenta.BackgroundColor = Color.White;
+
             timer1.Start();
             Frm_Resize_Adaptativo(null, EventArgs.Empty);
             CrearNuevaVenta(esLaPrimera: true);
@@ -119,8 +305,173 @@ namespace LogiPharm.Presentacion
 
             //if (dgvDetalleVenta.Rows.Count == 0)
             //    dgvDetalleVenta.Rows.Add();
+            
+            // Asegurar que las columnas editables estén configuradas correctamente
+            dgvDetalleVenta.Columns["colCodigo"].ReadOnly = false;
+            dgvDetalleVenta.Columns["colProducto"].ReadOnly = false;
+            dgvDetalleVenta.Columns["colCantidad"].ReadOnly = false;
+            dgvDetalleVenta.Columns["colDscto"].ReadOnly = false;
             dgvDetalleVenta.Columns["colPrecio"].ReadOnly = true;
+            dgvDetalleVenta.Columns["colIVA"].ReadOnly = true;
+            dgvDetalleVenta.Columns["colSubtotal"].ReadOnly = true;
+            dgvDetalleVenta.Columns["colTotal"].ReadOnly = true;
+            
             dgvDetalleVenta.Select();
+
+            CargarPuntosEmision();
+            CargarAmbienteSRI();
+        }
+
+        private void CargarPuntosEmision()
+        {
+            if (cboPuntoEmision == null || lblSiguienteSecuencial == null) return;
+
+            try
+            {
+                var dt = new DPuntosEmision().ListarActivosConEstablecimiento();
+                _dtPuntosEmision = dt;
+
+                cboPuntoEmision.BeginUpdate();
+                cboPuntoEmision.DataSource = null;
+                cboPuntoEmision.Items.Clear();
+
+                cboPuntoEmision.DisplayMember = "display";
+                cboPuntoEmision.ValueMember = "id";
+
+                // armamos una tabla con columna calculada para el DisplayMember
+                if (!dt.Columns.Contains("display"))
+                    dt.Columns.Add("display", typeof(string));
+
+                foreach (DataRow r in dt.Rows)
+                {
+                    string codEst = Convert.ToString(r["cod_est"]);
+                    string codPto = Convert.ToString(r["codigo"]);
+                    string desc = Convert.ToString(r["descripcion"]);
+                    r["display"] = $"{codEst}-{codPto} ({desc})";
+                }
+
+                cboPuntoEmision.DataSource = dt;
+                cboPuntoEmision.EndUpdate();
+
+                if (dt.Rows.Count > 0)
+                {
+                    // por ahora: primer punto activo
+                    cboPuntoEmision.SelectedIndex = 0;
+                }
+                else
+                {
+                    _idPuntoEmisionActual = 0;
+                    lblSiguienteSecuencial.Text = "---";
+                }
+            }
+            catch
+            {
+                _idPuntoEmisionActual = 0;
+                lblSiguienteSecuencial.Text = "---";
+            }
+        }
+
+        private void CargarAmbienteSRI()
+        {
+            try
+            {
+                DEmpresa d_empresa = new DEmpresa();
+                EEmpresa empresa = d_empresa.ObtenerDatosEmpresa();
+
+                label8.Text = "AMBIENTE SRI: " + ResolverAmbienteSri(empresa?.AmbienteSRI);
+            }
+            catch
+            {
+                // En caso de error, mostrar valor por defecto
+                label8.Text = "AMBIENTE SRI: PRUEBAS";
+            }
+        }
+
+		private static string ResolverAmbienteSri(string valor)
+		{
+			if (string.IsNullOrWhiteSpace(valor)) return "PRUEBAS";
+			valor = valor.Trim();
+
+			// Soporta configuración guardada como 1/2 o como texto
+			if (valor == "1") return "PRUEBAS";
+			if (valor == "2") return "PRODUCCIÓN";
+
+			string up = valor.ToUpperInvariant();
+			if (up.Contains("PROD")) return "PRODUCCIÓN";
+			if (up.Contains("PRUE")) return "PRUEBAS";
+
+			return up;
+		}
+
+		private void dgvDetalleVenta_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+		{
+			if (e.RowIndex < 0) return;
+			if (dgvDetalleVenta.Rows[e.RowIndex].IsNewRow) return;
+
+			string colName = dgvDetalleVenta.Columns[e.ColumnIndex].Name;
+			if (colName == "colTotal")
+			{
+				// resaltar total de línea
+				e.CellStyle.Font = new Font(dgvDetalleVenta.Font, FontStyle.Bold);
+			}
+		}
+
+        private void cboPuntoEmision_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ActualizarSiguienteSecuencial();
+        }
+
+        private void ActualizarSiguienteSecuencial()
+        {
+            if (cboPuntoEmision == null || lblSiguienteSecuencial == null) return;
+            if (cboPuntoEmision.SelectedValue == null)
+            {
+                lblSiguienteSecuencial.Text = "---";
+                return;
+            }
+
+            int id;
+            try { id = Convert.ToInt32(cboPuntoEmision.SelectedValue); }
+            catch { id = 0; }
+
+            if (id <= 0)
+            {
+                _idPuntoEmisionActual = 0;
+                lblSiguienteSecuencial.Text = "---";
+                return;
+            }
+
+            _idPuntoEmisionActual = id;
+
+            try
+            {
+                // buscamos datos del punto seleccionado en la tabla cargada
+                DataRow row = null;
+                if (_dtPuntosEmision != null)
+                {
+                    row = _dtPuntosEmision.AsEnumerable()
+                        .FirstOrDefault(r => Convert.ToInt32(r["id"]) == _idPuntoEmisionActual);
+                }
+
+                if (row == null)
+                {
+                    lblSiguienteSecuencial.Text = "---";
+                    return;
+                }
+
+                string codEst = Convert.ToString(row["cod_est"]);
+                string codPto = Convert.ToString(row["codigo"]);
+
+                // según tu JS: muestra el secuencial_factura como el que toca emitir.
+                int sec = row["secuencial_factura"] == DBNull.Value ? 0 : Convert.ToInt32(row["secuencial_factura"]);
+                string sec9 = sec.ToString().PadLeft(9, '0');
+
+                lblSiguienteSecuencial.Text = $"{codEst}-{codPto}-{sec9}";
+            }
+            catch
+            {
+                lblSiguienteSecuencial.Text = "---";
+            }
         }
 
         private void CrearNuevaVenta(bool esLaPrimera = false)
@@ -161,7 +512,7 @@ namespace LogiPharm.Presentacion
             }
         }
 
-        // ✅ CÓDIGO CORREGIDO
+        // ? CÓDIGO CORREGIDO
         private void CargarVenta(VentaEnEspera venta)
         {
             if (venta == null) return;
@@ -200,7 +551,7 @@ namespace LogiPharm.Presentacion
                 );
             }
 
-            // ✨ CORRECCIÓN CLAVE: Recalculamos TODAS las filas después de añadirlas
+            // ? CORRECCIÓN CLAVE: Recalculamos TODAS las filas después de añadirlas
             foreach (DataGridViewRow row in dgvDetalleVenta.Rows)
             {
                 if (row.IsNewRow) continue;
@@ -225,11 +576,11 @@ namespace LogiPharm.Presentacion
 
                 var boton = new Guna.UI2.WinForms.Guna2Button
                 {
-                    Text = venta.Nombre + (_ventasEnEspera.Count > 1 ? "   ✕" : ""), // Texto con ícono de cierre
+                    Text = venta.Nombre + (_ventasEnEspera.Count > 1 ? "   ?" : ""), // Texto con ícono de cierre
                     Tag = venta,
                     Margin = new Padding(2, 2, 0, 0),
 
-                    // --- ✨ NUEVO DISEÑO ---
+                    // --- ? NUEVO DISEÑO ---
                     BorderRadius = 8, // Esquinas redondeadas
                     Font = new Font("Segoe UI", 9F, esVentaActiva ? FontStyle.Bold : FontStyle.Regular),
                     TextAlign = HorizontalAlignment.Left,
@@ -297,7 +648,7 @@ namespace LogiPharm.Presentacion
             }
         }
 
-        // ✨ NUEVO MÉTODO
+        // ? NUEVO MÉTODO
         private void EliminarVenta(VentaEnEspera ventaAEliminar)
         {
             // Pedimos confirmación al usuario
@@ -404,6 +755,17 @@ namespace LogiPharm.Presentacion
         private void dgvDetalleVenta_CellMouseMove(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.RowIndex < 0) return;
+
+			// Hover de fila completa
+			if (e.RowIndex != _hoverRowFull)
+			{
+				int prev = _hoverRowFull;
+				_hoverRowFull = e.RowIndex;
+				if (prev >= 0 && prev < dgvDetalleVenta.RowCount)
+					dgvDetalleVenta.InvalidateRow(prev);
+				dgvDetalleVenta.InvalidateRow(_hoverRowFull);
+			}
+
             var name = dgvDetalleVenta.Columns[e.ColumnIndex].Name;
             bool esIcono = (name == "colEliminar" || name == "colInfo");
 
@@ -432,6 +794,14 @@ namespace LogiPharm.Presentacion
 
         private void dgvDetalleVenta_CellMouseLeave(object sender, DataGridViewCellEventArgs e)
         {
+			if (_hoverRowFull != -1)
+			{
+				int prev = _hoverRowFull;
+				_hoverRowFull = -1;
+				if (prev >= 0 && prev < dgvDetalleVenta.RowCount)
+					dgvDetalleVenta.InvalidateRow(prev);
+			}
+
             if (_hoverRow != -1 || _hoverCol != -1)
             {
                 int r = _hoverRow, c = _hoverCol;
@@ -441,6 +811,23 @@ namespace LogiPharm.Presentacion
             }
             dgvDetalleVenta.Cursor = Cursors.Default;
         }
+
+		private void dgvDetalleVenta_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
+		{
+			if (e.RowIndex < 0) return;
+			if (dgvDetalleVenta.Rows[e.RowIndex].IsNewRow) return;
+			if (e.RowIndex != _hoverRowFull) return;
+			if (dgvDetalleVenta.Rows[e.RowIndex].Selected) return;
+
+			// Color sutil de hover para toda la fila
+			using (var b = new SolidBrush(Color.FromArgb(245, 248, 255)))
+			{
+				e.Graphics.FillRectangle(b, e.RowBounds);
+			}
+
+			e.PaintCells(e.ClipBounds, DataGridViewPaintParts.All);
+			e.Handled = true;
+		}
 
         private void dgvDetalleVenta_CellToolTipTextNeeded(object sender, DataGridViewCellToolTipTextNeededEventArgs e)
         {
@@ -477,12 +864,24 @@ namespace LogiPharm.Presentacion
         {
             if (keyData == Keys.F3) { AbrirVentanaFactura(); return true; }
             if (keyData == Keys.F4) { AbrirVentanaPago(); return true; }
-            if (keyData == Keys.F8) { AbrirVentanaKardex(); return true; }
+            if (keyData == Keys.F8) { AbrirCalculadora(); return true; }
             if (keyData == Keys.F2 || keyData == (Keys.Shift | Keys.F2))
             {
                 CrearNuevaVenta();
                 return true;
             }
+
+			// Navegación tipo POS: Enter avanza en celdas relevantes
+			if (keyData == Keys.Enter && dgvDetalleVenta != null && dgvDetalleVenta.Focused)
+			{
+				var cell = dgvDetalleVenta.CurrentCell;
+				if (cell != null)
+				{
+					string colName = dgvDetalleVenta.Columns[cell.ColumnIndex].Name;
+					int rowIndex = cell.RowIndex;
+					return AvanzarConEnter(colName, rowIndex);
+				}
+			}
 
             if (keyData == (Keys.Control | Keys.Down))
             {
@@ -502,18 +901,55 @@ namespace LogiPharm.Presentacion
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+		private bool AvanzarConEnter(string colName, int rowIndex)
+		{
+			try
+			{
+				// Si está en código o producto, Enter inicia búsqueda/edición normal
+				if (colName == "colCodigo" || colName == "colProducto")
+				{
+					dgvDetalleVenta.BeginEdit(true);
+					return true;
+				}
+
+				// Si está en cantidad, pasa a siguiente fila (código)
+				if (colName == "colCantidad")
+				{
+					PonerFocoEnNuevaFila();
+					return true;
+				}
+
+				// Fallback: Tab behavior
+				SendKeys.Send("{TAB}");
+				return true;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+
+        private void btnAccesosSoporteTecnico_Click(object sender, EventArgs e)
+        {
+            AbrirCalculadora();
+        }
 
         private void btnKardex_Click(object sender, EventArgs e)
         {
-            AbrirVentanaKardex();
+            AbrirCalculadora();
         }
 
-
-        private void AbrirVentanaKardex()
+        private void AbrirCalculadora()
         {
-            using (FrmKardex frm = new FrmKardex())
+            try
             {
-                frm.ShowDialog();
+                System.Diagnostics.Process.Start("calc.exe");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"No se pudo abrir la calculadora: {ex.Message}", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -608,7 +1044,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                // ✅ 1. OBTENER LOS DATOS DE LA EMPRESA
+                // ? 1. OBTENER LOS DATOS DE LA EMPRESA
                 DEmpresa d_empresa = new DEmpresa();
                 EEmpresa empresa = d_empresa.ObtenerDatosEmpresa();
 
@@ -643,7 +1079,7 @@ namespace LogiPharm.Presentacion
                 decimal total = subtotal + iva;
                 decimal cambio = Math.Round(efectivoRecibido - total, 2);
 
-                // ✅ 2. LLENAR EL DATATABLE CON LOS DATOS DE LA EMPRESA
+                // ? 2. LLENAR EL DATATABLE CON LOS DATOS DE LA EMPRESA
                 dtInfo.Rows.Add(
                     empresa.NombreComercial,                          // NombreComercial
                     empresa.Ruc,                                      // RucEmpresa
@@ -721,6 +1157,7 @@ namespace LogiPharm.Presentacion
                         BuscarYAsignarProducto(textoBuscado, e.RowIndex);
                     }
                 }
+                // ✅ AGREGAR colDscto AQUÍ
                 else if (colName == "colCantidad" || colName == "colPFinal" || colName == "colDscto")
                 {
                     CalcularTotalesFila(fila);
@@ -767,6 +1204,13 @@ namespace LogiPharm.Presentacion
 
         private void AsignarDatosAFila(EProducto producto, int rowIndex)
         {
+            // Validar que el producto tenga datos válidos
+            if (producto == null || string.IsNullOrEmpty(producto.CodigoPrincipal))
+            {
+                MessageBox.Show("El producto no tiene datos válidos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             // Lógica para manejar productos duplicados
             for (int i = 0; i < dgvDetalleVenta.Rows.Count; i++)
             {
@@ -779,8 +1223,6 @@ namespace LogiPharm.Presentacion
                     decimal.TryParse(celdaCantidad.Value?.ToString(), out decimal cantidadActual);
                     celdaCantidad.Value = cantidadActual + 1;
 
-                    // ❌ Se elimina la línea 'filaActual.Tag' de aquí porque era incorrecta.
-
                     CalcularTotalesFila(dgvDetalleVenta.Rows[i]);
                     LimpiarFila(rowIndex);
                     PonerFocoEnNuevaFila();
@@ -789,13 +1231,26 @@ namespace LogiPharm.Presentacion
             }
 
             // Si llegamos aquí, el producto es nuevo en la lista.
-            DataGridViewRow filaActual = dgvDetalleVenta.Rows[rowIndex];
-
             dgvDetalleVenta.CellEndEdit -= dgvDetalleVenta_CellEndEdit;
 
-            // ✅ Se añade la línea aquí, que es el lugar correcto para "marcar" la nueva fila.
+            // Determinar si estamos en una fila nueva o necesitamos usar la actual
+            DataGridViewRow filaActual;
+            
+            // Si la fila es la nueva fila automática, la usamos directamente
+            if (rowIndex >= 0 && rowIndex < dgvDetalleVenta.Rows.Count)
+            {
+                filaActual = dgvDetalleVenta.Rows[rowIndex];
+            }
+            else
+            {
+                // Si no hay fila válida, buscamos la última fila nueva
+                filaActual = dgvDetalleVenta.Rows[dgvDetalleVenta.Rows.Count - 1];
+            }
+
+            // Marcar la fila con el ID del producto
             filaActual.Tag = producto.Id;
 
+            // Asignar valores
             filaActual.Cells["colCodigo"].Value = producto.CodigoPrincipal;
             filaActual.Cells["colProducto"].Value = producto.Nombre;
             filaActual.Cells["colPrecio"].Value = producto.PrecioVenta;
@@ -811,7 +1266,7 @@ namespace LogiPharm.Presentacion
 
         private void PonerFocoEnNuevaFila()
         {
-            // ✅ SOLUCIÓN DEFINITIVA: Solo cambiamos la celda activa, sin forzar la edición.
+            // ? SOLUCIÓN DEFINITIVA: Solo cambiamos la celda activa, sin forzar la edición.
             // Esto es más estable y evita los problemas de foco.
             if (dgvDetalleVenta.AllowUserToAddRows && dgvDetalleVenta.Rows[dgvDetalleVenta.Rows.Count - 1].IsNewRow)
             {
@@ -842,30 +1297,44 @@ namespace LogiPharm.Presentacion
             try
             {
                 decimal cantidad = Convert.ToDecimal(fila.Cells["colCantidad"].Value ?? 0);
+                if (cantidad < 0)
+                {
+                    fila.Cells["colCantidad"].Style.BackColor = Color.FromArgb(255, 224, 224);
+                    fila.Cells["colCantidad"].Style.ForeColor = Color.DarkRed;
+                    return;
+                }
+                fila.Cells["colCantidad"].Style.BackColor = Color.White;
+                fila.Cells["colCantidad"].Style.ForeColor = dgvDetalleVenta.DefaultCellStyle.ForeColor;
+
                 decimal precioFinal = Convert.ToDecimal(fila.Cells["colPFinal"].Value ?? 0);
                 decimal descuentoPorc = Convert.ToDecimal(fila.Cells["colDscto"].Value ?? 0);
 
-                decimal subtotal = cantidad * precioFinal;
-                decimal montoDescuento = subtotal * (descuentoPorc / 100);
-                decimal subtotalConDescuento = subtotal - montoDescuento;
+                // ✅ CÁLCULO DEL DESCUENTO
+                decimal subtotalSinDescuento = cantidad * precioFinal;
+                decimal montoDescuento = subtotalSinDescuento * (descuentoPorc / 100);
+                decimal subtotalConDescuento = subtotalSinDescuento - montoDescuento;
 
                 decimal ivaRate = ImpuestoProvider.GetIVA();
                 decimal iva = subtotalConDescuento * ivaRate;
                 decimal total = subtotalConDescuento + iva;
 
+                // ✅ ACTUALIZAR VALORES EN LA FILA
                 fila.Cells["colSubtotal"].Value = subtotalConDescuento;
                 fila.Cells["colIVA"].Value = iva;
                 fila.Cells["colTotal"].Value = total;
 
-                fila.Cells["colPFinal"].Value = string.Format("{0:N2}", precioFinal);
-                fila.Cells["colSubtotal"].Value = string.Format("{0:N2}", subtotalConDescuento);
-                fila.Cells["colIVA"].Value = string.Format("{0:N2}", iva);
-                fila.Cells["colTotal"].Value = string.Format("{0:N2}", total);
+                // ✅ FORMATEAR VALORES
+                fila.Cells["colPFinal"].Value = precioFinal;
+                fila.Cells["colSubtotal"].Value = subtotalConDescuento;
+                fila.Cells["colIVA"].Value = iva;
+                fila.Cells["colTotal"].Value = total;
 
+                // ✅ LLAMAR A CALCULAR TOTALES GENERALES AUTOMÁTICAMENTE
                 CalcularTotalesGenerales();
             }
             catch (FormatException)
             {
+                // Manejo de errores silencioso
             }
         }
 
@@ -892,17 +1361,18 @@ namespace LogiPharm.Presentacion
                 totalDescuento += subtotalSinDescuento * (dctoPorcentaje / 100);
             }
 
-            // ✅ CORRECCIÓN: Asignación correcta de los totales a las etiquetas.
-            // Suponiendo que 'lblPrecio' muestra el subtotal, 'lblIVA' el IVA, y necesitas un total general.
+            // Calcular total general
             decimal totalGeneral = subtotalGeneral + ivaGeneral;
 
-            // Paneles de Precios
-            this.label13.Text = totalGeneral.ToString("N2"); // PRECIO EFE (Total)
+            // Actualizar labels de precios principales
+            if (this.lblPrecio != null) this.lblPrecio.Text = totalGeneral.ToString("N2");
+            if (this.lblPrecioEfe != null) this.lblPrecioEfe.Text = totalGeneral.ToString("N2");
+            if (this.lblPrecioTar != null) this.lblPrecioTar.Text = totalGeneral.ToString("N2");
 
             // Labels de desglose
-            this.lblTotalDescuento.Text = totalDescuento.ToString("N2");
-            this.label24.Text = subtotalGeneral.ToString("N2"); // TARIFA 0% (Asumiendo que es subtotal)
-            this.lblIVA.Text = ivaGeneral.ToString("N2"); // IVA 15%
+            if (this.lblTotalDescuento != null) this.lblTotalDescuento.Text = totalDescuento.ToString("N2");
+            if (this.label24 != null) this.label24.Text = subtotalGeneral.ToString("N2");
+            if (this.lblIVA != null) this.lblIVA.Text = ivaGeneral.ToString("N2");
         }
 
         private void Dgv_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
@@ -1023,3 +1493,4 @@ namespace LogiPharm.Presentacion
         }
     }
 }
+
