@@ -230,11 +230,31 @@ namespace LogiPharm.Datos
                 {
                     cn.Open();
                     string query = @"
-                        SELECT id, codigoPrincipal, nombre, stock, precioVenta, activo as 'activo' 
-                        FROM productos 
-                        WHERE (codigoPrincipal LIKE @criterio OR nombre LIKE @criterio) 
-                          AND anulado = 0 AND activo = 1 
-                        ORDER BY nombre ASC;";
+                        SELECT 
+                            p.id, 
+                            p.codigoPrincipal, 
+                            p.nombre, 
+                            p.descripcion,
+                            p.stock, 
+                            p.stockMinimo,
+                            p.stockMaximo,
+                            p.precioVenta,
+                            p.costoUnidad,
+                            p.fechaCaducidad,
+                            p.activo,
+                            c.nombre AS NombreCategoria,
+                            l.nombre AS NombreLaboratorio,
+                            m.nombre AS NombreMarca,
+                            pe1.Nombre AS Ubicacion
+                        FROM productos p
+                        LEFT JOIN categorias c ON p.idCategoria = c.id
+                        LEFT JOIN laboratorios l ON p.idLaboratorio = l.id
+                        LEFT JOIN marcas m ON p.idMarca = m.id
+                        LEFT JOIN productos_ubicacionproducto pe ON p.id = pe.producto_id
+                        LEFT JOIN productos_percha pe1 ON pe.percha_id = pe1.id
+                        WHERE (p.codigoPrincipal LIKE @criterio OR p.nombre LIKE @criterio) 
+                          AND p.anulado = 0 AND p.activo = 1 
+                        ORDER BY p.nombre ASC;";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
                     cmd.Parameters.AddWithValue("@criterio", "%" + criterio + "%");
@@ -246,11 +266,22 @@ namespace LogiPharm.Datos
                             lista.Add(new EProducto
                             {
                                 Id = Convert.ToInt64(reader["id"]),
-                                CodigoPrincipal = reader["codigoPrincipal"].ToString(),
-                                Nombre = reader["nombre"].ToString(),
-                                Stock = Convert.ToDecimal(reader["stock"]),
-                                PrecioVenta = Convert.ToDecimal(reader["precioVenta"]),
-                                Activo = Convert.ToBoolean(reader["activo"]),
+                                CodigoPrincipal = GetStringSafe(reader, "codigoPrincipal") ?? "",
+                                Nombre = GetStringSafe(reader, "nombre") ?? "",
+                                Descripcion = GetStringSafe(reader, "descripcion"),
+                                Stock = GetDecimalSafe(reader, "stock"),
+                                StockMinimo = GetDecimalSafe(reader, "stockMinimo"),
+                                StockMaximo = GetDecimalSafe(reader, "stockMaximo"),
+                                PrecioVenta = GetDecimalSafe(reader, "precioVenta"),
+                                CostoUnidad = GetDecimalSafe(reader, "costoUnidad"),
+                                FechaVencimiento = reader["fechaCaducidad"] != DBNull.Value 
+                                    ? Convert.ToDateTime(reader["fechaCaducidad"]) 
+                                    : DateTime.MinValue,
+                                Activo = GetBoolSafe(reader, "activo"),
+                                NombreCategoria = GetStringSafe(reader, "NombreCategoria"),
+                                NombreLaboratorio = GetStringSafe(reader, "NombreLaboratorio"),
+                                NombreMarca = GetStringSafe(reader, "NombreMarca"),
+                                Ubicacion = GetStringSafe(reader, "Ubicacion")
                             });
                         }
                     }

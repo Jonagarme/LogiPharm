@@ -15,6 +15,8 @@ namespace LogiPharm.Entidades
 
         // --- ✨ CAMPOS NUEVOS AÑADIDOS ---
         public string ContribuyenteEspecial { get; set; }
+        public string NumeroResolucion { get; set; }
+        public string AmbienteSRI { get; set; } // "Pruebas" o "Producción"
         public bool ObligadoContabilidad { get; set; }
         public string CertificadoP12Path { get; set; }
         public string CertificadoPassword { get; set; } // Guardará la contraseña encriptada

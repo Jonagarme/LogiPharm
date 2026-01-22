@@ -42,6 +42,10 @@ namespace LogiPharm.Presentacion
 
             if (datos != null)
             {
+                // Configurar la caja desde configuración (solo la primera vez)
+                if (SesionActual.IdCaja == 0)
+                    SesionActual.ConfigurarCaja();
+
                 // Guardar sesión en memoria
                 SesionActual.IdUsuario = datos.IdUsuario;
                 SesionActual.NombreUsuario = datos.Usuario;
