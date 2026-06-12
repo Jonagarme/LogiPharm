@@ -1,0 +1,62 @@
+## Visual Studio / C# gitignore template
+## Source: https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Re]leases/
+x64/
+x86/
+[Aa]R[Mm]/
+[Aa]R[Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Log]s/
+[Ff]eedback/
+
+## Visual Studio cache and settings
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+## Mono Auto Generated Files
+mono_crash.*
+
+## Nested VS Projects
+*[Cc]roj.user
+*[Cc]sproj.user
+*[Vv]bproj.user
+*[Vv]dproj.user
+*[Nn]dproj.user
+*.dbmdl
+*.jfm
+
+## NuGet Packages
+*.nupkg
+# The packages folder can be ignored because NuGet restores it
+**/packages/*
+# except build/, because it might be required by MSBuild
+!**/packages/build/
+# uncomment if using NuGet packages
+# !packages/
+
+## SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+## Directory-specific overrides
+[Tt]emp/
+[Tt]mp/

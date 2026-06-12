@@ -64,6 +64,7 @@
     <Compile Include="EConsultaSriResponse.cs" />
     <Compile Include="ECotizacion.cs" />
     <Compile Include="EEmpresa.cs" />
+    <Compile Include="EEstablecimiento.cs" />
     <Compile Include="EFacturaCompra.cs" />
     <Compile Include="EFacturaCompraXml.cs" />
     <Compile Include="EFacturaElectronica.cs" />
@@ -79,12 +80,16 @@
     <Compile Include="EPercha.cs" />
     <Compile Include="EProducto.cs" />
     <Compile Include="EProveedor.cs" />
+    <Compile Include="EPuntoEmision.cs" />
+    <Compile Include="EReceta.cs" />
+    <Compile Include="ERecetaDetalle.cs" />
     <Compile Include="ERespuestaConsultaApi.cs" />
     <Compile Include="ERol.cs" />
     <Compile Include="ETransferencia.cs" />
     <Compile Include="ETransferenciaDetalle.cs" />
     <Compile Include="EUbicacionProducto.cs" />
     <Compile Include="EUsuario.cs" />
+    <Compile Include="FacturacionApiPayloads.cs" />
     <Compile Include="NotaCreditoPayload.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RespuestaFacturaApi.cs" />

@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Windows.Forms;
 using System.Linq;
 using LogiPharm.Entidades;
@@ -11,6 +11,8 @@ namespace LogiPharm.Presentacion
         private EDetalleFacturaXML _detalleProducto;
         private EProducto _productoExistente;
         private bool _mostrarSimilares;
+        private System.Windows.Forms.Label lblFechaCaducidad;
+        private System.Windows.Forms.DateTimePicker dtpFechaCaducidad;
 
         public EDetalleFacturaXML DetalleProducto => _detalleProducto;
 
@@ -19,11 +21,38 @@ namespace LogiPharm.Presentacion
             InitializeComponent();
             _detalleProducto = detalleProducto;
             _mostrarSimilares = mostrarSimilares;
+            InitializeFechaCaducidadControl();
             this.Load += FrmConfiguracionProductoXML_Load;
             
             // Habilitar cierre con tecla ESC
             this.KeyPreview = true;
             this.KeyDown += FrmConfiguracionProductoXML_KeyDown;
+        }
+
+        private void InitializeFechaCaducidadControl()
+        {
+            this.lblFechaCaducidad = new System.Windows.Forms.Label();
+            this.dtpFechaCaducidad = new System.Windows.Forms.DateTimePicker();
+
+            // lblFechaCaducidad
+            this.lblFechaCaducidad.AutoSize = true;
+            this.lblFechaCaducidad.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblFechaCaducidad.ForeColor = System.Drawing.Color.Black;
+            this.lblFechaCaducidad.Location = new System.Drawing.Point(320, 108);
+            this.lblFechaCaducidad.Name = "lblFechaCaducidad";
+            this.lblFechaCaducidad.Size = new System.Drawing.Size(100, 15);
+            this.lblFechaCaducidad.Text = "Caducidad:";
+
+            // dtpFechaCaducidad
+            this.dtpFechaCaducidad.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.dtpFechaCaducidad.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpFechaCaducidad.Location = new System.Drawing.Point(430, 103);
+            this.dtpFechaCaducidad.Name = "dtpFechaCaducidad";
+            this.dtpFechaCaducidad.Size = new System.Drawing.Size(110, 30);
+            
+            // Add to groupPrecios
+            this.groupPrecios.Controls.Add(this.lblFechaCaducidad);
+            this.groupPrecios.Controls.Add(this.dtpFechaCaducidad);
         }
 
         private void FrmConfiguracionProductoXML_KeyDown(object sender, KeyEventArgs e)
@@ -49,16 +78,16 @@ namespace LogiPharm.Presentacion
         {
             if (_detalleProducto == null) return;
 
-            // Título del panel
+            // Tï¿½tulo del panel
             lblTitulo.Text = _detalleProducto.EsProductoNuevo ? "NUEVO PRODUCTO" : "ACTUALIZAR PRODUCTO";
             
-            // Información básica
+            // Informaciï¿½n bï¿½sica
             txtCodigoPrincipal.Text = _detalleProducto.CodigoPrincipal;
             txtDescripcion.Text = _detalleProducto.Descripcion;
 
             // Precios desde el XML
             numCostoPorUnidad.Value = _detalleProducto.PrecioUnitario;
-            numCostoPorCaja.Value = 0; // Se calculará si ingresa unidades por caja
+            numCostoPorCaja.Value = 0; // Se calcularï¿½ si ingresa unidades por caja
 
             // Si el producto existe, cargar sus datos actuales
             if (!_detalleProducto.EsProductoNuevo && _detalleProducto.IdProductoEncontrado.HasValue && _detalleProducto.IdProductoEncontrado.Value > 0)
@@ -71,9 +100,17 @@ namespace LogiPharm.Presentacion
                 numPVPUnidad.Value = _detalleProducto.PrecioUnitario * 1.30m; // 30% margen sugerido
                 chkEsFraccionable.Checked = false;
                 numDivision.Value = 1;
+                if (_detalleProducto.FechaCaducidad.HasValue)
+                {
+                    dtpFechaCaducidad.Value = _detalleProducto.FechaCaducidad.Value;
+                }
+                else
+                {
+                    dtpFechaCaducidad.Value = DateTime.Now.AddYears(1);
+                }
             }
 
-            // Cálculo inicial
+            // Cï¿½lculo inicial
             CalcularPrecios();
         }
 
@@ -93,6 +130,19 @@ namespace LogiPharm.Presentacion
                     numPVPUnidad.Value = _productoExistente.PrecioVenta;
                     chkEsFraccionable.Checked = _productoExistente.EsDivisible;
                     numDivision.Value = 1; // No tenemos este dato en el modelo actual
+
+                    if (_productoExistente.FechaVencimiento != DateTime.MinValue)
+                    {
+                        dtpFechaCaducidad.Value = _productoExistente.FechaVencimiento;
+                    }
+                    else if (_detalleProducto.FechaCaducidad.HasValue)
+                    {
+                        dtpFechaCaducidad.Value = _detalleProducto.FechaCaducidad.Value;
+                    }
+                    else
+                    {
+                        dtpFechaCaducidad.Value = DateTime.Now.AddYears(1);
+                    }
                 }
             }
             catch (Exception ex)
@@ -144,7 +194,7 @@ namespace LogiPharm.Presentacion
 
         private void chkEsFraccionable_CheckedChanged(object sender, EventArgs e)
         {
-            // Habilitar/deshabilitar sección de fraccionamiento
+            // Habilitar/deshabilitar secciï¿½n de fraccionamiento
             panelFraccionamiento.Enabled = chkEsFraccionable.Checked;
             
             if (!chkEsFraccionable.Checked)
@@ -164,14 +214,18 @@ namespace LogiPharm.Presentacion
             {
                 // Actualizar el objeto con los datos ingresados
                 _detalleProducto.PrecioUnitario = numCostoPorUnidad.Value;
+                _detalleProducto.PrecioVenta = numPVPUnidad.Value;
+                _detalleProducto.FechaCaducidad = dtpFechaCaducidad.Value;
+                _detalleProducto.EsDivisible = chkEsFraccionable.Checked;
+                _detalleProducto.CantDivision = (int)numDivision.Value;
                 
-                // Aquí podrías guardar directamente o retornar el objeto modificado
+                // Aquï¿½ podrï¿½as guardar directamente o retornar el objeto modificado
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar configuración: {ex.Message}", 
+                MessageBox.Show($"Error al guardar configuraciï¿½n: {ex.Message}", 
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -181,7 +235,7 @@ namespace LogiPharm.Presentacion
             if (numCostoPorUnidad.Value <= 0)
             {
                 MessageBox.Show("El costo por unidad debe ser mayor a 0.", 
-                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Validaciï¿½n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numCostoPorUnidad.Focus();
                 return false;
             }
@@ -189,7 +243,7 @@ namespace LogiPharm.Presentacion
             if (numPVPUnidad.Value <= 0)
             {
                 MessageBox.Show("El precio de venta debe ser mayor a 0.", 
-                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Validaciï¿½n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numPVPUnidad.Focus();
                 return false;
             }
@@ -197,7 +251,7 @@ namespace LogiPharm.Presentacion
             if (numPVPUnidad.Value < numCostoPorUnidad.Value)
             {
                 var result = MessageBox.Show(
-                    "El precio de venta es menor al costo. ¿Desea continuar de todas formas?", 
+                    "El precio de venta es menor al costo. ï¿½Desea continuar de todas formas?", 
                     "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 
                 if (result == DialogResult.No)
@@ -221,7 +275,7 @@ namespace LogiPharm.Presentacion
         /// </summary>
         private void MostrarPanelSimilares()
         {
-            // Ajustar tamaño del formulario
+            // Ajustar tamaï¿½o del formulario
             this.Width = 900;
             this.Height = 750;
 
@@ -236,7 +290,7 @@ namespace LogiPharm.Presentacion
                 BorderThickness = 2
             };
 
-            // Ícono de advertencia
+            // ï¿½cono de advertencia
             var lblIcono = new System.Windows.Forms.Label
             {
                 Text = "!",
@@ -282,7 +336,7 @@ namespace LogiPharm.Presentacion
                 BorderRadius = 8
             };
 
-            // Campo de búsqueda/filtro
+            // Campo de bï¿½squeda/filtro
             var lblBuscar = new System.Windows.Forms.Label
             {
                 Text = "Buscar por Codigo o Nombre",
@@ -301,7 +355,7 @@ namespace LogiPharm.Presentacion
                 Font = new System.Drawing.Font("Segoe UI", 10F)
             };
 
-            // Botón para limpiar búsqueda
+            // Botï¿½n para limpiar bï¿½squeda
             var btnLimpiar = new Guna.UI2.WinForms.Guna2Button
             {
                 Text = "X",
@@ -472,7 +526,7 @@ namespace LogiPharm.Presentacion
                 }
             };
 
-            // Evento de búsqueda/filtro en tiempo real
+            // Evento de bï¿½squeda/filtro en tiempo real
             txtBuscar.TextChanged += (s, e) =>
             {
                 string filtro = txtBuscar.Text.Trim().ToUpper();
@@ -485,7 +539,7 @@ namespace LogiPharm.Presentacion
                 }
                 else
                 {
-                    // Filtrar por código o nombre
+                    // Filtrar por cï¿½digo o nombre
                     var filtrados = _detalleProducto.ProductosSimilares
                         .Where(p => p.CodigoPrincipal.ToUpper().Contains(filtro) || 
                                    p.Nombre.ToUpper().Contains(filtro))
@@ -494,7 +548,7 @@ namespace LogiPharm.Presentacion
                     dgvSimilares.DataSource = new BindingSource(filtrados, null);
                     lblResultados.Text = $"Mostrando {filtrados.Count} de {_detalleProducto.ProductosSimilares.Count} producto(s)";
                     
-                    // Si solo hay un resultado, seleccionarlo automáticamente
+                    // Si solo hay un resultado, seleccionarlo automï¿½ticamente
                     if (filtrados.Count == 1 && dgvSimilares.Rows.Count > 0)
                     {
                         dgvSimilares.Rows[0].Selected = true;
@@ -502,7 +556,7 @@ namespace LogiPharm.Presentacion
                 }
             };
 
-            // Evento Enter para búsqueda rápida
+            // Evento Enter para bï¿½squeda rï¿½pida
             txtBuscar.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter)
@@ -517,7 +571,7 @@ namespace LogiPharm.Presentacion
                 }
             };
 
-            // Botón para crear como nuevo producto
+            // Botï¿½n para crear como nuevo producto
             var btnNuevo = new Guna.UI2.WinForms.Guna2Button
             {
                 Text = "CREAR COMO NUEVO PRODUCTO",
@@ -553,7 +607,7 @@ namespace LogiPharm.Presentacion
                 }
             };
 
-            // Botón para confirmar selección
+            // Botï¿½n para confirmar selecciï¿½n
             var btnConfirmar = new Guna.UI2.WinForms.Guna2Button
             {
                 Text = "VINCULAR PRODUCTO SELECCIONADO",
@@ -567,7 +621,7 @@ namespace LogiPharm.Presentacion
 
             btnConfirmar.Click += (s, e) => VincularProductoSeleccionado(dgvSimilares);
 
-            // Doble clic en el grid también vincula
+            // Doble clic en el grid tambiï¿½n vincula
             dgvSimilares.CellDoubleClick += (s, e) =>
             {
                 if (e.RowIndex >= 0)
@@ -585,7 +639,7 @@ namespace LogiPharm.Presentacion
             groupSimilares.Controls.Add(btnNuevo);
             groupSimilares.Controls.Add(btnConfirmar);
 
-            // Añadir al formulario
+            // Aï¿½adir al formulario
             panelPrincipal.Controls.Add(panelAdvertencia);
             panelPrincipal.Controls.Add(groupSimilares);
 
@@ -597,7 +651,7 @@ namespace LogiPharm.Presentacion
             btnGuardar.Visible = false;
             btnCancelar.Location = new System.Drawing.Point(panelPrincipal.Width - 140, 620);
 
-            // Dar foco al campo de búsqueda
+            // Dar foco al campo de bï¿½squeda
             txtBuscar.Focus();
         }
 
@@ -606,7 +660,7 @@ namespace LogiPharm.Presentacion
             if (dgvSimilares.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Debe seleccionar un producto de la lista.",
-                    "Selección Requerida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Selecciï¿½n Requerida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -623,7 +677,7 @@ namespace LogiPharm.Presentacion
                 // Cargar datos del producto existente
                 CargarDatosProductoExistente((int)productoSeleccionado.Id);
                 
-                // Mostrar configuración normal
+                // Mostrar configuraciï¿½n normal
                 MostrarConfiguracionNormal();
                 
                 MessageBox.Show($"Producto vinculado con:\n{productoSeleccionado.Nombre}\n\nAhora puedes ajustar precios y costos.",
@@ -633,7 +687,7 @@ namespace LogiPharm.Presentacion
 
         private void MostrarConfiguracionNormal()
         {
-            // Mostrar paneles de configuración
+            // Mostrar paneles de configuraciï¿½n
             groupInfo.Visible = true;
             groupInfo.Location = new System.Drawing.Point(20, 70);
             
@@ -651,7 +705,7 @@ namespace LogiPharm.Presentacion
             
             btnCancelar.Location = new System.Drawing.Point(460, 650);
             
-            // Ajustar tamaño del formulario
+            // Ajustar tamaï¿½o del formulario
             this.Width = 600;
             this.Height = 720;
         }
@@ -673,11 +727,11 @@ namespace LogiPharm.Presentacion
                     _detalleProducto.NombreProductoEncontrado = producto.Nombre;
                     CargarDatosProductoExistente((int)producto.Id);
                     MessageBox.Show($"Producto encontrado: {producto.Nombre}",
-                        "Vinculación Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        "Vinculaciï¿½n Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("No se encontró ningún producto con ese código de barras.",
+                    MessageBox.Show("No se encontrï¿½ ningï¿½n producto con ese cï¿½digo de barras.",
                         "No Encontrado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }

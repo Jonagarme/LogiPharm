@@ -1,4 +1,6 @@
-﻿namespace LogiPharm.Presentacion.Utilidades
+using System;
+
+namespace LogiPharm.Presentacion.Utilidades
 {
     public static class SesionActual
     {
@@ -6,39 +8,50 @@
         public static string NombreUsuario { get; set; }
         public static string NombreCompleto { get; set; }
         public static string Rol { get; set; }
-        public static int IdCaja { get; set; } = 2; // ID de la caja asignada al usuario/terminal
-        public static string NombreCaja { get; set; } = "CAJA 002"; // Nombre de la caja
+        public static int IdEmpresa { get; set; } = 1;
+        public static int IdCaja { get; set; } = 0; // ID de la caja asignada (0 = detectar automáticamente)
+        public static string NombreCaja { get; set; } = "SIN CAJA"; // Nombre de la caja
         public static bool Activa => IdUsuario > 0;
 
         /// <summary>
-        /// Configura la caja desde App.config, o usa valores por defecto si no está configurada.
+        /// Configura la caja detectando automáticamente cuál está abierta.
+        /// Si hay una caja abierta, la asigna. Si no, usa valores por defecto.
         /// Debe llamarse al iniciar la aplicación (en Program.cs o FrmLogin).
         /// </summary>
         public static void ConfigurarCaja()
         {
             try
             {
-                // Intentar leer desde App.config
-                string idCajaConfig = System.Configuration.ConfigurationManager.AppSettings["IdCaja"];
-                string nombreCajaConfig = System.Configuration.ConfigurationManager.AppSettings["NombreCaja"];
+                // ✅ DETECCIÓN AUTOMÁTICA: Buscar la primera caja abierta
+                var d_cierre = new LogiPharm.Datos.DCierreCaja();
+                var cajaAbierta = d_cierre.ObtenerPrimeraCajaAbierta();
 
-                if (!string.IsNullOrEmpty(idCajaConfig) && int.TryParse(idCajaConfig, out int idCaja))
+                if (cajaAbierta != null)
                 {
-                    IdCaja = idCaja;
+                    // Si hay una caja abierta, usarla
+                    IdCaja = Convert.ToInt32(cajaAbierta["idCaja"]);
+                    NombreCaja = Convert.ToString(cajaAbierta["nombreCaja"]);
                 }
-
-                if (!string.IsNullOrEmpty(nombreCajaConfig))
+                else
                 {
-                    NombreCaja = nombreCajaConfig;
-                }
+                    // Si no hay cajas abiertas, intentar leer desde App.config (fallback)
+                    string idCajaConfig = System.Configuration.ConfigurationManager.AppSettings["IdCaja"];
+                    string nombreCajaConfig = System.Configuration.ConfigurationManager.AppSettings["NombreCaja"];
 
-                // Si prefieres cargar desde base de datos en lugar de App.config, puedes:
-                // var caja = new DCaja().ObtenerCajaPorMaquina(Environment.MachineName);
-                // if (caja != null) { IdCaja = caja.Id; NombreCaja = caja.Nombre; }
+                    if (!string.IsNullOrEmpty(idCajaConfig) && int.TryParse(idCajaConfig, out int idCaja))
+                    {
+                        IdCaja = idCaja;
+                    }
+
+                    if (!string.IsNullOrEmpty(nombreCajaConfig))
+                    {
+                        NombreCaja = nombreCajaConfig;
+                    }
+                }
             }
             catch
             {
-                // Si falla, mantener valores por defecto
+                // Si falla, mantener valores por defecto (0, "SIN CAJA")
             }
         }
 
@@ -48,6 +61,7 @@
             NombreUsuario = null;
             NombreCompleto = null;
             Rol = null;
+            IdEmpresa = 1;
             // No limpiamos IdCaja porque es específico de la terminal/equipo
         }
     }

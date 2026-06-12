@@ -75,7 +75,7 @@ namespace LogiPharm.Presentacion.Utilidades
                     { "Normativas", ConstruirMenuNormativas() },
                     { "Seguridad", ConstruirMenuSeguridad(formulario) },
                     { "Configuracion", ConstruirMenuConfiguracion(formulario) },
-                    { "Sucursales", ConstruirMenuSucursales() },
+                    { "Sucursales", ConstruirMenuSucursales(formulario) },
                     { "Ventanas", ConstruirMenuVentanas(formulario) }
                 };
 
@@ -322,7 +322,9 @@ namespace LogiPharm.Presentacion.Utilidades
             ToolStripMenuItem cotizaciones = new ToolStripMenuItem("Cotizaciones");
             cotizaciones.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmCotizaciones>(formulario);
             ventas.DropDownItems.Add(cotizaciones);
-            ventas.DropDownItems.Add("Recetas médicas");
+            ToolStripMenuItem recetas = new ToolStripMenuItem("Recetas médicas");
+            recetas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmRecetasMedicas>(formulario);
+            ventas.DropDownItems.Add(recetas);
             return ventas;
         }
 
@@ -584,14 +586,21 @@ namespace LogiPharm.Presentacion.Utilidades
             return configuracion;
         }
 
-        private static ToolStripMenuItem ConstruirMenuSucursales()
+        private static ToolStripMenuItem ConstruirMenuSucursales(Form formulario)
         {
             ToolStripMenuItem sucursales = new ToolStripMenuItem("🏪 Sucursales")
             {
                 Font = Fuentes.MenuPrincipal
             };
-            sucursales.DropDownItems.Add("Gestión de Sucursales");
-            sucursales.DropDownItems.Add("Transferencias internas");
+
+            ToolStripMenuItem mGestion = new ToolStripMenuItem("Gestión de Sucursales");
+            mGestion.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmSucursales>(formulario);
+
+            ToolStripMenuItem mTransferencias = new ToolStripMenuItem("Transferencias internas");
+            mTransferencias.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmTransferencias>(formulario);
+
+            sucursales.DropDownItems.Add(mGestion);
+            sucursales.DropDownItems.Add(mTransferencias);
             return sucursales;
         }
 

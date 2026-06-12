@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 
 namespace LogiPharm.Entidades
@@ -60,14 +60,20 @@ namespace LogiPharm.Entidades
         public decimal CostoPorUnidad => Cantidad > 0 ? PrecioTotalSinImpuesto / Cantidad : 0;
         public decimal PVPSugerido => CostoPorUnidad * 1.30m; // 30% margen sugerido
 
+        public decimal PrecioVenta { get; set; }
+        public DateTime? FechaCaducidad { get; set; }
+        public bool EsDivisible { get; set; }
+        public int CantDivision { get; set; }
+
         public EDetalleFacturaXML()
         {
             ProductosSimilares = new List<ProductoSimilarDetectado>();
+            FechaCaducidad = DateTime.Now.AddYears(1);
         }
     }
 
     /// <summary>
-    /// Clase para representar un producto similar detectado durante la importación
+    /// Clase para representar un producto similar detectado durante la importaciï¿½n
     /// </summary>
     public class ProductoSimilarDetectado
     {

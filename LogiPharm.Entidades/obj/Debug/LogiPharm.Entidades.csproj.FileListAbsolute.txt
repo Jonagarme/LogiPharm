@@ -35,6 +35,8 @@ C:\Users\jonag\OneDrive\Imágenes\LogiPharm\LogiPharm\LogiPharm.Entidades\bin\De
 C:\Users\jonag\OneDrive\Imágenes\LogiPharm\LogiPharm\LogiPharm.Entidades\bin\Debug\LogiPharm.Entidades.pdb
 C:\Users\jonag\OneDrive\Imágenes\LogiPharm\LogiPharm\LogiPharm.Entidades\bin\Debug\FontAwesome.Sharp.dll
 C:\Users\jonag\OneDrive\Imágenes\LogiPharm\LogiPharm\LogiPharm.Entidades\bin\Debug\Guna.UI2.dll
+C:\Users\jonag\OneDrive\Imágenes\LogiPharm\LogiPharm\LogiPharm.Entidades\bin\Debug\Newtonsoft.Json.dll
+C:\Users\jonag\OneDrive\Imágenes\LogiPharm\LogiPharm\LogiPharm.Entidades\bin\Debug\Newtonsoft.Json.xml
 C:\Users\jonag\OneDrive\Imágenes\LogiPharm\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPharm.Entidades.csproj.AssemblyReference.cache
 C:\Users\jonag\OneDrive\Imágenes\LogiPharm\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPharm.Entidades.csproj.CoreCompileInputs.cache
 C:\Users\jonag\OneDrive\Imágenes\LogiPharm\LogiPharm\LogiPharm.Entidades\obj\Debug\LogiPhar.8A4C43FA.Up2Date

@@ -30,6 +30,7 @@ namespace LogiPharm.Entidades
         public bool CalculoABCManual { get; set; }
         public string ClasificacionABC { get; set; }
         public bool Activo { get; set; }
+        public bool AplicaIva { get; set; } = true;
 
         // Campos de Auditoría (no se insertan directamente, se asignan en la capa de datos)
         public int CreadoPor { get; set; }
@@ -94,3 +95,4 @@ namespace LogiPharm.Entidades
         }
     }
 }
+

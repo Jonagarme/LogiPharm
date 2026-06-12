@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.IO;
 using System.Windows.Forms;
@@ -309,44 +309,44 @@ namespace LogiPharm.Presentacion
                     return;
                 }
 
-                using (var http = new HttpClient())
+                this.Cursor = Cursors.WaitCursor;
+
+                var d = new DFacturacion();
+                bool esProd = false;
+                try
                 {
-                    // Ajusta la URL base de tu API
-                    string url = $"http://localhost:5001/api/consulta_sri/{claveAcceso}";
-                    var resp = await http.GetAsync(url);
-
-                    if (!resp.IsSuccessStatusCode)
-                    {
-                        MessageBox.Show($"Error al consultar la API: {resp.StatusCode}",
-                                        "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    string json = await resp.Content.ReadAsStringAsync();
-                    var data = JsonConvert.DeserializeObject<ConsultaSriResponse>(json);
-
-                    if (data == null || string.IsNullOrWhiteSpace(data.ComprobanteXml))
-                    {
-                        MessageBox.Show("La respuesta de la API no contiene el XML del comprobante.",
-                                        "Sin datos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-
-                    EFacturaCompraXml factura = XmlHelper.ParseFactura(data.ComprobanteXml);
-
-                    LlenarFormularioConDatosXML(factura);
-
-                    MessageBox.Show("Factura cargada desde el SRI con éxito.",
-                                    "Consulta Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                    // Auditoría: VISUALIZAR/CONSULTAR SRI
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", "VISUALIZAR", "compras", null, $"Consultar SRI por clave {claveAcceso}", null, Environment.MachineName, "UI"); } catch { }
+                    var empresa = new DEmpresa().ObtenerDatosEmpresa();
+                    esProd = empresa != null && (empresa.AmbienteSRI == "2" || empresa.AmbienteSRI == "Producción");
                 }
+                catch { }
+
+                var data = await d.ConsultarSriApiAsync(claveAcceso, esProd);
+
+                if (data == null || string.IsNullOrWhiteSpace(data.ComprobanteXml))
+                {
+                    MessageBox.Show("La respuesta de la API no contiene el XML del comprobante.",
+                                    "Sin datos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                EFacturaCompraXml factura = XmlHelper.ParseFactura(data.ComprobanteXml);
+
+                LlenarFormularioConDatosXML(factura);
+
+                MessageBox.Show("Factura cargada desde el SRI con éxito.",
+                                "Consulta Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Auditoría: VISUALIZAR/CONSULTAR SRI
+                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Compras", "VISUALIZAR", "compras", null, $"Consultar SRI por clave {claveAcceso}", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error en la consulta:\n" + ex.Message,
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
             }
         }
 

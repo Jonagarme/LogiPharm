@@ -153,5 +153,170 @@ namespace LogiPharm.Presentacion.Utilidades
             };
         }
 
+		public static ProcesarFacturaRequest BuildProcesarFacturaRequest(
+			string tipo,
+			EEmpresa empresa,
+			string establecimiento,
+			string puntoEmision,
+			string secuencial,
+			ECliente cliente,
+			List<ProductoVenta> productos,
+			string formaPago = "EFECTIVO")
+		{
+			if (empresa == null) throw new ArgumentNullException(nameof(empresa));
+			if (productos == null) productos = new List<ProductoVenta>();
+
+			var (idComprador, razonComprador, dirComprador) = NormalizarCliente(cliente);
+			string sec9 = (secuencial ?? "1").PadLeft(9, '0');
+			decimal ivaRate = ImpuestoProvider.GetIVA();
+			decimal ivaTarifaPct = Math.Round(ivaRate * 100m, 2, MidpointRounding.AwayFromZero);
+
+			var detalles = new List<FacturaDetalleApi>();
+			decimal totalSinImpuestos = 0m;
+			decimal totalDescuento = 0m;
+			decimal totalIva = 0m;
+			decimal baseIva15 = 0m;
+			decimal valorIva15 = 0m;
+			decimal baseIva0 = 0m;
+
+			foreach (var p in productos)
+			{
+				decimal cant = Math.Round(p.Cantidad, 2, MidpointRounding.AwayFromZero);
+				decimal pu = Math.Round(p.PrecioUnitario, 2, MidpointRounding.AwayFromZero);
+				decimal subtotalSinDesc = Math.Round(cant * pu, 2, MidpointRounding.AwayFromZero);
+
+				decimal baseLinea;
+				if (p.PrecioTotalSinImpuesto > 0)
+				{
+					baseLinea = Math.Round(p.PrecioTotalSinImpuesto, 2, MidpointRounding.AwayFromZero);
+				}
+				else
+				{
+					// En el POS `Descuento` suele ser % (0-100). Si no, se interpreta como valor.
+					decimal descuentoValorEstimado;
+					if (p.Descuento > 0m && p.Descuento <= 100m)
+						descuentoValorEstimado = Math.Round(subtotalSinDesc * (p.Descuento / 100m), 2, MidpointRounding.AwayFromZero);
+					else
+						descuentoValorEstimado = Math.Round(p.Descuento, 2, MidpointRounding.AwayFromZero);
+
+					baseLinea = Math.Round(subtotalSinDesc - descuentoValorEstimado, 2, MidpointRounding.AwayFromZero);
+					if (baseLinea < 0m) baseLinea = 0m;
+				}
+
+				decimal dsctoValor = Math.Round(subtotalSinDesc - baseLinea, 2, MidpointRounding.AwayFromZero);
+				if (dsctoValor < 0m) dsctoValor = 0m;
+
+				decimal itemIvaRate = p.AplicaIva ? ivaRate : 0m;
+				decimal itemIvaTarifaPct = p.AplicaIva ? ivaTarifaPct : 0m;
+				string itemCodigoPorc = p.AplicaIva ? IVA_COD_PORC : "0";
+
+				decimal ivaLinea = Math.Round(baseLinea * itemIvaRate, 2, MidpointRounding.AwayFromZero);
+				totalSinImpuestos += baseLinea;
+				totalDescuento += dsctoValor;
+				totalIva += ivaLinea;
+
+				if (p.AplicaIva)
+				{
+					baseIva15 += baseLinea;
+					valorIva15 += ivaLinea;
+				}
+				else
+				{
+					baseIva0 += baseLinea;
+				}
+
+				detalles.Add(new FacturaDetalleApi
+				{
+					codigoPrincipal = p.CodigoPrincipal,
+					codigoAuxiliar = string.Empty,
+					descripcion = p.Descripcion,
+					cantidad = cant,
+					precioUnitario = pu,
+					descuento = dsctoValor,
+					precioTotalSinImpuesto = baseLinea,
+					impuestos = new List<ImpuestoApi>
+					{
+						new ImpuestoApi
+						{
+							codigo = IVA_CODIGO,
+							codigoPorcentaje = itemCodigoPorc,
+							baseImponible = baseLinea,
+							tarifa = itemIvaTarifaPct,
+							valor = ivaLinea
+						}
+					}
+				});
+			}
+
+			totalSinImpuestos = Math.Round(totalSinImpuestos, 2, MidpointRounding.AwayFromZero);
+			totalDescuento = Math.Round(totalDescuento, 2, MidpointRounding.AwayFromZero);
+			totalIva = Math.Round(totalIva, 2, MidpointRounding.AwayFromZero);
+			decimal importeTotal = Math.Round(totalSinImpuestos + totalIva, 2, MidpointRounding.AwayFromZero);
+
+			string telefono = (cliente?.Telefono ?? string.Empty).Trim();
+			if (string.IsNullOrWhiteSpace(telefono)) telefono = (cliente?.Celular ?? string.Empty).Trim();
+			string email = (cliente?.Email ?? string.Empty).Trim();
+
+			var listaImpuestosCabecera = new List<ImpuestoApi>();
+			if (baseIva15 > 0m)
+			{
+				listaImpuestosCabecera.Add(new ImpuestoApi
+				{
+					codigo = IVA_CODIGO,
+					codigoPorcentaje = IVA_COD_PORC,
+					baseImponible = Math.Round(baseIva15, 2, MidpointRounding.AwayFromZero),
+					tarifa = ivaTarifaPct,
+					valor = Math.Round(valorIva15, 2, MidpointRounding.AwayFromZero)
+				});
+			}
+			if (baseIva0 > 0m || listaImpuestosCabecera.Count == 0)
+			{
+				listaImpuestosCabecera.Add(new ImpuestoApi
+				{
+					codigo = IVA_CODIGO,
+					codigoPorcentaje = "0",
+					baseImponible = Math.Round(baseIva0, 2, MidpointRounding.AwayFromZero),
+					tarifa = 0m,
+					valor = 0m
+				});
+			}
+
+			return new ProcesarFacturaRequest
+			{
+				tipo = string.IsNullOrWhiteSpace(tipo) ? "FACTURA" : tipo,
+				ruc = (empresa.Ruc ?? string.Empty).Trim(),
+				empresa_Id = empresa.Id,
+				data = new ProcesarFacturaData
+				{
+					fechaEmision = DateTime.Now.ToString("dd/MM/yyyy"),
+					establecimiento = establecimiento,
+					puntoEmision = puntoEmision,
+					secuencial = sec9,
+					identificacionComprador = idComprador,
+					razonSocialComprador = razonComprador,
+					direccionComprador = dirComprador,
+					totalSinImpuestos = totalSinImpuestos,
+					totalDescuento = totalDescuento,
+					importeTotal = importeTotal,
+					detalles = detalles,
+					impuestos = listaImpuestosCabecera,
+					pagos = new List<PagoApi>
+					{
+						new PagoApi
+						{
+							formaPago = formaPago,
+							total = importeTotal
+						}
+					},
+					infoAdicional = new InfoAdicionalApi
+					{
+						email = email,
+						telefono = telefono
+					}
+				}
+			};
+		}
+
     }
 }
+

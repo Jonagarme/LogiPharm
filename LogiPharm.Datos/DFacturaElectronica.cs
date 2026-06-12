@@ -1,5 +1,7 @@
 using System;
+using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Linq;
 using LogiPharm.Entidades;
@@ -116,12 +118,54 @@ namespace LogiPharm.Datos
             }
         }
 
-        public EFacturaElectronica ConsultarPorClaveAcceso(string claveAcceso)
-        {
-            // TODO: Implementar consulta al SRI o servicio externo
-            // Por ahora retorna null, deberías integrarlo con tu proveedor de servicios
-            throw new NotImplementedException("La consulta por clave de acceso requiere integración con el SRI o proveedor de servicios.");
-        }
+		public async Task<EFacturaElectronica> ConsultarPorClaveAccesoAsync(string claveAcceso, bool? esProduccionOverride = null)
+		{
+			if (string.IsNullOrWhiteSpace(claveAcceso))
+				throw new ArgumentException("La clave de acceso no puede estar vacía.");
+			claveAcceso = claveAcceso.Trim();
+
+			bool esProduccion;
+			if (esProduccionOverride.HasValue)
+			{
+				esProduccion = esProduccionOverride.Value;
+			}
+			else
+			{
+				// Por defecto PRODUCCIÓN (si la config no está disponible)
+				esProduccion = true;
+				try
+				{
+					var empresa = new DEmpresa().ObtenerDatosEmpresa();
+					var amb = (empresa?.AmbienteSRI ?? string.Empty).Trim();
+					if (amb == "1") esProduccion = false;
+					else if (amb == "2") esProduccion = true;
+					else if (amb.IndexOf("PRUE", StringComparison.OrdinalIgnoreCase) >= 0) esProduccion = false;
+					else if (amb.IndexOf("PROD", StringComparison.OrdinalIgnoreCase) >= 0) esProduccion = true;
+				}
+				catch
+				{
+					// usar default
+				}
+			}
+
+			var df = new DFacturacion();
+			var resp = await df.ConsultarSriApiAsync(claveAcceso, esProduccion);
+
+			string xml = (resp?.XmlAutorizado ?? resp?.ComprobanteXml ?? string.Empty).Trim();
+			if (string.IsNullOrWhiteSpace(xml))
+			{
+				string estado = resp?.Estado ?? "";
+				throw new Exception("La API no devolvió el XML autorizado." + (string.IsNullOrWhiteSpace(estado) ? "" : (" Estado: " + estado)));
+			}
+
+			return ParsearXML(xml);
+		}
+
+		public EFacturaElectronica ConsultarPorClaveAcceso(string claveAcceso)
+		{
+			// Mantener API síncrona por compatibilidad, evitando deadlock en UI.
+			return Task.Run(() => ConsultarPorClaveAccesoAsync(claveAcceso)).GetAwaiter().GetResult();
+		}
 
         public void BuscarProductosExistentes(EFacturaElectronica factura)
         {

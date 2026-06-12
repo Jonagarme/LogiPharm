@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
@@ -333,42 +333,7 @@ namespace LogiPharm.Presentacion
 
         private async Task<RespuestaFacturaApi> EnviarNotaCreditoApi(NotaCreditoPayload payload)
         {
-            string apiUrl = "http://127.0.0.1:5001/api/nota_credito"; // ajusta a tu endpoint real
-
-            var json = JsonConvert.SerializeObject(
-                payload,
-                Formatting.None,
-                new JsonSerializerSettings
-                {
-                    Culture = CultureInfo.InvariantCulture,
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-
-            using (var client = new HttpClient())
-            using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
-            {
-                var resp = await client.PostAsync(apiUrl, content);
-                var body = await resp.Content.ReadAsStringAsync();
-
-                if (!resp.IsSuccessStatusCode)
-                {
-                    try
-                    {
-                        var raw = JsonConvert.DeserializeObject<dynamic>(body);
-                        string err = (string)(raw?.error ?? "Error desconocido");
-                        string msgs = raw?.mensajes != null ? JsonConvert.SerializeObject(raw.mensajes, Formatting.Indented) : "[]";
-                        throw new Exception($"HTTP {(int)resp.StatusCode} {resp.ReasonPhrase}\n{err}\nMensajes: {msgs}");
-                    }
-                    catch
-                    {
-                        throw new Exception($"HTTP {(int)resp.StatusCode} {resp.ReasonPhrase}\n{body}");
-                    }
-                }
-
-                var data = JsonConvert.DeserializeObject<RespuestaFacturaApi>(body);
-                if (data == null) throw new Exception("No se pudo leer la respuesta de la API.");
-                return data;
-            }
+            return await new DFacturacion().EnviarNotaCreditoApiAsync(payload);
         }
     }
 }

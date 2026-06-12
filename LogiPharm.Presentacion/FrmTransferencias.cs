@@ -1,4 +1,4 @@
-using Guna.UI2.WinForms;
+ï»¿using Guna.UI2.WinForms;
 using LogiPharm.Datos;
 using System;
 using System.Data;
@@ -32,7 +32,7 @@ namespace LogiPharm.Presentacion
             dgvTransferencias.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "colNumero",
-                HeaderText = "N° TRANSFERENCIA",
+                HeaderText = "NÂ° TRANSFERENCIA",
                 DataPropertyName = "numeroTransferencia",
                 Width = 150,
                 ReadOnly = true
@@ -51,7 +51,7 @@ namespace LogiPharm.Presentacion
             dgvTransferencias.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "colOrigen",
-                HeaderText = "UBICACIÓN ORIGEN",
+                HeaderText = "UBICACIÃ“N ORIGEN",
                 DataPropertyName = "ubicacionOrigen",
                 Width = 150,
                 ReadOnly = true
@@ -60,7 +60,7 @@ namespace LogiPharm.Presentacion
             dgvTransferencias.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "colDestino",
-                HeaderText = "UBICACIÓN DESTINO",
+                HeaderText = "UBICACIÃ“N DESTINO",
                 DataPropertyName = "ubicacionDestino",
                 Width = 150,
                 ReadOnly = true
@@ -152,9 +152,27 @@ namespace LogiPharm.Presentacion
             try
             {
                 string filtroEstado = "";
-                if (cboEstado.SelectedItem != null && cboEstado.SelectedItem.ToString() != "Todos")
+                if (cboEstado.SelectedIndex > 0)
                 {
-                    filtroEstado = cboEstado.SelectedItem.ToString().ToUpper().Replace(" ", "_");
+                    // Mapeo por indice para evitar problemas de tildes/encoding.
+                    switch (cboEstado.SelectedIndex)
+                    {
+                        case 1: // Pendiente
+                            filtroEstado = "PENDIENTE";
+                            break;
+                        case 2: // En Transito
+                            filtroEstado = "EN_TRANSITO";
+                            break;
+                        case 3: // Recibida
+                            filtroEstado = "RECIBIDA";
+                            break;
+                        case 4: // Cancelada
+                            filtroEstado = "CANCELADA";
+                            break;
+                        default:
+                            filtroEstado = "";
+                            break;
+                    }
                 }
 
                 DataTable dt = _dTransferencias.ListarTransferencias(filtroEstado);
@@ -222,8 +240,8 @@ namespace LogiPharm.Presentacion
             if (dgvTransferencias.CurrentRow == null) return;
 
             long id = Convert.ToInt64(dgvTransferencias.CurrentRow.Cells["colId"].Value);
-            // Aquí puedes abrir un formulario de vista detallada
-            MessageBox.Show($"Ver transferencia ID: {id}", "Información",
+            // AquÃ­ puedes abrir un formulario de vista detallada
+            MessageBox.Show($"Ver transferencia ID: {id}", "InformaciÃ³n",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }

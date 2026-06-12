@@ -77,16 +77,12 @@ namespace LogiPharm.Presentacion
                 cboDestino.DataSource = _dtUbicaciones.Copy();
                 cboDestino.SelectedIndex = -1;
 
-                // Mensaje de depuración (puedes quitarlo después)
-                MessageBox.Show($"? Se cargaron {_dtUbicaciones.Rows.Count} ubicaciones correctamente.", 
-                    "Depuración", 
-                    MessageBoxButtons.OK, 
-                    MessageBoxIcon.Information);
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"? Error al cargar ubicaciones:\n\n{ex.Message}\n\nStack Trace:\n{ex.StackTrace}", 
-                    "Error Detallado",
+                MessageBox.Show($"Error al cargar ubicaciones:\n\n{ex.Message}", 
+                    "Error",
                     MessageBoxButtons.OK, 
                     MessageBoxIcon.Error);
             }

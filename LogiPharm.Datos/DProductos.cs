@@ -1,4 +1,4 @@
-﻿using MySqlConnector;
+using MySqlConnector;
 using System;
 using System.Data;
 using System.Linq;
@@ -139,7 +139,7 @@ namespace LogiPharm.Datos
             {
                 cn.Open();
                 string query = @"
-                    SELECT id, codigoPrincipal, nombre, precioVenta, stock, activo as 'activo'
+                    SELECT id, codigoPrincipal, nombre, precioVenta, stock, activo as 'activo', aplicaIva
                     FROM productos
                     WHERE (codigoPrincipal = @texto OR codigoAuxiliar = @texto OR nombre LIKE CONCAT('%', @texto, '%'))
                       AND anulado = 0 AND activo = 1
@@ -160,6 +160,7 @@ namespace LogiPharm.Datos
                             PrecioVenta = Convert.ToDecimal(reader["precioVenta"]),
                             Stock = Convert.ToDecimal(reader["stock"]),
                             Activo = Convert.ToBoolean(reader["activo"]),
+                            AplicaIva = Convert.ToBoolean(reader["aplicaIva"]),
                         };
                     }
                 }
@@ -173,7 +174,12 @@ namespace LogiPharm.Datos
             using (var conn = new MySqlConnection(CapaDatos.Conexion.cadena))
             {
                 conn.Open();
-                string sql = "SELECT * FROM productos WHERE id = @id";
+                string sql = @"
+                    SELECT p.*, pe1.Nombre AS Ubicacion 
+                    FROM productos p
+                    LEFT JOIN productos_ubicacionproducto pe ON p.id = pe.producto_id
+                    LEFT JOIN productos_percha pe1 ON pe.percha_id = pe1.id 
+                    WHERE p.id = @id";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
@@ -206,13 +212,15 @@ namespace LogiPharm.Datos
                                 PvpUnidad = GetDecimalSafe(dr, "pvpUnidad"),
                                 PrecioVenta = GetDecimalSafe(dr, "precioVenta"),
                                 // ===========================================
+                                Ubicacion = GetStringSafe(dr, "Ubicacion"),
                                 EsDivisible = GetBoolSafe(dr, "esDivisible"),
                                 EsPsicotropico = GetBoolSafe(dr, "esPsicotropico"),
                                 RequiereCadenaFrio = GetBoolSafe(dr, "requiereCadenaFrio"),
                                 RequiereSeguimiento = GetBoolSafe(dr, "requiereSeguimiento"),
                                 CalculoABCManual = GetBoolSafe(dr, "calculoABCManual"),
                                 ClasificacionABC = GetStringSafe(dr, "clasificacionABC"),
-                                Activo = GetBoolSafe(dr, "activo")
+                                Activo = GetBoolSafe(dr, "activo"),
+                                AplicaIva = GetBoolSafe(dr, "aplicaIva")
                             };
                         }
                     }
@@ -242,6 +250,7 @@ namespace LogiPharm.Datos
                             p.costoUnidad,
                             p.fechaCaducidad,
                             p.activo,
+                            p.aplicaIva,
                             c.nombre AS NombreCategoria,
                             l.nombre AS NombreLaboratorio,
                             m.nombre AS NombreMarca,
@@ -278,6 +287,7 @@ namespace LogiPharm.Datos
                                     ? Convert.ToDateTime(reader["fechaCaducidad"]) 
                                     : DateTime.MinValue,
                                 Activo = GetBoolSafe(reader, "activo"),
+                                AplicaIva = GetBoolSafe(reader, "aplicaIva"),
                                 NombreCategoria = GetStringSafe(reader, "NombreCategoria"),
                                 NombreLaboratorio = GetStringSafe(reader, "NombreLaboratorio"),
                                 NombreMarca = GetStringSafe(reader, "NombreMarca"),
@@ -329,6 +339,7 @@ namespace LogiPharm.Datos
                                 PrecioVenta = GetDecimalSafe(dr, "precioVenta"),
                                 // =================================================
                                 Activo = GetBoolSafe(dr, "activo"),
+                                AplicaIva = GetBoolSafe(dr, "aplicaIva"),
                             };
                         }
                     }
@@ -357,14 +368,14 @@ namespace LogiPharm.Datos
                             stock, stockMinimo, stockMaximo,
                             costoUnidad, costoCaja, pvpUnidad, precioVenta,
                             esDivisible, esPsicotropico, requiereCadenaFrio, requiereSeguimiento, calculoABCManual,
-                            clasificacionABC, activo, creadoPor, creadoDate
+                            clasificacionABC, activo, creadoPor, creadoDate, aplicaIva
                         ) VALUES (
                             @nombre, @codigoPrincipal, @codigoAuxiliar, @descripcion, @observaciones, @registroSanitario,
                             @idTipoProducto, @idClaseProducto, @idCategoria, @idSubcategoria, @idSubnivel, @idMarca, @idLaboratorio,
                             @stock, @stockMinimo, @stockMaximo,
                             @costoUnidad, @costoCaja, @pvpUnidad, @precioVenta,
                             @esDivisible, @esPsicotropico, @requiereCadenaFrio, @requiereSeguimiento, @calculoABCManual,
-                            @clasificacionABC, @activo, @creadoPor, @creadoDate
+                            @clasificacionABC, @activo, @creadoPor, @creadoDate, @aplicaIva
                         );";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
@@ -403,6 +414,7 @@ namespace LogiPharm.Datos
                     // auditoría
                     cmd.Parameters.AddWithValue("@creadoPor", producto.CreadoPor);
                     cmd.Parameters.AddWithValue("@creadoDate", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@aplicaIva", producto.AplicaIva);
 
                     filasAfectadas = cmd.ExecuteNonQuery();
                 }
@@ -531,6 +543,7 @@ namespace LogiPharm.Datos
                             calculoABCManual = @calculoABCManual,
                             clasificacionABC = @clasificacionABC,
                             activo = @activo,
+                            aplicaIva = @aplicaIva,
                             editadoPor = @editadoPor,
                             editadoDate = @editadoDate
                         WHERE id = @id;";
@@ -570,6 +583,7 @@ namespace LogiPharm.Datos
                     cmd.Parameters.AddWithValue("@activo", producto.Activo);
 
                     cmd.Parameters.AddWithValue("@editadoPor", producto.EditadoPor);
+                    cmd.Parameters.AddWithValue("@aplicaIva", producto.AplicaIva);
                     cmd.Parameters.AddWithValue("@editadoDate", DateTime.Now);
 
                     filasAfectadas = cmd.ExecuteNonQuery();
@@ -816,5 +830,187 @@ namespace LogiPharm.Datos
             public decimal PrecioVenta { get; set; }
             public double PorcentajeSimilitud { get; set; }
         }
+
+        // ===== NUEVOS MÉTODOS PARA ALINEACIÓN CON PHP (FILTROS Y ESTADÍSTICAS) =====
+        
+        public void ObtenerEstadisticasProductos(out int total, out int enStock, out int stockBajo, out int totalCategorias)
+        {
+            total = 0;
+            enStock = 0;
+            stockBajo = 0;
+            totalCategorias = 0;
+
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    
+                    // 1. Total productos
+                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM productos WHERE anulado = 0", cn))
+                    {
+                        total = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+                    
+                    // 2. En Stock
+                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM productos WHERE anulado = 0 AND stock > 0", cn))
+                    {
+                        enStock = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+                    
+                    // 3. Stock Bajo
+                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM productos WHERE anulado = 0 AND stock <= stockMinimo", cn))
+                    {
+                        stockBajo = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+
+                    // 4. Total Categorías
+                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM categorias", cn))
+                    {
+                        totalCategorias = Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+                }
+                catch
+                {
+                    // Silenciar fallos de BD o retornar lo que se pueda
+                }
+            }
+        }
+
+        public DataTable ListarCategorias()
+        {
+            DataTable tabla = new DataTable();
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    const string query = "SELECT id, nombre FROM categorias ORDER BY nombre ASC";
+                    using (var da = new MySqlDataAdapter(query, cn))
+                    {
+                        da.Fill(tabla);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al listar categorías: " + ex.Message);
+                }
+            }
+            return tabla;
+        }
+
+        public DataTable ListarProductosFiltradoPaginado(string criterio, int? idCategoria, int? idLaboratorio, int offset, int limit)
+        {
+            DataTable tabla = new DataTable();
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    string query = @"
+                        SELECT 
+                            codigoPrincipal AS 'Código', 
+                            nombre AS 'Nombre', 
+                            stock AS 'Stock', 
+                            precioVenta AS 'PVP',
+                            stockMinimo AS 'StockMinimo',
+                            activo as 'Activo',
+                            id AS 'ID' 
+                        FROM productos 
+                        WHERE anulado = 0";
+
+                    if (!string.IsNullOrWhiteSpace(criterio))
+                    {
+                        query += " AND (codigoPrincipal LIKE @criterio OR nombre LIKE @criterio OR descripcion LIKE @criterio)";
+                    }
+                    if (idCategoria.HasValue && idCategoria.Value > 0)
+                    {
+                        query += " AND idCategoria = @idCategoria";
+                    }
+                    if (idLaboratorio.HasValue && idLaboratorio.Value > 0)
+                    {
+                        query += " AND idLaboratorio = @idLaboratorio";
+                    }
+
+                    query += " ORDER BY nombre ASC LIMIT @limit OFFSET @offset;";
+
+                    using (var cmd = new MySqlCommand(query, cn))
+                    {
+                        if (!string.IsNullOrWhiteSpace(criterio))
+                        {
+                            cmd.Parameters.AddWithValue("@criterio", $"%{criterio}%");
+                        }
+                        if (idCategoria.HasValue && idCategoria.Value > 0)
+                        {
+                            cmd.Parameters.AddWithValue("@idCategoria", idCategoria.Value);
+                        }
+                        if (idLaboratorio.HasValue && idLaboratorio.Value > 0)
+                        {
+                            cmd.Parameters.AddWithValue("@idLaboratorio", idLaboratorio.Value);
+                        }
+                        cmd.Parameters.Add("@limit", MySqlDbType.Int32).Value = limit;
+                        cmd.Parameters.Add("@offset", MySqlDbType.Int32).Value = offset;
+
+                        using (var da = new MySqlDataAdapter(cmd))
+                        {
+                            da.Fill(tabla);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al buscar productos paginados con filtros: " + ex.Message);
+                }
+            }
+            return tabla;
+        }
+
+        public int ContarProductosFiltrado(string criterio, int? idCategoria, int? idLaboratorio)
+        {
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                try
+                {
+                    cn.Open();
+                    string sql = "SELECT COUNT(*) FROM productos WHERE anulado = 0";
+                    if (!string.IsNullOrWhiteSpace(criterio))
+                    {
+                        sql += " AND (codigoPrincipal LIKE @c OR nombre LIKE @c OR descripcion LIKE @c)";
+                    }
+                    if (idCategoria.HasValue && idCategoria.Value > 0)
+                    {
+                        sql += " AND idCategoria = @idCategoria";
+                    }
+                    if (idLaboratorio.HasValue && idLaboratorio.Value > 0)
+                    {
+                        sql += " AND idLaboratorio = @idLaboratorio";
+                    }
+
+                    using (var cmd = new MySqlCommand(sql, cn))
+                    {
+                        if (!string.IsNullOrWhiteSpace(criterio))
+                        {
+                            cmd.Parameters.AddWithValue("@c", $"%{criterio}%");
+                        }
+                        if (idCategoria.HasValue && idCategoria.Value > 0)
+                        {
+                            cmd.Parameters.AddWithValue("@idCategoria", idCategoria.Value);
+                        }
+                        if (idLaboratorio.HasValue && idLaboratorio.Value > 0)
+                        {
+                            cmd.Parameters.AddWithValue("@idLaboratorio", idLaboratorio.Value);
+                        }
+
+                        var obj = cmd.ExecuteScalar();
+                        return Convert.ToInt32(obj);
+                    }
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
     }
 }
+

@@ -4,6 +4,30 @@ using Newtonsoft.Json;
 
 namespace LogiPharm.Entidades
 {
+	public class RespuestaConsultaApi
+	{
+		// Nuevo endpoint: /api/facturacion/consultar-sri
+		// { estado, numeroAutorizacion, fechaAutorizacion, xmlAutorizado, claveAcceso, mensajes }
+		[JsonProperty("claveAcceso")]
+		public string ClaveAcceso { get; set; }
+		[JsonProperty("estado")]
+		public string Estado { get; set; }
+		[JsonProperty("numeroAutorizacion")]
+		public string NumeroAutorizacion { get; set; }
+		[JsonProperty("fechaAutorizacion")]
+		public string FechaAutorizacion { get; set; }
+		[JsonProperty("xmlAutorizado")]
+		public string XmlAutorizado { get; set; }
+		[JsonProperty("mensajes")]
+		public object Mensajes { get; set; }
+
+		// Compatibilidad hacia atrás (otros endpoints antiguos)
+		[JsonProperty("resumen")]
+		public Resumen Resumen { get; set; }
+		[JsonProperty("comprobanteXml")]
+		public string ComprobanteXml { get; set; }
+	}
+
     public class CompradorResumen
     {
         [JsonProperty("identificacion")]
@@ -43,19 +67,4 @@ namespace LogiPharm.Entidades
         public TotalesResumen Totales { get; set; }
     }
 
-    public class RespuestaConsultaApi
-    {
-        [JsonProperty("claveAcceso")]
-        public string ClaveAcceso { get; set; }
-        [JsonProperty("estado")]
-        public string Estado { get; set; }
-        [JsonProperty("numeroAutorizacion")]
-        public string NumeroAutorizacion { get; set; }
-        [JsonProperty("fechaAutorizacion")]
-        public string FechaAutorizacion { get; set; }
-        [JsonProperty("resumen")]
-        public Resumen Resumen { get; set; }
-        [JsonProperty("comprobanteXml")]
-        public string ComprobanteXml { get; set; }
-    }
 }

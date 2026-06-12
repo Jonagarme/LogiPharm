@@ -1,4 +1,4 @@
-﻿namespace LogiPharm.Entidades
+namespace LogiPharm.Entidades
 {
     public class EUsuario
     {
@@ -10,6 +10,7 @@
 
         public int Id { get; set; }
         public int IdRol { get; set; }
+        public int IdEmpresa { get; set; }
         public string NombreUsuario { get; set; }
         public string ContrasenaHash { get; set; }
         public string Email { get; set; }
@@ -18,7 +19,6 @@
         // Propiedades de auditoría
         public int CreadoPor { get; set; }
         public int? EditadoPor { get; set; }
-
 
     }
 }

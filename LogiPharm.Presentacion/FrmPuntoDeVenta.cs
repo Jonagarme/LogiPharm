@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -19,8 +19,17 @@ namespace LogiPharm.Presentacion
 
         private DataTable _dtPuntosEmision;
         private int _idPuntoEmisionActual;
+        private Dictionary<long, bool> _productosAplicaIva = new Dictionary<long, bool>();
+        private bool _esEntrega = false;
+        private decimal _totalGeneral = 0m;
+        private FlowLayoutPanel flowPanelDerecho;
+        private Guna.UI2.WinForms.Guna2GroupBox grpClienteInfo;
+        private Guna.UI2.WinForms.Guna2Button btnNuevoCliente;
+        private Guna.UI2.WinForms.Guna2Button btnPagarSidebar;
 
-
+        private Guna.UI2.WinForms.Guna2CheckBox chkExentoIva;
+        private List<Guna.UI2.WinForms.Guna2Button> btnDescuentosList = new List<Guna.UI2.WinForms.Guna2Button>();
+        private Guna.UI2.WinForms.Guna2TextBox txtCustomDscto;
         private int _hoverRow = -1, _hoverCol = -1;
 		private int _hoverRowFull = -1;
         private const double PanelDerechoPct = 0.32; // 32% del ancho
@@ -37,6 +46,9 @@ namespace LogiPharm.Presentacion
 			ConfigurarTooltips();
             
             this.Resize += Frm_Resize_Adaptativo;
+
+            if (this.btnDocumento != null)
+                this.btnDocumento.Click += (s, e) => ToggleDocumentType();
 
             this.dgvDetalleVenta.CellEndEdit += dgvDetalleVenta_CellEndEdit;
             this.dgvDetalleVenta.CellClick += dgvDetalleVenta_CellAccion;
@@ -320,6 +332,581 @@ namespace LogiPharm.Presentacion
 
             CargarPuntosEmision();
             CargarAmbienteSRI();
+            InicializarControlesAdicionales();
+            InicializarSidebarDerecha();
+        }
+
+        private void InicializarControlesAdicionales()
+        {
+            if (grpDescuentosFijo == null) return;
+
+            grpDescuentosFijo.Controls.Clear();
+            grpDescuentosFijo.Text = "DESCUENTOS Y ALÍCUOTAS";
+
+            // FlowLayoutPanel for horizontal alignment
+            FlowLayoutPanel flow = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                Padding = new Padding(8, 2, 8, 2),
+                BackColor = Color.Transparent
+            };
+
+            // Add static label "Fijos:"
+            Label lblFijos = new Label
+            {
+                Text = "Fijos:",
+                AutoSize = true,
+                Margin = new Padding(0, 8, 2, 0),
+                Font = new Font("Segoe UI", 8.25F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(64, 64, 64)
+            };
+            flow.Controls.Add(lblFijos);
+
+            // Discount buttons: 0%, 20%, 30%, 40%
+            string[] pctes = { "0%", "20%", "30%", "40%" };
+            btnDescuentosList.Clear();
+            foreach (var p in pctes)
+            {
+                var btn = new Guna.UI2.WinForms.Guna2Button
+                {
+                    Text = p,
+                    Size = new Size(50, 26),
+                    BorderRadius = 4,
+                    FillColor = Color.FromArgb(242, 245, 250),
+                    ForeColor = Color.FromArgb(108, 117, 125),
+                    Font = new Font("Segoe UI", 8.25F, FontStyle.Bold),
+                    Margin = new Padding(2, 4, 2, 0)
+                };
+
+                btn.Click += (s, e) => {
+                    decimal val = decimal.Parse(p.Replace("%", ""));
+                    if (_ventaActual != null)
+                    {
+                        _ventaActual.Descuento = val;
+                        if (txtCustomDscto != null)
+                        {
+                            txtCustomDscto.TextChanged -= txtCustomDscto_TextChanged;
+                            txtCustomDscto.Text = "";
+                            txtCustomDscto.TextChanged += txtCustomDscto_TextChanged;
+                        }
+                        RecalcularTodaLaVenta();
+                        ActualizarBotonesDescuento();
+                    }
+                };
+
+                btnDescuentosList.Add(btn);
+                flow.Controls.Add(btn);
+            }
+
+            // Custom label
+            Label lblOtro = new Label
+            {
+                Text = "Otro:",
+                AutoSize = true,
+                Margin = new Padding(12, 8, 2, 0),
+                Font = new Font("Segoe UI", 8.25F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(64, 64, 64)
+            };
+            flow.Controls.Add(lblOtro);
+
+            // Custom textbox
+            txtCustomDscto = new Guna.UI2.WinForms.Guna2TextBox
+            {
+                Size = new Size(65, 26),
+                BorderRadius = 4,
+                Font = new Font("Segoe UI", 8.25F),
+                PlaceholderText = "0%",
+                Margin = new Padding(2, 4, 2, 0)
+            };
+            txtCustomDscto.TextChanged += txtCustomDscto_TextChanged;
+            flow.Controls.Add(txtCustomDscto);
+
+            // Exento de IVA checkbox
+            chkExentoIva = new Guna.UI2.WinForms.Guna2CheckBox
+            {
+                Text = "EXENTO DE IVA",
+                ForeColor = Color.FromArgb(220, 53, 69),
+                Font = new Font("Segoe UI", 8.25F, FontStyle.Bold),
+                CheckedState = { FillColor = Color.FromArgb(220, 53, 69) },
+                Margin = new Padding(30, 8, 0, 0),
+                AutoSize = true
+            };
+            chkExentoIva.CheckedChanged += chkExentoIva_CheckedChanged;
+            flow.Controls.Add(chkExentoIva);
+
+            grpDescuentosFijo.Controls.Add(flow);
+
+            // Set up Click listeners for Price Panels (guna2Panel2, guna2Panel3, guna2Panel4)
+            ConfigurarClickPanelesPrecios();
+        }
+
+        private void InicializarSidebarDerecha()
+        {
+            if (panelDerecho == null) return;
+
+            // Clear any existing controls in panelDerecho
+            panelDerecho.Controls.Clear();
+
+            // Create a vertical FlowLayoutPanel to stack controls
+            flowPanelDerecho = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.TopDown,
+                WrapContents = false,
+                AutoScroll = true,
+                BackColor = Color.FromArgb(242, 245, 250), // Premium Light Gray/Indigo hue background
+                Padding = new Padding(10, 10, 10, 10)
+            };
+            panelDerecho.Controls.Add(flowPanelDerecho);
+
+            // 1. CLIENTE INFO GROUPBOX
+            grpClienteInfo = new Guna.UI2.WinForms.Guna2GroupBox
+            {
+                Text = "DATOS DEL CLIENTE",
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                ForeColor = Color.FromArgb(64, 64, 64),
+                CustomBorderColor = Color.FromArgb(230, 235, 240),
+                BorderColor = Color.Gainsboro,
+                BorderRadius = 8,
+                Height = 175,
+                Margin = new Padding(0, 0, 0, 10)
+            };
+
+            // Create Quick Register Client button dynamically
+            btnNuevoCliente = new Guna.UI2.WinForms.Guna2Button
+            {
+                Text = "+",
+                Font = new Font("Segoe UI", 12F, FontStyle.Bold),
+                FillColor = Color.FromArgb(13, 110, 253), // Premium blue
+                ForeColor = Color.White,
+                BorderRadius = 4,
+                Cursor = Cursors.Hand,
+                Size = new Size(30, 28)
+            };
+            btnNuevoCliente.Click += (s, e) => {
+                string id = txtIdentificacion.Text.Trim();
+                using (var frm = new FrmFichaCliente(id))
+                {
+                    if (frm.ShowDialog() == DialogResult.OK && frm.ClienteGuardado != null)
+                    {
+                        _clienteSeleccionado = frm.ClienteGuardado;
+                        txtIdentificacion.Text = frm.ClienteGuardado.Identificacion ?? frm.ClienteGuardado.CedulaRuc;
+                        txtCliente.Text = frm.ClienteGuardado.RazonSocial ?? frm.ClienteGuardado.Nombres;
+                        txtEmail.Text = frm.ClienteGuardado.Email;
+                    }
+                }
+            };
+
+            // Move customer controls from panelTop to grpClienteInfo
+            grpClienteInfo.Controls.Add(label2);
+            grpClienteInfo.Controls.Add(txtIdentificacion);
+            grpClienteInfo.Controls.Add(btnNuevoCliente);
+            grpClienteInfo.Controls.Add(label1);
+            grpClienteInfo.Controls.Add(txtCliente);
+            grpClienteInfo.Controls.Add(label3);
+            grpClienteInfo.Controls.Add(txtEmail);
+
+            // Reposition them inside grpClienteInfo
+            label2.Location = new Point(10, 48);
+            txtIdentificacion.Location = new Point(10, 65);
+            txtIdentificacion.Size = new Size(100, 28);
+
+            btnNuevoCliente.Location = new Point(115, 65);
+
+            label1.Location = new Point(150, 48);
+            txtCliente.Location = new Point(150, 65);
+            txtCliente.Size = new Size(200, 28);
+
+            label3.Location = new Point(10, 105);
+            txtEmail.Location = new Point(10, 122);
+            txtEmail.Size = new Size(340, 28);
+
+            flowPanelDerecho.Controls.Add(grpClienteInfo);
+
+            // 2. MODOS DE PRECIOS PANEL
+            panelPrecios.Parent = null; // Detach from tblHeaderResumen
+            panelPrecios.Dock = DockStyle.None;
+            panelPrecios.Height = 230;
+            panelPrecios.Width = 360;
+            panelPrecios.BackColor = Color.Transparent;
+            panelPrecios.Margin = new Padding(0, 0, 0, 10);
+            
+            // Rearrange tblResumenImpuestos inside panelPrecios to stack vertically
+            tblResumenImpuestos.Dock = DockStyle.None;
+            tblResumenImpuestos.Location = new Point(8, 65);
+            tblResumenImpuestos.Width = 345;
+            tblResumenImpuestos.Height = 150;
+            
+            tblResumenImpuestos.ColumnCount = 1;
+            tblResumenImpuestos.RowCount = 3;
+            tblResumenImpuestos.ColumnStyles.Clear();
+            tblResumenImpuestos.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tblResumenImpuestos.RowStyles.Clear();
+            tblResumenImpuestos.RowStyles.Add(new RowStyle(SizeType.Absolute, 55F));
+            tblResumenImpuestos.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));
+            tblResumenImpuestos.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));
+            
+            tblResumenImpuestos.Controls.Clear();
+            tblResumenImpuestos.Controls.Add(tblImpuesto15, 0, 0);
+            tblResumenImpuestos.Controls.Add(tblImpuesto0, 0, 1);
+            tblResumenImpuestos.Controls.Add(tblDescuentoResumen, 0, 2);
+            
+            tblImpuesto15.Dock = DockStyle.Fill;
+            tblImpuesto0.Dock = DockStyle.Fill;
+            tblDescuentoResumen.Dock = DockStyle.Fill;
+
+            flowPanelDerecho.Controls.Add(panelPrecios);
+
+            // 3. DESCUENTOS Y ALÍCUOTAS GROUPBOX
+            grpDescuentosFijo.Parent = null;
+            grpDescuentosFijo.Dock = DockStyle.None;
+            grpDescuentosFijo.Height = 110;
+            grpDescuentosFijo.Width = 360;
+            grpDescuentosFijo.Margin = new Padding(0, 0, 0, 10);
+            flowPanelDerecho.Controls.Add(grpDescuentosFijo);
+
+            // 4. FACTURACIÓN ELECTRÓNICA GROUPBOX
+            guna2GroupBox1.Parent = null;
+            guna2GroupBox1.Dock = DockStyle.None;
+            guna2GroupBox1.Height = 260; // Increased height to prevent overlapping
+            guna2GroupBox1.Width = 360;
+            guna2GroupBox1.Margin = new Padding(0, 0, 0, 10);
+            
+            // Move cboPuntoEmision and sequential label inside guna2GroupBox1
+            cboPuntoEmision.Parent = guna2GroupBox1;
+            lblPuntoEmision.Parent = guna2GroupBox1;
+            lblSiguienteSecuencial.Parent = guna2GroupBox1;
+
+            // Reposition original and moved controls to prevent overlapping
+            label4.Location = new Point(15, 45);
+            lblNumeroFactura.Location = new Point(15, 75);
+            
+            label5.Location = new Point(15, 115);
+            lblVendedor.Location = new Point(75, 115);
+            
+            label6.Location = new Point(180, 115);
+            lblCaja.Location = new Point(215, 115);
+            
+            label10.Location = new Point(15, 140);
+            lblFechaEmision.Location = new Point(120, 140);
+
+            lblPuntoEmision.Location = new Point(15, 165);
+            cboPuntoEmision.Location = new Point(15, 182);
+            cboPuntoEmision.Size = new Size(330, 30);
+            
+            lblSiguienteSecuencial.Location = new Point(15, 222);
+            lblSiguienteSecuencial.Size = new Size(330, 20);
+
+            flowPanelDerecho.Controls.Add(guna2GroupBox1);
+
+            // 5. PROCESAR VENTA SIDEBAR BUTTON (Matching PHP pos.php)
+            btnPagarSidebar = new Guna.UI2.WinForms.Guna2Button
+            {
+                Text = "PROCESAR VENTA (F4)",
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                FillColor = Color.FromArgb(40, 167, 69), // Success green color
+                ForeColor = Color.White,
+                BorderRadius = 8,
+                Height = 45,
+                Margin = new Padding(0, 10, 0, 10),
+                Cursor = Cursors.Hand,
+                Animated = true
+            };
+            btnPagarSidebar.Click += btnPagar_Click;
+            flowPanelDerecho.Controls.Add(btnPagarSidebar);
+
+            // Hide panelTop and panelHeaderResumen as they are no longer needed
+            if (panelTop != null) panelTop.Visible = false;
+            if (panelHeaderResumen != null) panelHeaderResumen.Visible = false;
+
+            // Handle Resize
+            panelDerecho.Resize += (s, ev) => AjustarAnchoSidebar();
+            AjustarAnchoSidebar();
+        }
+
+        private void AjustarAnchoSidebar()
+        {
+            if (flowPanelDerecho == null) return;
+            
+            int w = panelDerecho.Width;
+            int childWidth = w - 25; // Subtract for scrollbar and padding
+
+            if (childWidth < 280) childWidth = 280;
+
+            if (grpClienteInfo != null)
+            {
+                grpClienteInfo.Width = childWidth;
+                
+                label2.Location = new Point(10, 48);
+                txtIdentificacion.Location = new Point(10, 65);
+                txtIdentificacion.Width = 100;
+                
+                if (btnNuevoCliente != null)
+                {
+                    btnNuevoCliente.Location = new Point(115, 65);
+                    btnNuevoCliente.Width = 30;
+                    btnNuevoCliente.Height = 28;
+                }
+                
+                label1.Location = new Point(150, 48);
+                txtCliente.Location = new Point(150, 65);
+                txtCliente.Width = childWidth - 150 - 15;
+                
+                label3.Location = new Point(10, 105);
+                txtEmail.Location = new Point(10, 122);
+                txtEmail.Width = childWidth - 25;
+            }
+
+            if (panelPrecios != null)
+            {
+                panelPrecios.Width = childWidth;
+                tblResumenImpuestos.Width = childWidth - 15;
+                
+                if (childWidth >= 350)
+                {
+                    guna2Panel2.Location = new Point(8, 6);
+                    guna2Panel3.Location = new Point(123, 6);
+                    guna2Panel4.Location = new Point(238, 6);
+                    guna2Panel2.Width = 107;
+                    guna2Panel3.Width = 107;
+                    guna2Panel4.Width = 107;
+                }
+                else
+                {
+                    int eachWidth = (childWidth - 25) / 3;
+                    guna2Panel2.Location = new Point(8, 6);
+                    guna2Panel2.Width = eachWidth;
+                    
+                    guna2Panel3.Location = new Point(guna2Panel2.Right + 5, 6);
+                    guna2Panel3.Width = eachWidth;
+                    
+                    guna2Panel4.Location = new Point(guna2Panel3.Right + 5, 6);
+                    guna2Panel4.Width = eachWidth;
+                }
+            }
+
+            if (grpDescuentosFijo != null)
+            {
+                grpDescuentosFijo.Width = childWidth;
+            }
+
+            if (guna2GroupBox1 != null)
+            {
+                guna2GroupBox1.Width = childWidth;
+                
+                label4.Width = childWidth - 30;
+                lblNumeroFactura.Width = childWidth - 30;
+                
+                if (childWidth < 320)
+                {
+                    label6.Location = new Point(15, 135);
+                    lblCaja.Location = new Point(50, 135);
+                    
+                    label10.Location = new Point(15, 155);
+                    lblFechaEmision.Location = new Point(120, 155);
+                    
+                    lblPuntoEmision.Location = new Point(15, 180);
+                    cboPuntoEmision.Location = new Point(15, 197);
+                    cboPuntoEmision.Width = childWidth - 30;
+                    
+                    lblSiguienteSecuencial.Location = new Point(15, 232);
+                    lblSiguienteSecuencial.Width = childWidth - 30;
+                    
+                    guna2GroupBox1.Height = 270;
+                }
+                else
+                {
+                    label6.Location = new Point(180, 115);
+                    lblCaja.Location = new Point(215, 115);
+                    
+                    label10.Location = new Point(15, 140);
+                    lblFechaEmision.Location = new Point(120, 140);
+                    
+                    lblPuntoEmision.Location = new Point(15, 165);
+                    cboPuntoEmision.Location = new Point(15, 182);
+                    cboPuntoEmision.Width = childWidth - 30;
+                    
+                    lblSiguienteSecuencial.Location = new Point(15, 222);
+                    lblSiguienteSecuencial.Width = childWidth - 30;
+                    
+                    guna2GroupBox1.Height = 260;
+                }
+            }
+
+            if (btnPagarSidebar != null)
+            {
+                btnPagarSidebar.Width = childWidth;
+            }
+        }
+
+        private void txtCustomDscto_TextChanged(object sender, EventArgs e)
+        {
+            if (_ventaActual == null) return;
+            string text = txtCustomDscto.Text.Replace("%", "").Trim();
+            if (decimal.TryParse(text, out decimal val))
+            {
+                _ventaActual.Descuento = val;
+            }
+            else
+            {
+                _ventaActual.Descuento = 0m;
+            }
+            RecalcularTodaLaVenta();
+            ActualizarBotonesDescuento();
+        }
+
+        private void chkExentoIva_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_ventaActual == null) return;
+            _ventaActual.DesactivarIva = chkExentoIva.Checked;
+            
+            // Re-calculate row taxes and totals
+            RecalcularTodaLaVenta();
+        }
+
+        private void ConfigurarClickPanelesPrecios()
+        {
+            guna2Panel2.Cursor = Cursors.Hand;
+            guna2Panel3.Cursor = Cursors.Hand;
+            guna2Panel4.Cursor = Cursors.Hand;
+
+            guna2Panel2.Click += (s, e) => CambiarModoPrecio("NORMAL");
+            lblPrecio.Click += (s, e) => CambiarModoPrecio("NORMAL");
+            label18.Click += (s, e) => CambiarModoPrecio("NORMAL");
+
+            guna2Panel3.Click += (s, e) => CambiarModoPrecio("EFECTIVO");
+            lblPrecioEfe.Click += (s, e) => CambiarModoPrecio("EFECTIVO");
+            label14.Click += (s, e) => CambiarModoPrecio("EFECTIVO");
+
+            guna2Panel4.Click += (s, e) => CambiarModoPrecio("TARJETA");
+            lblPrecioTar.Click += (s, e) => CambiarModoPrecio("TARJETA");
+            label16.Click += (s, e) => CambiarModoPrecio("TARJETA");
+        }
+
+        private void CambiarModoPrecio(string nuevoModo)
+        {
+            if (_ventaActual == null) return;
+            _ventaActual.PriceMode = nuevoModo;
+
+            // Recalculate toda la venta using the new pricing modifiers
+            RecalcularTodaLaVenta();
+
+            // Highlight the selected panel
+            ActualizarEstiloPrecios();
+        }
+
+        private void ActualizarEstiloPrecios()
+        {
+            if (_ventaActual == null) return;
+
+            // Colors for selected vs. default border styling
+            Color colorSeleccionado = Color.FromArgb(255, 193, 7); // Gold/Yellow border
+            Color colorDefecto = Color.Gainsboro;
+
+            guna2Panel2.BorderColor = (_ventaActual.PriceMode == "NORMAL") ? colorSeleccionado : colorDefecto;
+            guna2Panel2.BorderThickness = (_ventaActual.PriceMode == "NORMAL") ? 3 : 1;
+
+            guna2Panel3.BorderColor = (_ventaActual.PriceMode == "EFECTIVO") ? colorSeleccionado : colorDefecto;
+            guna2Panel3.BorderThickness = (_ventaActual.PriceMode == "EFECTIVO") ? 3 : 1;
+
+            guna2Panel4.BorderColor = (_ventaActual.PriceMode == "TARJETA") ? colorSeleccionado : colorDefecto;
+            guna2Panel4.BorderThickness = (_ventaActual.PriceMode == "TARJETA") ? 3 : 1;
+        }
+
+        private void ActualizarBotonesDescuento()
+        {
+            if (_ventaActual == null) return;
+
+            decimal dcto = _ventaActual.Descuento;
+
+            if (txtCustomDscto != null)
+            {
+                txtCustomDscto.TextChanged -= txtCustomDscto_TextChanged;
+                if (dcto != 0m && dcto != 20m && dcto != 30m && dcto != 40m)
+                {
+                    txtCustomDscto.Text = dcto.ToString("N2");
+                }
+                else
+                {
+                    txtCustomDscto.Text = "";
+                }
+                txtCustomDscto.TextChanged += txtCustomDscto_TextChanged;
+            }
+
+            for (int i = 0; i < btnDescuentosList.Count; i++)
+            {
+                var btn = btnDescuentosList[i];
+                decimal valBtn = decimal.Parse(btn.Text.Replace("%", ""));
+
+                if (dcto == valBtn)
+                {
+                    btn.FillColor = Color.FromArgb(13, 110, 253); // Blue selected
+                    btn.ForeColor = Color.White;
+                }
+                else
+                {
+                    btn.FillColor = Color.FromArgb(242, 245, 250); // Gray unselected
+                    btn.ForeColor = Color.FromArgb(108, 117, 125);
+                }
+            }
+        }
+
+        private void SyncUIConVentaActual()
+        {
+            if (_ventaActual == null) return;
+
+            // Sync document type (Nota de Entrega / Factura)
+            _esEntrega = _ventaActual.EsEntrega;
+            ActualizarVisualizacionDocumento();
+
+            // Sync Price Mode visual indicator
+            ActualizarEstiloPrecios();
+
+            // Sync Exento IVA checkbox
+            if (chkExentoIva != null)
+            {
+                chkExentoIva.CheckedChanged -= chkExentoIva_CheckedChanged;
+                chkExentoIva.Checked = _ventaActual.DesactivarIva;
+                chkExentoIva.CheckedChanged += chkExentoIva_CheckedChanged;
+            }
+
+            // Sync Descuento buttons and custom textbox
+            ActualizarBotonesDescuento();
+        }
+
+        private void ActualizarVisualizacionDocumento()
+        {
+            if (btnDocumento == null) return;
+
+            if (_esEntrega)
+            {
+                btnDocumento.Text = "F11 NOTA ENTREGA";
+                btnDocumento.FillColor = Color.FromArgb(220, 53, 69);
+            }
+            else
+            {
+                btnDocumento.Text = "F11 FACTURA";
+                btnDocumento.FillColor = Color.FromArgb(0, 123, 195);
+            }
+        }
+
+        private void ToggleDocumentType()
+        {
+            if (_ventaActual == null) return;
+            _ventaActual.EsEntrega = !_ventaActual.EsEntrega;
+            _esEntrega = _ventaActual.EsEntrega;
+            ActualizarVisualizacionDocumento();
+        }
+
+        private void RecalcularTodaLaVenta()
+        {
+            foreach (DataGridViewRow row in dgvDetalleVenta.Rows)
+            {
+                if (row.IsNewRow) continue;
+                CalcularTotalesFila(row);
+            }
+            CalcularTotalesGenerales();
         }
 
         private void CargarPuntosEmision()
@@ -361,13 +948,13 @@ namespace LogiPharm.Presentacion
                 else
                 {
                     _idPuntoEmisionActual = 0;
-                    lblSiguienteSecuencial.Text = "---";
+                    lblSiguienteSecuencial.Text = "Siguiente: ---";
                 }
             }
             catch
             {
                 _idPuntoEmisionActual = 0;
-                lblSiguienteSecuencial.Text = "---";
+                lblSiguienteSecuencial.Text = "Siguiente: ---";
             }
         }
 
@@ -426,7 +1013,7 @@ namespace LogiPharm.Presentacion
             if (cboPuntoEmision == null || lblSiguienteSecuencial == null) return;
             if (cboPuntoEmision.SelectedValue == null)
             {
-                lblSiguienteSecuencial.Text = "---";
+                lblSiguienteSecuencial.Text = "Siguiente: ---";
                 return;
             }
 
@@ -437,7 +1024,7 @@ namespace LogiPharm.Presentacion
             if (id <= 0)
             {
                 _idPuntoEmisionActual = 0;
-                lblSiguienteSecuencial.Text = "---";
+                lblSiguienteSecuencial.Text = "Siguiente: ---";
                 return;
             }
 
@@ -455,7 +1042,7 @@ namespace LogiPharm.Presentacion
 
                 if (row == null)
                 {
-                    lblSiguienteSecuencial.Text = "---";
+                    lblSiguienteSecuencial.Text = "Siguiente: ---";
                     return;
                 }
 
@@ -466,11 +1053,11 @@ namespace LogiPharm.Presentacion
                 int sec = row["secuencial_factura"] == DBNull.Value ? 0 : Convert.ToInt32(row["secuencial_factura"]);
                 string sec9 = sec.ToString().PadLeft(9, '0');
 
-                lblSiguienteSecuencial.Text = $"{codEst}-{codPto}-{sec9}";
+                lblSiguienteSecuencial.Text = $"Siguiente: {codEst}-{codPto}-{sec9}";
             }
             catch
             {
-                lblSiguienteSecuencial.Text = "---";
+                lblSiguienteSecuencial.Text = "Siguiente: ---";
             }
         }
 
@@ -492,6 +1079,7 @@ namespace LogiPharm.Presentacion
 
             // Guardar cliente
             _ventaActual.Cliente = _clienteSeleccionado;
+            _ventaActual.EsEntrega = _esEntrega;
 
             // Guardar productos de la tabla
             _ventaActual.Productos.Clear();
@@ -502,12 +1090,14 @@ namespace LogiPharm.Presentacion
                 // Asumiendo que tienes una clase ProductoVenta como la usas en AbrirVentanaPago
                 _ventaActual.Productos.Add(new ProductoVenta
                 {
+                    Id = Convert.ToInt32(row.Tag),
                     CodigoPrincipal = row.Cells["colCodigo"].Value.ToString(),
                     Descripcion = row.Cells["colProducto"].Value.ToString(),
                     Cantidad = Convert.ToDecimal(row.Cells["colCantidad"].Value ?? 0),
                     PrecioUnitario = Convert.ToDecimal(row.Cells["colPrecio"].Value ?? 0),
                     Descuento = Convert.ToDecimal(row.Cells["colDscto"].Value ?? 0),
-                    PrecioTotalSinImpuesto = Convert.ToDecimal(row.Cells["colSubtotal"].Value ?? 0)
+                    PrecioTotalSinImpuesto = Convert.ToDecimal(row.Cells["colSubtotal"].Value ?? 0),
+                    AplicaIva = _productosAplicaIva.ContainsKey(Convert.ToInt64(row.Tag)) ? _productosAplicaIva[Convert.ToInt64(row.Tag)] : true
                 });
             }
         }
@@ -538,7 +1128,7 @@ namespace LogiPharm.Presentacion
             dgvDetalleVenta.Rows.Clear();
             foreach (var producto in venta.Productos)
             {
-                dgvDetalleVenta.Rows.Add(
+                int rowIndex = dgvDetalleVenta.Rows.Add(
                     null, // colEliminar
                     producto.CodigoPrincipal,
                     producto.Descripcion,
@@ -549,7 +1139,13 @@ namespace LogiPharm.Presentacion
                     0, // Porcentaje inicial
                     producto.Descuento // Dscto
                 );
+                DataGridViewRow row = dgvDetalleVenta.Rows[rowIndex];
+                row.Tag = producto.Id;
+                _productosAplicaIva[producto.Id] = producto.AplicaIva;
             }
+
+            // Sync all UI controls with active tab properties
+            SyncUIConVentaActual();
 
             // ? CORRECCIÓN CLAVE: Recalculamos TODAS las filas después de añadirlas
             foreach (DataGridViewRow row in dgvDetalleVenta.Rows)
@@ -865,6 +1461,7 @@ namespace LogiPharm.Presentacion
             if (keyData == Keys.F3) { AbrirVentanaFactura(); return true; }
             if (keyData == Keys.F4) { AbrirVentanaPago(); return true; }
             if (keyData == Keys.F8) { AbrirCalculadora(); return true; }
+            if (keyData == Keys.F11) { ToggleDocumentType(); return true; }
             if (keyData == Keys.F2 || keyData == (Keys.Shift | Keys.F2))
             {
                 CrearNuevaVenta();
@@ -1000,9 +1597,9 @@ namespace LogiPharm.Presentacion
                 return;
             }
 
-            decimal totalVenta = CalcularTotalVenta();
+            decimal totalVenta = _totalGeneral;
 
-            using (var frmPago = new FrmPago(totalVenta, _clienteSeleccionado, productos))
+            using (var frmPago = new FrmPago(totalVenta, _clienteSeleccionado, productos, _esEntrega))
             {
                 if (frmPago.ShowDialog() == DialogResult.OK)
                 {
@@ -1306,7 +1903,15 @@ namespace LogiPharm.Presentacion
                 fila.Cells["colCantidad"].Style.BackColor = Color.White;
                 fila.Cells["colCantidad"].Style.ForeColor = dgvDetalleVenta.DefaultCellStyle.ForeColor;
 
-                decimal precioFinal = Convert.ToDecimal(fila.Cells["colPFinal"].Value ?? 0);
+                decimal basePrecio = Convert.ToDecimal(fila.Cells["colPrecio"].Value ?? 0);
+                decimal factor = 1.0m;
+                if (_ventaActual != null)
+                {
+                    if (_ventaActual.PriceMode == "EFECTIVO") factor = 0.95m;
+                    else if (_ventaActual.PriceMode == "TARJETA") factor = 1.05m;
+                }
+                decimal precioFinal = Math.Round(basePrecio * factor, 4);
+
                 decimal descuentoPorc = Convert.ToDecimal(fila.Cells["colDscto"].Value ?? 0);
 
                 // ✅ CÁLCULO DEL DESCUENTO
@@ -1314,8 +1919,22 @@ namespace LogiPharm.Presentacion
                 decimal montoDescuento = subtotalSinDescuento * (descuentoPorc / 100);
                 decimal subtotalConDescuento = subtotalSinDescuento - montoDescuento;
 
+                bool aplicaIva = true;
+                if (_ventaActual != null && _ventaActual.DesactivarIva)
+                {
+                    aplicaIva = false;
+                }
+                else if (fila.Tag != null)
+                {
+                    long prodId = Convert.ToInt64(fila.Tag);
+                    if (_productosAplicaIva.ContainsKey(prodId))
+                    {
+                        aplicaIva = _productosAplicaIva[prodId];
+                    }
+                }
+
                 decimal ivaRate = ImpuestoProvider.GetIVA();
-                decimal iva = subtotalConDescuento * ivaRate;
+                decimal iva = aplicaIva ? (subtotalConDescuento * ivaRate) : 0m;
                 decimal total = subtotalConDescuento + iva;
 
                 // ✅ ACTUALIZAR VALORES EN LA FILA
@@ -1340,38 +1959,72 @@ namespace LogiPharm.Presentacion
 
         private void CalcularTotalesGenerales()
         {
-            decimal subtotalGeneral = 0;
-            decimal ivaGeneral = 0;
-            decimal totalDescuento = 0;
+            decimal subtotalIva = 0m;
+            decimal subtotalExento = 0m;
+            decimal rowDiscountTotal = 0m;
 
             foreach (DataGridViewRow fila in dgvDetalleVenta.Rows)
             {
                 if (fila.IsNewRow) continue;
 
-                decimal.TryParse(fila.Cells["colSubtotal"].Value?.ToString(), out decimal sub);
-                decimal.TryParse(fila.Cells["colIVA"].Value?.ToString(), out decimal iva);
-                decimal.TryParse(fila.Cells["colDscto"].Value?.ToString(), out decimal dctoPorcentaje);
+                decimal.TryParse(fila.Cells["colSubtotal"].Value?.ToString(), out decimal rowSubtotal);
+                decimal.TryParse(fila.Cells["colDscto"].Value?.ToString(), out decimal rowDsctoPorc);
                 decimal.TryParse(fila.Cells["colPFinal"].Value?.ToString(), out decimal precioFinal);
                 decimal.TryParse(fila.Cells["colCantidad"].Value?.ToString(), out decimal cantidad);
 
-                subtotalGeneral += sub;
-                ivaGeneral += iva;
+                bool rowAplicaIva = true;
+                if (_ventaActual != null && _ventaActual.DesactivarIva)
+                {
+                    rowAplicaIva = false;
+                }
+                else if (fila.Tag != null)
+                {
+                    long prodId = Convert.ToInt64(fila.Tag);
+                    if (_productosAplicaIva.ContainsKey(prodId))
+                    {
+                        rowAplicaIva = _productosAplicaIva[prodId];
+                    }
+                }
+
+                if (rowAplicaIva)
+                {
+                    subtotalIva += rowSubtotal;
+                }
+                else
+                {
+                    subtotalExento += rowSubtotal;
+                }
 
                 decimal subtotalSinDescuento = cantidad * precioFinal;
-                totalDescuento += subtotalSinDescuento * (dctoPorcentaje / 100);
+                rowDiscountTotal += subtotalSinDescuento * (rowDsctoPorc / 100);
             }
 
-            // Calcular total general
-            decimal totalGeneral = subtotalGeneral + ivaGeneral;
+            decimal subtotalGeneral = subtotalIva + subtotalExento;
+
+            decimal generalDsctoPorc = _ventaActual != null ? _ventaActual.Descuento : 0m;
+            decimal generalDsctoRatio = generalDsctoPorc / 100m;
+            decimal generalDiscountAmount = subtotalGeneral * generalDsctoRatio;
+
+            decimal subtotalIvaWithDiscount = subtotalIva * (1m - generalDsctoRatio);
+            decimal subtotalExentoWithDiscount = subtotalExento * (1m - generalDsctoRatio);
+
+            decimal ivaRate = ImpuestoProvider.GetIVA();
+            decimal ivaGeneral = subtotalIvaWithDiscount * ivaRate;
+
+            decimal totalGeneral = subtotalIvaWithDiscount + subtotalExentoWithDiscount + ivaGeneral;
+            decimal totalDescuento = rowDiscountTotal + generalDiscountAmount;
+
+            _totalGeneral = totalGeneral;
 
             // Actualizar labels de precios principales
             if (this.lblPrecio != null) this.lblPrecio.Text = totalGeneral.ToString("N2");
-            if (this.lblPrecioEfe != null) this.lblPrecioEfe.Text = totalGeneral.ToString("N2");
-            if (this.lblPrecioTar != null) this.lblPrecioTar.Text = totalGeneral.ToString("N2");
+            if (this.lblPrecioEfe != null) this.lblPrecioEfe.Text = (totalGeneral * 0.9m).ToString("N2");
+            if (this.lblPrecioTar != null) this.lblPrecioTar.Text = (totalGeneral * 1.1m).ToString("N2");
 
             // Labels de desglose
+            if (this.lblTarifa15 != null) this.lblTarifa15.Text = subtotalIvaWithDiscount.ToString("N2");
+            if (this.lblTarifa0 != null) this.lblTarifa0.Text = subtotalExentoWithDiscount.ToString("N2");
             if (this.lblTotalDescuento != null) this.lblTotalDescuento.Text = totalDescuento.ToString("N2");
-            if (this.label24 != null) this.label24.Text = subtotalGeneral.ToString("N2");
             if (this.lblIVA != null) this.lblIVA.Text = ivaGeneral.ToString("N2");
         }
 

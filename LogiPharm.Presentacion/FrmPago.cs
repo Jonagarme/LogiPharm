@@ -1,15 +1,10 @@
-﻿using LogiPharm.Entidades;
+using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using LogiPharm.Datos;
-using Formatting = Newtonsoft.Json.Formatting;
 
 namespace LogiPharm.Presentacion
 {
@@ -19,6 +14,7 @@ namespace LogiPharm.Presentacion
         private readonly decimal _totalAPagar;
         private readonly ECliente _cliente;
         private readonly List<ProductoVenta> _productos;
+        private readonly bool _esEntrega;
 
         // ↓↓↓ Añadir en FrmPago (dentro de la clase, fuera de métodos)
         public string ClaveAcceso { get; private set; } = "";
@@ -31,12 +27,13 @@ namespace LogiPharm.Presentacion
         public DialogResult Resultado { get; private set; }
 
         // Constructor actualizado para recibir toda la información de la venta
-        public FrmPago(decimal totalAPagar, ECliente cliente, List<ProductoVenta> productos)
+        public FrmPago(decimal totalAPagar, ECliente cliente, List<ProductoVenta> productos, bool esEntrega = false)
         {
             InitializeComponent();
             _totalAPagar = totalAPagar;
             _cliente = cliente;
             _productos = productos;
+            _esEntrega = esEntrega;
             Resultado = DialogResult.Cancel;
             
             // Habilitar cierre con tecla ESC
@@ -124,39 +121,44 @@ namespace LogiPharm.Presentacion
                     return; // Detenemos el proceso si no hay datos de la empresa
                 }
 
-                // ✨ Se reemplazan los datos fijos por los de la base de datos
-                string empresaRuc = empresa.Ruc;
-                int ambiente = 1; // 1=pruebas, 2=producción
+				// ✨ Se reemplazan los datos fijos por los de la base de datos
                 string estab = "001"; 
                 string ptoEmi = "001"; 
-                string dirMatriz = empresa.DireccionMatriz;
-                string dirEstablecimiento = empresa.DireccionMatriz; 
-                string rimpe = empresa.ContribuyenteEspecial ?? "CONTRIBUYENTE RÉGIMEN GENERAL"; 
-                bool obligadoContabilidad = empresa.ObligadoContabilidad;
 
                 // --- (El resto de tu lógica para obtener el secuencial no cambia) ---
                 var datosSecuencial = new LogiPharm.Datos.DGenerarSecuancial();
                 string numeroFacturaCompleto = datosSecuencial.ObtenerSiguienteSecuencial(estab, ptoEmi);
                 string secuencial = numeroFacturaCompleto.Split('-')[2];
 
-                // 🧱 Construir payload con los datos dinámicos
-                var factura = FacturaBuilder.BuildFactura(
-                      empresaRuc,
-                      ambiente,
-                      estab,
-                      ptoEmi,
-                      secuencial,
-                      dirMatriz,
-                      dirEstablecimiento,
-                      rimpe,
-                      obligadoContabilidad,
-                      _cliente,
-                      _productos
-                );
+				// 🧱 Construir JSON para el nuevo endpoint
+				var request = FacturaBuilder.BuildProcesarFacturaRequest(
+					"FACTURA",
+					empresa,
+					estab,
+					ptoEmi,
+					secuencial,
+					_cliente,
+					_productos,
+					formaPago: "EFECTIVO"
+				);
 
-                // 🚀 Enviar a la API y leer respuesta
-                var r = await EnviarFacturaAPI(factura);
-                this.NumeroAutorizacion = r.numeroAutorizacion ?? "";
+				// 🚀 Enviar a la API y leer respuesta
+				RespuestaFacturaApi r = null;
+                if (!_esEntrega)
+                {
+                    r = await new DFacturacion().ProcesarFacturaApiAsync(request);
+                    this.NumeroAutorizacion = r.numeroAutorizacion ?? "";
+                    this.ClaveAcceso = r.claveAcceso ?? "";
+                    this.EstadoAutorizacion = r.estadoFinal ?? "";
+                    this.FechaAutorizacionIso = r.fechaAutorizacion ?? "";
+                }
+                else
+                {
+                    this.NumeroAutorizacion = "";
+                    this.ClaveAcceso = "";
+                    this.EstadoAutorizacion = "NOTA_ENTREGA";
+                    this.FechaAutorizacionIso = DateTime.Now.ToString("o");
+                }
 
                 try
                 {
@@ -169,21 +171,25 @@ namespace LogiPharm.Presentacion
                     int idUsuario = SesionActual.IdUsuario; // De tu clase de sesión
 
                     DFacturaVenta d_factura = new DFacturaVenta();
-                    d_factura.GuardarFactura(_cliente, _productos, numeroFacturaCompleto, idCierreCaja, idUsuario, this.NumeroAutorizacion);
+                    d_factura.GuardarFactura(_cliente, _productos, numeroFacturaCompleto, idCierreCaja, idUsuario, this.NumeroAutorizacion, SesionActual.IdEmpresa, _esEntrega, this.EstadoAutorizacion);
                 }
                 catch (Exception dbEx)
                 {
                     // Si la API funcionó pero la base de datos local falló, es un problema crítico
-                    MessageBox.Show("¡ATENCIÓN! La factura fue autorizada por el SRI, pero falló al guardarse en la base de datos local.\n\nError: " + dbEx.Message, "Error Crítico de Guardado", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    string errorMsgMsg = _esEntrega ? "FallÃ³ al guardarse la Nota de Entrega localmente." : "Â¡ATENCIÃ“N! La factura fue autorizada por el SRI, pero fallÃ³ al guardarse en la base de datos local.";
+                    MessageBox.Show(errorMsgMsg + "\n\nError: " + dbEx.Message, "Error CrÃ­tico de Guardado", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     // Aquí NO cerramos el formulario, para que el usuario pueda intentar de nuevo o tomar nota.
                     return;
                 }
 
                 // --- (El resto de tu código para guardar el resultado no cambia) ---
-                this.ClaveAcceso = r.claveAcceso ?? "";
-                this.NumeroAutorizacion = r.numeroAutorizacion ?? "";
-                this.EstadoAutorizacion = r.estadoFinal ?? "";
-                this.FechaAutorizacionIso = r.fechaAutorizacion ?? "";
+                if (r != null)
+                {
+                    this.ClaveAcceso = r.claveAcceso ?? "";
+                    this.NumeroAutorizacion = r.numeroAutorizacion ?? "";
+                    this.EstadoAutorizacion = r.estadoFinal ?? "";
+                    this.FechaAutorizacionIso = r.fechaAutorizacion ?? "";
+                }
                 this.SecuencialUsado = numeroFacturaCompleto;
                 this.EfectivoRecibido = efectivoRecibido;
 
@@ -203,51 +209,6 @@ namespace LogiPharm.Presentacion
 
 
 
-        private async Task<RespuestaFacturaApi> EnviarFacturaAPI(FacturaPayload payload)
-        {
-            string apiUrl = "http://127.0.0.1:5001/api/factura";
-
-            var json = JsonConvert.SerializeObject(
-                payload,
-                Formatting.None,
-                new JsonSerializerSettings
-                {
-                    Culture = CultureInfo.InvariantCulture,
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-
-            using (var client = new HttpClient())
-            using (var content = new StringContent(json, Encoding.UTF8, "application/json"))
-            {
-                var resp = await client.PostAsync(apiUrl, content);
-                var body = await resp.Content.ReadAsStringAsync();
-
-                if (!resp.IsSuccessStatusCode)
-                {
-                    // Intenta leer { error, mensajes }
-                    try
-                    {
-                        var raw = JsonConvert.DeserializeObject<dynamic>(body);
-                        string err = (string)(raw?.error ?? "Error desconocido");
-                        string msgs = raw?.mensajes != null ? JsonConvert.SerializeObject(raw.mensajes, Formatting.Indented) : "[]";
-                        throw new Exception($"HTTP {(int)resp.StatusCode} {resp.ReasonPhrase}\n{err}\nMensajes: {msgs}");
-                    }
-                    catch
-                    {
-                        throw new Exception($"HTTP {(int)resp.StatusCode} {resp.ReasonPhrase}\n{body}");
-                    }
-                }
-
-                var data = JsonConvert.DeserializeObject<RespuestaFacturaApi>(body);
-                if (data == null) throw new Exception("No se pudo leer la respuesta de la API.");
-                return data;
-            }
-        }
-
-
-
-
-
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             this.Resultado = DialogResult.Cancel;
@@ -255,3 +216,6 @@ namespace LogiPharm.Presentacion
         }
     }
 }
+
+
+

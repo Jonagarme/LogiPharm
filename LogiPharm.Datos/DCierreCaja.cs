@@ -9,6 +9,27 @@ namespace LogiPharm.Datos
 {
     public class DCierreCaja
     {
+        //✅ NUEVO: Obtiene la primera caja que esté abierta (automático)
+        public DataRow ObtenerPrimeraCajaAbierta()
+        {
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                string sql = @"SELECT cc.idCaja, c.nombre AS nombreCaja
+                               FROM cierres_caja cc
+                               INNER JOIN cajas c ON c.id = cc.idCaja
+                               WHERE cc.estado = 'ABIERTA'
+                               ORDER BY cc.fechaApertura DESC
+                               LIMIT 1;";
+
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    var dt = new DataTable();
+                    new MySqlDataAdapter(cmd).Fill(dt);
+                    return dt.Rows.Count > 0 ? dt.Rows[0] : null;
+                }
+            }
+        }
+
         //✅ VERIFICA EN 'cierres_caja' USANDO 'estado' (sin restricción de fecha)
         public bool VerificarCajaAbiertaHoy(int idCaja)
         {

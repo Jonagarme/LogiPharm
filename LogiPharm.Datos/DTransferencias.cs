@@ -1,4 +1,4 @@
-using CapaDatos;
+ï»¿using CapaDatos;
 using LogiPharm.Entidades;
 using MySqlConnector;
 using System;
@@ -9,6 +9,9 @@ namespace LogiPharm.Datos
 {
     public class DTransferencias
     {
+        private const string TablaTransferencia = "inventario_transferenciastock";
+        private const string TablaTransferenciaDetalle = "inventario_transferenciastockdetalle";
+
         // =====================
         // LISTAR TRANSFERENCIAS
         // =====================
@@ -20,37 +23,90 @@ namespace LogiPharm.Datos
                 try
                 {
                     cn.Open();
-                    string query = @"
+                    // Intentamos primero traer totales desde la tabla (si existen las columnas).
+                    string queryConTotales = @"
                         SELECT 
                             t.id,
                             t.numero_transferencia AS numeroTransferencia,
                             t.fecha_creacion AS fechaTransferencia,
                             uOrigen.nombre AS ubicacionOrigen,
                             uDestino.nombre AS ubicacionDestino,
-                            t.motivo,
-                            t.estado,
+                            t.motivo AS motivoTransferencia,
+                            COALESCE(t.total_productos, 0) AS totalProductos,
+                            COALESCE(t.total_unidades, 0) AS totalUnidades,
+                            t.estado AS estado,
                             t.tipo,
                             t.observaciones
-                        FROM inventario_transferenciastock t
+                        FROM " + TablaTransferencia + @" t
                         LEFT JOIN inventario_ubicacion uOrigen ON t.ubicacion_origen_id = uOrigen.id
                         LEFT JOIN inventario_ubicacion uDestino ON t.ubicacion_destino_id = uDestino.id
                         WHERE 1=1";
 
                     if (!string.IsNullOrWhiteSpace(filtroEstado))
+                        queryConTotales += " AND t.estado = @estado";
+
+                    queryConTotales += " ORDER BY t.fecha_creacion DESC;";
+
+                    bool ejecutado = false;
+                    try
                     {
-                        query += " AND t.estado = @estado";
+                        using (var cmd = new MySqlCommand(queryConTotales, cn))
+                        {
+                            if (!string.IsNullOrWhiteSpace(filtroEstado))
+                                cmd.Parameters.AddWithValue("@estado", filtroEstado);
+
+                            using (var da = new MySqlDataAdapter(cmd))
+                                da.Fill(tabla);
+                        }
+                        ejecutado = true;
+                    }
+                    catch (MySqlException ex)
+                    {
+                        // Compatibilidad hacia atras: BD sin columnas de totales.
+                        if (ex.Message != null && ex.Message.IndexOf("Unknown column", StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            tabla.Clear();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
 
-                    query += " ORDER BY t.fecha_creacion DESC;";
-
-                    MySqlCommand cmd = new MySqlCommand(query, cn);
-                    if (!string.IsNullOrWhiteSpace(filtroEstado))
+                    if (!ejecutado)
                     {
-                        cmd.Parameters.AddWithValue("@estado", filtroEstado);
-                    }
+                        string querySinTotales = @"
+                            SELECT 
+                                t.id,
+                                t.numero_transferencia AS numeroTransferencia,
+                                t.fecha_creacion AS fechaTransferencia,
+                                uOrigen.nombre AS ubicacionOrigen,
+                                uDestino.nombre AS ubicacionDestino,
+                                t.motivo AS motivoTransferencia,
+                                0 AS totalProductos,
+                                0 AS totalUnidades,
+                                t.estado AS estado,
+                                t.tipo,
+                                t.observaciones
+                            FROM " + TablaTransferencia + @" t
+                            LEFT JOIN inventario_ubicacion uOrigen ON t.ubicacion_origen_id = uOrigen.id
+                            LEFT JOIN inventario_ubicacion uDestino ON t.ubicacion_destino_id = uDestino.id
+                            WHERE 1=1";
 
-                    MySqlDataAdapter da = new MySqlDataAdapter(cmd);
-                    da.Fill(tabla);
+                        if (!string.IsNullOrWhiteSpace(filtroEstado))
+                            querySinTotales += " AND t.estado = @estado";
+
+                        querySinTotales += " ORDER BY t.fecha_creacion DESC;";
+
+                        using (var cmd = new MySqlCommand(querySinTotales, cn))
+                        {
+                            if (!string.IsNullOrWhiteSpace(filtroEstado))
+                                cmd.Parameters.AddWithValue("@estado", filtroEstado);
+
+                            using (var da = new MySqlDataAdapter(cmd))
+                                da.Fill(tabla);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -107,6 +163,65 @@ namespace LogiPharm.Datos
                             };
                         }
                     }
+
+                    // Intentar cargar detalle (si existe la tabla)
+                    if (transferencia != null)
+                    {
+                        try
+                        {
+                            string qDetalle = @"
+                                SELECT 
+                                    d.id,
+                                    d.transferencia_id,
+                                    d.producto_id,
+                                    p.codigoPrincipal AS codigoProducto,
+                                    p.nombre AS nombreProducto,
+                                    d.numero_lote,
+                                    d.fecha_caducidad,
+                                    d.cantidad_solicitada,
+                                    d.cantidad_recibida,
+                                    d.estado
+                                FROM " + TablaTransferenciaDetalle + @" d
+                                INNER JOIN productos p ON d.producto_id = p.id
+                                WHERE d.transferencia_id = @id
+                                ORDER BY d.id;";
+
+                            using (var cmdDet = new MySqlCommand(qDetalle, cn))
+                            {
+                                cmdDet.Parameters.AddWithValue("@id", id);
+                                using (var rd = cmdDet.ExecuteReader())
+                                {
+                                    while (rd.Read())
+                                    {
+                                        transferencia.Detalles.Add(new ETransferenciaDetalle
+                                        {
+                                            Id = rd["id"] != DBNull.Value ? Convert.ToInt64(rd["id"]) : 0,
+                                            IdTransferencia = rd["transferencia_id"] != DBNull.Value ? Convert.ToInt64(rd["transferencia_id"]) : 0,
+                                            IdProducto = rd["producto_id"] != DBNull.Value ? Convert.ToInt64(rd["producto_id"]) : 0,
+                                            CodigoProducto = rd["codigoProducto"]?.ToString() ?? "",
+                                            NombreProducto = rd["nombreProducto"]?.ToString() ?? "",
+                                            Lote = rd["numero_lote"]?.ToString() ?? "",
+                                            FechaCaducidad = rd["fecha_caducidad"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(rd["fecha_caducidad"]) : null,
+                                            CantidadSolicitada = rd["cantidad_solicitada"] != DBNull.Value ? Convert.ToInt32(rd["cantidad_solicitada"]) : 0,
+                                            CantidadRecibida = rd["cantidad_recibida"] != DBNull.Value ? Convert.ToInt32(rd["cantidad_recibida"]) : 0,
+                                            Estado = rd["estado"]?.ToString() ?? "PENDIENTE"
+                                        });
+                                    }
+                                }
+                            }
+
+                            transferencia.TotalProductos = transferencia.Detalles.Count;
+                            transferencia.TotalUnidades = 0;
+                            foreach (var d in transferencia.Detalles)
+                                transferencia.TotalUnidades += d.CantidadSolicitada;
+                        }
+                        catch (MySqlException ex)
+                        {
+                            // Si la tabla no existe afan, no rompemos la consulta.
+                            if (ex.Message == null || ex.Message.IndexOf("doesn't exist", StringComparison.OrdinalIgnoreCase) < 0)
+                                throw;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -128,33 +243,95 @@ namespace LogiPharm.Datos
                 {
                     try
                     {
+                        if (transferencia == null)
+                            throw new ArgumentNullException(nameof(transferencia));
+
+                        int totalProductos = transferencia.Detalles != null ? transferencia.Detalles.Count : 0;
+                        decimal totalUnidades = 0m;
+                        if (transferencia.Detalles != null)
+                            foreach (var d in transferencia.Detalles) totalUnidades += d.CantidadSolicitada;
+
                         // Insertar encabezado
-                        string queryHeader = @"
-                            INSERT INTO inventario_transferenciastock (
-                                numero_transferencia, fecha_creacion, fecha_envio,
-                                ubicacion_origen_id, ubicacion_destino_id,
-                                motivo, observaciones, estado, tipo,
-                                creadoPor_id, editadoDate
-                            ) VALUES (
-                                @numeroTransferencia, @fechaCreacion, NULL,
-                                @ubicacionOrigenId, @ubicacionDestinoId,
-                                @motivo, @observaciones, @estado, @tipo,
-                                @creadoPorId, NULL
-                            );
-                            SELECT LAST_INSERT_ID();";
+                        long idTransferencia;
 
-                        MySqlCommand cmd = new MySqlCommand(queryHeader, cn, transaction);
-                        cmd.Parameters.AddWithValue("@numeroTransferencia", transferencia.NumeroTransferencia);
-                        cmd.Parameters.AddWithValue("@fechaCreacion", transferencia.FechaTransferencia);
-                        cmd.Parameters.AddWithValue("@ubicacionOrigenId", transferencia.IdUbicacionOrigen);
-                        cmd.Parameters.AddWithValue("@ubicacionDestinoId", transferencia.IdUbicacionDestino);
-                        cmd.Parameters.AddWithValue("@motivo", transferencia.MotivoTransferencia ?? "");
-                        cmd.Parameters.AddWithValue("@observaciones", transferencia.Observaciones ?? "");
-                        cmd.Parameters.AddWithValue("@estado", transferencia.Estado);
-                        cmd.Parameters.AddWithValue("@tipo", "TRANSFERENCIA");
-                        cmd.Parameters.AddWithValue("@creadoPorId", transferencia.CreadoPor);
+                        // Intento 1: insertar con columnas de totales
+                        try
+                        {
+                            string queryHeaderConTotales = @"
+                                INSERT INTO " + TablaTransferencia + @" (
+                                    numero_transferencia, fecha_creacion, fecha_envio,
+                                    ubicacion_origen_id, ubicacion_destino_id,
+                                    motivo, observaciones, estado, tipo,
+                                    total_productos, total_unidades,
+                                    creadoPor_id, editadoDate
+                                ) VALUES (
+                                    @numeroTransferencia, @fechaCreacion, NULL,
+                                    @ubicacionOrigenId, @ubicacionDestinoId,
+                                    @motivo, @observaciones, @estado, @tipo,
+                                    @totalProductos, @totalUnidades,
+                                    @creadoPorId, NULL
+                                );
+                                SELECT LAST_INSERT_ID();";
 
-                        long idTransferencia = Convert.ToInt64(cmd.ExecuteScalar());
+                            using (var cmd = new MySqlCommand(queryHeaderConTotales, cn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@numeroTransferencia", transferencia.NumeroTransferencia);
+                                cmd.Parameters.AddWithValue("@fechaCreacion", transferencia.FechaTransferencia);
+                                cmd.Parameters.AddWithValue("@ubicacionOrigenId", transferencia.IdUbicacionOrigen);
+                                cmd.Parameters.AddWithValue("@ubicacionDestinoId", transferencia.IdUbicacionDestino);
+                                cmd.Parameters.AddWithValue("@motivo", transferencia.MotivoTransferencia ?? "");
+                                cmd.Parameters.AddWithValue("@observaciones", transferencia.Observaciones ?? "");
+                                cmd.Parameters.AddWithValue("@estado", transferencia.Estado);
+                                cmd.Parameters.AddWithValue("@tipo", "TRANSFERENCIA");
+                                cmd.Parameters.AddWithValue("@totalProductos", totalProductos);
+                                cmd.Parameters.AddWithValue("@totalUnidades", totalUnidades);
+                                cmd.Parameters.AddWithValue("@creadoPorId", transferencia.CreadoPor);
+                                idTransferencia = Convert.ToInt64(cmd.ExecuteScalar());
+                            }
+                        }
+                        catch (MySqlException ex)
+                        {
+                            if (ex.Message == null || ex.Message.IndexOf("Unknown column", StringComparison.OrdinalIgnoreCase) < 0)
+                                throw;
+
+                            // Intento 2: BD sin columnas de totales
+                            string queryHeader = @"
+                                INSERT INTO " + TablaTransferencia + @" (
+                                    numero_transferencia, fecha_creacion, fecha_envio,
+                                    ubicacion_origen_id, ubicacion_destino_id,
+                                    motivo, observaciones, estado, tipo,
+                                    creadoPor_id, editadoDate
+                                ) VALUES (
+                                    @numeroTransferencia, @fechaCreacion, NULL,
+                                    @ubicacionOrigenId, @ubicacionDestinoId,
+                                    @motivo, @observaciones, @estado, @tipo,
+                                    @creadoPorId, NULL
+                                );
+                                SELECT LAST_INSERT_ID();";
+
+                            using (var cmd = new MySqlCommand(queryHeader, cn, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@numeroTransferencia", transferencia.NumeroTransferencia);
+                                cmd.Parameters.AddWithValue("@fechaCreacion", transferencia.FechaTransferencia);
+                                cmd.Parameters.AddWithValue("@ubicacionOrigenId", transferencia.IdUbicacionOrigen);
+                                cmd.Parameters.AddWithValue("@ubicacionDestinoId", transferencia.IdUbicacionDestino);
+                                cmd.Parameters.AddWithValue("@motivo", transferencia.MotivoTransferencia ?? "");
+                                cmd.Parameters.AddWithValue("@observaciones", transferencia.Observaciones ?? "");
+                                cmd.Parameters.AddWithValue("@estado", transferencia.Estado);
+                                cmd.Parameters.AddWithValue("@tipo", "TRANSFERENCIA");
+                                cmd.Parameters.AddWithValue("@creadoPorId", transferencia.CreadoPor);
+                                idTransferencia = Convert.ToInt64(cmd.ExecuteScalar());
+                            }
+                        }
+
+                        // Insertar detalle + reservar stock
+                        if (transferencia.Detalles != null)
+                        {
+                            foreach (var det in transferencia.Detalles)
+                            {
+                                InsertarDetalleYReservarStock(cn, transaction, idTransferencia, transferencia.IdUbicacionOrigen, det);
+                            }
+                        }
 
                         transaction.Commit();
                         return true;
@@ -165,6 +342,83 @@ namespace LogiPharm.Datos
                         throw new Exception("Error al insertar la transferencia: " + ex.Message);
                     }
                 }
+            }
+        }
+
+        private static void InsertarDetalleYReservarStock(MySqlConnection cn, MySqlTransaction tx, long idTransferencia, int idUbicacionOrigen, ETransferenciaDetalle det)
+        {
+            if (det == null)
+                throw new ArgumentNullException(nameof(det));
+
+            // 1) Buscar el lote origen
+            int idLoteOrigen;
+            using (var cmdLote = new MySqlCommand(@"
+                SELECT id
+                FROM inventario_loteproducto
+                WHERE producto_id = @productoId
+                  AND ubicacion_id = @ubicacionId
+                  AND numero_lote = @numeroLote
+                  AND (@fechaCaducidad IS NULL OR fecha_caducidad = @fechaCaducidad)
+                ORDER BY fecha_ingreso ASC
+                LIMIT 1;", cn, tx))
+            {
+                cmdLote.Parameters.AddWithValue("@productoId", det.IdProducto);
+                cmdLote.Parameters.AddWithValue("@ubicacionId", idUbicacionOrigen);
+                cmdLote.Parameters.AddWithValue("@numeroLote", det.Lote ?? "");
+                cmdLote.Parameters.AddWithValue("@fechaCaducidad", (object)det.FechaCaducidad ?? DBNull.Value);
+
+                object scalar = cmdLote.ExecuteScalar();
+                if (scalar == null || scalar == DBNull.Value)
+                    throw new Exception($"No se encontrÃ³ el lote '{det.Lote}' para el producto ID {det.IdProducto} en la ubicaciÃ³n origen.");
+
+                idLoteOrigen = Convert.ToInt32(scalar);
+            }
+
+            // 2) Reservar stock del lote
+            using (var cmdReserva = new MySqlCommand(@"
+                UPDATE inventario_loteproducto
+                SET cantidad_disponible = cantidad_disponible - @cantidad,
+                    cantidad_reservada = cantidad_reservada + @cantidad
+                WHERE id = @idLote
+                  AND cantidad_disponible >= @cantidad;", cn, tx))
+            {
+                cmdReserva.Parameters.AddWithValue("@idLote", idLoteOrigen);
+                cmdReserva.Parameters.AddWithValue("@cantidad", det.CantidadSolicitada);
+
+                int rows = cmdReserva.ExecuteNonQuery();
+                if (rows == 0)
+                    throw new Exception($"Stock insuficiente para reservar el lote '{det.Lote}'.");
+            }
+
+            // 3) Insertar detalle
+            try
+            {
+                using (var cmdDet = new MySqlCommand(@"
+                    INSERT INTO " + TablaTransferenciaDetalle + @" (
+                        transferencia_id, producto_id, lote_origen_id,
+                        numero_lote, fecha_caducidad,
+                        cantidad_solicitada, cantidad_recibida, estado, creadoDate
+                    ) VALUES (
+                        @transferenciaId, @productoId, @loteOrigenId,
+                        @numeroLote, @fechaCaducidad,
+                        @cantidadSolicitada, 0, 'PENDIENTE', @creadoDate
+                    );", cn, tx))
+                {
+                    cmdDet.Parameters.AddWithValue("@transferenciaId", idTransferencia);
+                    cmdDet.Parameters.AddWithValue("@productoId", det.IdProducto);
+                    cmdDet.Parameters.AddWithValue("@loteOrigenId", idLoteOrigen);
+                    cmdDet.Parameters.AddWithValue("@numeroLote", det.Lote ?? "");
+                    cmdDet.Parameters.AddWithValue("@fechaCaducidad", (object)det.FechaCaducidad ?? DBNull.Value);
+                    cmdDet.Parameters.AddWithValue("@cantidadSolicitada", det.CantidadSolicitada);
+                    cmdDet.Parameters.AddWithValue("@creadoDate", DateTime.Now);
+                    cmdDet.ExecuteNonQuery();
+                }
+            }
+            catch (MySqlException ex)
+            {
+                if (ex.Message != null && ex.Message.IndexOf("doesn't exist", StringComparison.OrdinalIgnoreCase) >= 0)
+                    throw new Exception("Falta la tabla de detalle de transferencias. Cree la tabla 'inventario_transferenciastockdetalle' para guardar productos/lotes de la transferencia.");
+                throw;
             }
         }
 
@@ -180,7 +434,7 @@ namespace LogiPharm.Datos
                 {
                     try
                     {
-                        // Actualizar estado y fecha de recepción
+                        // Actualizar estado y fecha de recepciÃ³n
                         string queryUpdate = @"
                             UPDATE inventario_transferenciastock 
                             SET estado = 'RECIBIDA',
@@ -223,8 +477,19 @@ namespace LogiPharm.Datos
                 {
                     try
                     {
+                        // Liberar reservas de stock (si existe detalle)
+                        try
+                        {
+                            LiberarReservasStock(cn, transaction, idTransferencia);
+                        }
+                        catch (MySqlException ex)
+                        {
+                            if (ex.Message == null || ex.Message.IndexOf("doesn't exist", StringComparison.OrdinalIgnoreCase) < 0)
+                                throw;
+                        }
+
                         string query = @"
-                            UPDATE inventario_transferenciastock 
+                            UPDATE " + TablaTransferencia + @" 
                             SET estado = 'CANCELADA',
                                 anulado = 1,
                                 editadoPor_id = @editadoPorId,
@@ -254,6 +519,186 @@ namespace LogiPharm.Datos
             }
         }
 
+        private static void LiberarReservasStock(MySqlConnection cn, MySqlTransaction tx, long idTransferencia)
+        {
+            // Recuperar detalles y devolver stock reservado al disponible
+            using (var cmd = new MySqlCommand(@"
+                SELECT lote_origen_id, cantidad_solicitada
+                FROM " + TablaTransferenciaDetalle + @"
+                WHERE transferencia_id = @id;", cn, tx))
+            {
+                cmd.Parameters.AddWithValue("@id", idTransferencia);
+                using (var rd = cmd.ExecuteReader())
+                {
+                    var items = new List<Tuple<int, decimal>>();
+                    while (rd.Read())
+                    {
+                        int idLote = rd["lote_origen_id"] != DBNull.Value ? Convert.ToInt32(rd["lote_origen_id"]) : 0;
+                        decimal qty = rd["cantidad_solicitada"] != DBNull.Value ? Convert.ToDecimal(rd["cantidad_solicitada"]) : 0m;
+                        if (idLote > 0 && qty > 0) items.Add(Tuple.Create(idLote, qty));
+                    }
+                    rd.Close();
+
+                    foreach (var it in items)
+                    {
+                        using (var cmdUpd = new MySqlCommand(@"
+                            UPDATE inventario_loteproducto
+                            SET cantidad_disponible = cantidad_disponible + @cantidad,
+                                cantidad_reservada = cantidad_reservada - @cantidad
+                            WHERE id = @idLote;", cn, tx))
+                        {
+                            cmdUpd.Parameters.AddWithValue("@idLote", it.Item1);
+                            cmdUpd.Parameters.AddWithValue("@cantidad", it.Item2);
+                            cmdUpd.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
+        }
+
+        private static void ProcesarRecepcionStock(MySqlConnection cn, MySqlTransaction tx, long idTransferencia)
+        {
+            // Obtener ubicaciones
+            int idOrigen = 0;
+            int idDestino = 0;
+            using (var cmdHead = new MySqlCommand(@"
+                SELECT ubicacion_origen_id, ubicacion_destino_id
+                FROM " + TablaTransferencia + @"
+                WHERE id = @id;", cn, tx))
+            {
+                cmdHead.Parameters.AddWithValue("@id", idTransferencia);
+                using (var rd = cmdHead.ExecuteReader())
+                {
+                    if (!rd.Read())
+                        throw new Exception("La transferencia no existe.");
+
+                    idOrigen = rd["ubicacion_origen_id"] != DBNull.Value ? Convert.ToInt32(rd["ubicacion_origen_id"]) : 0;
+                    idDestino = rd["ubicacion_destino_id"] != DBNull.Value ? Convert.ToInt32(rd["ubicacion_destino_id"]) : 0;
+                }
+            }
+
+            // Leer detalles
+            var detalles = new List<Tuple<int, long, string, DateTime?, decimal>>();
+            using (var cmdDet = new MySqlCommand(@"
+                SELECT lote_origen_id, producto_id, numero_lote, fecha_caducidad, cantidad_solicitada
+                FROM " + TablaTransferenciaDetalle + @"
+                WHERE transferencia_id = @id;", cn, tx))
+            {
+                cmdDet.Parameters.AddWithValue("@id", idTransferencia);
+                using (var rd = cmdDet.ExecuteReader())
+                {
+                    while (rd.Read())
+                    {
+                        int loteOrigenId = rd["lote_origen_id"] != DBNull.Value ? Convert.ToInt32(rd["lote_origen_id"]) : 0;
+                        long productoId = rd["producto_id"] != DBNull.Value ? Convert.ToInt64(rd["producto_id"]) : 0;
+                        string numeroLote = rd["numero_lote"]?.ToString() ?? "";
+                        DateTime? fechaCad = rd["fecha_caducidad"] != DBNull.Value ? (DateTime?)Convert.ToDateTime(rd["fecha_caducidad"]) : null;
+                        decimal qty = rd["cantidad_solicitada"] != DBNull.Value ? Convert.ToDecimal(rd["cantidad_solicitada"]) : 0m;
+                        if (loteOrigenId > 0 && productoId > 0 && qty > 0)
+                            detalles.Add(Tuple.Create(loteOrigenId, productoId, numeroLote, fechaCad, qty));
+                    }
+                }
+            }
+
+            foreach (var it in detalles)
+            {
+                int loteOrigenId = it.Item1;
+                long productoId = it.Item2;
+                string numeroLote = it.Item3;
+                DateTime? fechaCad = it.Item4;
+                decimal qty = it.Item5;
+
+                // 1) Descontar reservado del origen
+                using (var cmdUpdOrigen = new MySqlCommand(@"
+                    UPDATE inventario_loteproducto
+                    SET cantidad_reservada = cantidad_reservada - @cantidad
+                    WHERE id = @idLote
+                      AND cantidad_reservada >= @cantidad;", cn, tx))
+                {
+                    cmdUpdOrigen.Parameters.AddWithValue("@idLote", loteOrigenId);
+                    cmdUpdOrigen.Parameters.AddWithValue("@cantidad", qty);
+                    int rows = cmdUpdOrigen.ExecuteNonQuery();
+                    if (rows == 0)
+                        throw new Exception($"No hay reservado suficiente en el lote origen (ID {loteOrigenId}).");
+                }
+
+                // 2) Aumentar disponible en destino (si existe el lote), si no existe lo crea
+                int rowsDestino;
+                using (var cmdUpdDest = new MySqlCommand(@"
+                    UPDATE inventario_loteproducto
+                    SET cantidad_disponible = cantidad_disponible + @cantidad,
+                        cantidad_inicial = cantidad_inicial + @cantidad
+                    WHERE producto_id = @productoId
+                      AND ubicacion_id = @ubicacionDestino
+                      AND numero_lote = @numeroLote
+                      AND (@fechaCaducidad IS NULL OR fecha_caducidad = @fechaCaducidad)
+                    LIMIT 1;", cn, tx))
+                {
+                    cmdUpdDest.Parameters.AddWithValue("@cantidad", qty);
+                    cmdUpdDest.Parameters.AddWithValue("@productoId", productoId);
+                    cmdUpdDest.Parameters.AddWithValue("@ubicacionDestino", idDestino);
+                    cmdUpdDest.Parameters.AddWithValue("@numeroLote", numeroLote);
+                    cmdUpdDest.Parameters.AddWithValue("@fechaCaducidad", (object)fechaCad ?? DBNull.Value);
+                    rowsDestino = cmdUpdDest.ExecuteNonQuery();
+                }
+
+                if (rowsDestino == 0)
+                {
+                    // Copiar costo unitario desde lote origen
+                    decimal costoUnitario = 0m;
+                    DateTime fechaFab = DateTime.Today;
+                    using (var cmdInfo = new MySqlCommand(@"
+                        SELECT costo_unitario, fecha_fabricacion
+                        FROM inventario_loteproducto
+                        WHERE id = @idLote;", cn, tx))
+                    {
+                        cmdInfo.Parameters.AddWithValue("@idLote", loteOrigenId);
+                        using (var rd = cmdInfo.ExecuteReader())
+                        {
+                            if (rd.Read())
+                            {
+                                if (rd["costo_unitario"] != DBNull.Value) costoUnitario = Convert.ToDecimal(rd["costo_unitario"]);
+                                if (rd["fecha_fabricacion"] != DBNull.Value) fechaFab = Convert.ToDateTime(rd["fecha_fabricacion"]);
+                            }
+                        }
+                    }
+
+                    using (var cmdIns = new MySqlCommand(@"
+                        INSERT INTO inventario_loteproducto
+                            (producto_id, ubicacion_id, numero_lote, fecha_ingreso, fecha_fabricacion, fecha_caducidad,
+                             cantidad_inicial, cantidad_disponible, cantidad_reservada, costo_unitario, numero_factura,
+                             observaciones, activo, creadoDate)
+                        VALUES
+                            (@productoId, @ubicacionId, @numeroLote, @fechaIngreso, @fechaFabricacion, @fechaCaducidad,
+                             @cantidad, @cantidad, 0, @costoUnitario, '',
+                             'Transferencia interna', 1, @creadoDate);", cn, tx))
+                    {
+                        cmdIns.Parameters.AddWithValue("@productoId", productoId);
+                        cmdIns.Parameters.AddWithValue("@ubicacionId", idDestino);
+                        cmdIns.Parameters.AddWithValue("@numeroLote", numeroLote);
+                        cmdIns.Parameters.AddWithValue("@fechaIngreso", DateTime.Now);
+                        cmdIns.Parameters.AddWithValue("@fechaFabricacion", fechaFab);
+                        cmdIns.Parameters.AddWithValue("@fechaCaducidad", (object)fechaCad ?? DBNull.Value);
+                        cmdIns.Parameters.AddWithValue("@cantidad", qty);
+                        cmdIns.Parameters.AddWithValue("@costoUnitario", costoUnitario);
+                        cmdIns.Parameters.AddWithValue("@creadoDate", DateTime.Now);
+                        cmdIns.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            // Marcar detalle como recibido
+            using (var cmdUpdDet = new MySqlCommand(@"
+                UPDATE " + TablaTransferenciaDetalle + @"
+                SET cantidad_recibida = cantidad_solicitada,
+                    estado = 'RECIBIDO_COMPLETO'
+                WHERE transferencia_id = @id;", cn, tx))
+            {
+                cmdUpdDet.Parameters.AddWithValue("@id", idTransferencia);
+                cmdUpdDet.ExecuteNonQuery();
+            }
+        }
+
         // =====================
         // OBTENER LOTES DISPONIBLES POR PRODUCTO
         // =====================
@@ -265,7 +710,7 @@ namespace LogiPharm.Datos
                 try
                 {
                     cn.Open();
-                    // Aquí deberías tener una tabla de lotes por producto
+                    // AquÃ­ deberÃ­as tener una tabla de lotes por producto
                     // Por ahora simulamos con datos dummy
                     string query = @"
                         SELECT 
@@ -287,7 +732,7 @@ namespace LogiPharm.Datos
                 }
                 catch (Exception ex)
                 {
-                    // Si la tabla no existe, devolvemos tabla vacía
+                    // Si la tabla no existe, devolvemos tabla vacÃ­a
                     // throw new Exception("Error al obtener lotes: " + ex.Message);
                 }
             }
@@ -295,7 +740,7 @@ namespace LogiPharm.Datos
         }
 
         // =====================
-        // GENERAR NÚMERO DE TRANSFERENCIA
+        // GENERAR NÃšMERO DE TRANSFERENCIA
         // =====================
         public string GenerarNumeroTransferencia()
         {

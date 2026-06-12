@@ -1,4 +1,4 @@
-﻿namespace LogiPharm.Presentacion
+namespace LogiPharm.Presentacion
 {
     partial class FrmLogin
     {
@@ -24,6 +24,7 @@
             this.panelTop = new Guna.UI2.WinForms.Guna2Panel();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.guna2ControlBox1 = new Guna.UI2.WinForms.Guna2ControlBox();
+            this.txtCompanyId = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtUsuario = new Guna.UI2.WinForms.Guna2TextBox();
             this.txtClave = new Guna.UI2.WinForms.Guna2TextBox();
             this.btnLogin = new Guna.UI2.WinForms.Guna2Button();
@@ -82,6 +83,27 @@
             this.guna2ControlBox1.Size = new System.Drawing.Size(45, 29);
             this.guna2ControlBox1.TabIndex = 0;
             // 
+            // 
+            // txtCompanyId
+            // 
+            this.txtCompanyId.Animated = true;
+            this.txtCompanyId.BorderRadius = 8;
+            this.txtCompanyId.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.txtCompanyId.DefaultText = "";
+            this.txtCompanyId.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
+            this.txtCompanyId.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
+            this.txtCompanyId.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtCompanyId.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.txtCompanyId.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtCompanyId.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.txtCompanyId.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.txtCompanyId.Location = new System.Drawing.Point(50, 210);
+            this.txtCompanyId.Name = "txtCompanyId";
+            this.txtCompanyId.PlaceholderText = "E-mail o RUC de Empresa";
+            this.txtCompanyId.SelectedText = "";
+            this.txtCompanyId.Size = new System.Drawing.Size(300, 40);
+            this.txtCompanyId.TabIndex = 1;
+            // 
             // txtUsuario
             // 
             this.txtUsuario.Animated = true;
@@ -95,12 +117,12 @@
             this.txtUsuario.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtUsuario.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.txtUsuario.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtUsuario.Location = new System.Drawing.Point(50, 210);
+            this.txtUsuario.Location = new System.Drawing.Point(50, 265);
             this.txtUsuario.Name = "txtUsuario";
             this.txtUsuario.PlaceholderText = "Usuario";
             this.txtUsuario.SelectedText = "";
             this.txtUsuario.Size = new System.Drawing.Size(300, 40);
-            this.txtUsuario.TabIndex = 1;
+            this.txtUsuario.TabIndex = 2;
             // 
             // txtClave
             // 
@@ -115,13 +137,13 @@
             this.txtClave.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtClave.Font = new System.Drawing.Font("Segoe UI", 9.75F);
             this.txtClave.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtClave.Location = new System.Drawing.Point(50, 265);
+            this.txtClave.Location = new System.Drawing.Point(50, 320);
             this.txtClave.Name = "txtClave";
             this.txtClave.PasswordChar = '●';
             this.txtClave.PlaceholderText = "Contraseña";
             this.txtClave.SelectedText = "";
             this.txtClave.Size = new System.Drawing.Size(300, 40);
-            this.txtClave.TabIndex = 2;
+            this.txtClave.TabIndex = 3;
             this.txtClave.UseSystemPasswordChar = true;
             // 
             // btnLogin
@@ -134,10 +156,10 @@
             this.btnLogin.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(141)))), ((int)(((byte)(141)))), ((int)(((byte)(141)))));
             this.btnLogin.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold);
             this.btnLogin.ForeColor = System.Drawing.Color.White;
-            this.btnLogin.Location = new System.Drawing.Point(50, 330);
+            this.btnLogin.Location = new System.Drawing.Point(50, 385);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(300, 45);
-            this.btnLogin.TabIndex = 3;
+            this.btnLogin.TabIndex = 4;
             this.btnLogin.Text = "INGRESAR";
             this.btnLogin.Click += new System.EventHandler(this.BtnLogin_Click);
             // 
@@ -154,10 +176,10 @@
             this.btnCancelar.FillColor = System.Drawing.Color.Transparent;
             this.btnCancelar.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Bold);
             this.btnCancelar.ForeColor = System.Drawing.Color.Gray;
-            this.btnCancelar.Location = new System.Drawing.Point(50, 385);
+            this.btnCancelar.Location = new System.Drawing.Point(50, 440);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(300, 45);
-            this.btnCancelar.TabIndex = 4;
+            this.btnCancelar.TabIndex = 5;
             this.btnCancelar.Text = "CANCELAR";
             this.btnCancelar.Click += new System.EventHandler(this.BtnCancelar_Click);
             // 
@@ -168,17 +190,17 @@
             this.lblTitulo.Location = new System.Drawing.Point(125, 165);
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(144, 30);
-            this.lblTitulo.TabIndex = 5;
+            this.lblTitulo.TabIndex = 6;
             this.lblTitulo.Text = "Iniciar Sesión";
             // 
             // lblMensaje
             // 
             this.lblMensaje.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblMensaje.ForeColor = System.Drawing.Color.Red;
-            this.lblMensaje.Location = new System.Drawing.Point(50, 440);
+            this.lblMensaje.Location = new System.Drawing.Point(50, 500);
             this.lblMensaje.Name = "lblMensaje";
             this.lblMensaje.Size = new System.Drawing.Size(300, 23);
-            this.lblMensaje.TabIndex = 6;
+            this.lblMensaje.TabIndex = 7;
             this.lblMensaje.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // FrmLogin
@@ -186,13 +208,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(400, 480);
+            this.ClientSize = new System.Drawing.Size(400, 540);
             this.Controls.Add(this.lblMensaje);
             this.Controls.Add(this.lblTitulo);
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnLogin);
             this.Controls.Add(this.txtClave);
             this.Controls.Add(this.txtUsuario);
+            this.Controls.Add(this.txtCompanyId);
             this.Controls.Add(this.panelTop);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FrmLogin";
@@ -213,6 +236,7 @@
         private Guna.UI2.WinForms.Guna2Panel panelTop;
         private Guna.UI2.WinForms.Guna2ControlBox guna2ControlBox1;
         private System.Windows.Forms.PictureBox pictureBoxLogo;
+        private Guna.UI2.WinForms.Guna2TextBox txtCompanyId;
         private Guna.UI2.WinForms.Guna2TextBox txtUsuario;
         private Guna.UI2.WinForms.Guna2TextBox txtClave;
         private Guna.UI2.WinForms.Guna2Button btnLogin;

@@ -213,6 +213,12 @@
     <Compile Include="FrmEmpresa.Designer.cs">
       <DependentUpon>FrmEmpresa.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmEstablecimientoEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmEstablecimientoEdit.Designer.cs">
+      <DependentUpon>FrmEstablecimientoEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmEstadoCaja.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -382,11 +388,29 @@
     <Compile Include="FrmPuntoDeVenta.Designer.cs">
       <DependentUpon>FrmPuntoDeVenta.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmPuntoEmisionEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmPuntoEmisionEdit.Designer.cs">
+      <DependentUpon>FrmPuntoEmisionEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmPuntosEmision.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmPuntosEmision.Designer.cs">
+      <DependentUpon>FrmPuntosEmision.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmRecepcionProductos.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FrmRecepcionProductos.Designer.cs">
       <DependentUpon>FrmRecepcionProductos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmRecetasMedicas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmRecetasMedicas.Designer.cs">
+      <DependentUpon>FrmRecetasMedicas.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmReporteCierres.cs">
       <SubType>Form</SubType>
@@ -424,6 +448,12 @@
     <Compile Include="FrmSeleccionPacientes.Designer.cs">
       <DependentUpon>FrmSeleccionPacientes.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmSucursales.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmSucursales.Designer.cs">
+      <DependentUpon>FrmSucursales.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmTransferencias.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -457,6 +487,7 @@
     </Compile>
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="Utilidades\Encriptador.cs" />
+    <Compile Include="Utilidades\EstilosHelper.cs" />
     <Compile Include="Utilidades\FacturaBuilder.cs" />
     <Compile Include="Utilidades\FormularioHelper.cs" />
     <Compile Include="Utilidades\FormulariosHelper.cs" />
@@ -499,8 +530,14 @@
       <DependentUpon>FrmPerchas.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="FrmRecetasMedicas.resx">
+      <DependentUpon>FrmRecetasMedicas.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmReporteCierres.resx">
       <DependentUpon>FrmReporteCierres.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmSucursales.resx">
+      <DependentUpon>FrmSucursales.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmTransferencias.resx">
       <DependentUpon>FrmTransferencias.cs</DependentUpon>

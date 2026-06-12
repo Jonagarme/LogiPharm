@@ -1,4 +1,4 @@
-﻿using CapaDatos;
+using CapaDatos;
 using LogiPharm.Entidades;
 using MySqlConnector;
 using System;
@@ -9,7 +9,7 @@ namespace LogiPharm.Datos
 {
     public class DFacturaVenta
     {
-        public void GuardarFactura(ECliente cliente, List<ProductoVenta> productos, string numeroFactura, int idCierreCaja, int idUsuario, string numeroAutorizacion)
+        public void GuardarFactura(ECliente cliente, List<ProductoVenta> productos, string numeroFactura, int idCierreCaja, int idUsuario, string numeroAutorizacion, int idEmpresa, bool esEntrega = false, string estadoFactura = "PENDIENTE")
         {
             using (var cn = new MySqlConnection(Conexion.cadena))
             {
@@ -24,17 +24,22 @@ namespace LogiPharm.Datos
                         {
                             subtotal += prod.PrecioTotalSinImpuesto;
                             descuento += prod.Descuento;
+                            
+                            decimal prodIvaRate = prod.AplicaIva ? 0.15m : 0m;
+                            iva += prod.PrecioTotalSinImpuesto * prodIvaRate;
                         }
-                        iva = subtotal * 0.15m; // Asumiendo IVA 15%
-                        total = subtotal - descuento + iva;
+                        iva = Math.Round(iva, 4, MidpointRounding.AwayFromZero);
+                        total = Math.Round(subtotal + iva, 4, MidpointRounding.AwayFromZero);
 
                         // --- 2. Insertar el encabezado de la factura (facturas_venta) ---
                         string sqlFactura = @"INSERT INTO facturas_venta 
                                             (idCliente, idUsuario, idCierreCaja, numeroFactura, numeroAutorizacion, fechaEmision, 
-                                            subtotal, descuento, iva, total, estado, creadoPor, creadoDate, anulado)
+                                            subtotal, descuento, iva, total, estado, creadoPor, creadoDate, anulado,
+                                            es_entrega, estadoFactura, idEmpresa)
                                             VALUES
                                             (@idCliente, @idUsuario, @idCierreCaja, @numeroFactura, @numeroAutorizacion, NOW(),
-                                            @subtotal, @descuento, @iva, @total, 'PAGADA', @idUsuario, NOW(), 0);
+                                            @subtotal, @descuento, @iva, @total, 'PAGADA', @idUsuario, NOW(), 0,
+                                            @es_entrega, @estadoFactura, @idEmpresa);
                                             SELECT LAST_INSERT_ID();";
 
                         long idFacturaVenta;
@@ -49,6 +54,9 @@ namespace LogiPharm.Datos
                             cmdFactura.Parameters.AddWithValue("@descuento", descuento);
                             cmdFactura.Parameters.AddWithValue("@iva", iva);
                             cmdFactura.Parameters.AddWithValue("@total", total);
+                            cmdFactura.Parameters.AddWithValue("@es_entrega", esEntrega ? 1 : 0);
+                            cmdFactura.Parameters.AddWithValue("@estadoFactura", estadoFactura);
+                            cmdFactura.Parameters.AddWithValue("@idEmpresa", idEmpresa);
                             idFacturaVenta = Convert.ToInt64(cmdFactura.ExecuteScalar());
                         }
 
@@ -63,7 +71,8 @@ namespace LogiPharm.Datos
 
                             using (var cmdDetalle = new MySqlCommand(sqlDetalle, cn, tran))
                             {
-                                decimal ivaProducto = prod.PrecioTotalSinImpuesto * 0.15m;
+                                decimal prodIvaRate = prod.AplicaIva ? 0.15m : 0m;
+                                decimal ivaProducto = Math.Round(prod.PrecioTotalSinImpuesto * prodIvaRate, 4, MidpointRounding.AwayFromZero);
                                 cmdDetalle.Parameters.AddWithValue("@idFacturaVenta", idFacturaVenta);
                                 cmdDetalle.Parameters.AddWithValue("@idProducto", prod.Id); // Necesitas el ID del producto
                                 cmdDetalle.Parameters.AddWithValue("@cantidad", prod.Cantidad);
@@ -93,7 +102,8 @@ namespace LogiPharm.Datos
                             using (var cmdKardex = new MySqlCommand(sqlKardex, cn, tran))
                             {
                                 cmdKardex.Parameters.AddWithValue("@idProducto", prod.Id);
-                                cmdKardex.Parameters.AddWithValue("@detalle", $"Factura Venta N° {numeroFactura}");
+                                string tipoDocText = esEntrega ? "Nota de Entrega" : "Factura Venta";
+                                cmdKardex.Parameters.AddWithValue("@detalle", $"{tipoDocText} N° {numeroFactura}");
                                 cmdKardex.Parameters.AddWithValue("@egreso", prod.Cantidad);
                                 cmdKardex.Parameters.AddWithValue("@saldo", nuevoSaldo);
                                 cmdKardex.ExecuteNonQuery();

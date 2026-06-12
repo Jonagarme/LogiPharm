@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using LogiPharm.Negocio;
 using LogiPharm.Entidades;
@@ -19,6 +19,7 @@ namespace LogiPharm.Presentacion
             this.AcceptButton = btnLogin;
             
             // Agregar manejadores de tecla Enter para cada textbox
+            txtCompanyId.KeyDown += Txt_KeyDown;
             txtUsuario.KeyDown += Txt_KeyDown;
             txtClave.KeyDown += Txt_KeyDown;
         }
@@ -35,51 +36,67 @@ namespace LogiPharm.Presentacion
 
         private void BtnLogin_Click(object sender, EventArgs e)
         {
+            string companyId = txtCompanyId.Text.Trim();
             string usuario = txtUsuario.Text.Trim();
             string clave = txtClave.Text.Trim();
 
-            EUsuario datos = NUsuario.Login(usuario, clave);
-
-            if (datos != null)
+            if (string.IsNullOrEmpty(companyId) || string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(clave))
             {
-                // Configurar la caja desde configuración (solo la primera vez)
-                if (SesionActual.IdCaja == 0)
+                lblMensaje.Text = "Por favor, complete todos los campos.";
+                return;
+            }
+
+            try
+            {
+                EUsuario datos = NUsuario.Login(companyId, usuario, clave);
+
+                if (datos != null)
+                {
+                    // Guardar sesión en memoria
+                    SesionActual.IdUsuario = datos.IdUsuario;
+                    SesionActual.NombreUsuario = datos.Usuario;
+                    SesionActual.NombreCompleto = datos.NombreCompleto;
+                    SesionActual.Rol = datos.Rol;
+                    SesionActual.IdEmpresa = datos.IdEmpresa;
+
+                    // ✅ DETECTAR AUTOMÁTICAMENTE LA CAJA ABIERTA
                     SesionActual.ConfigurarCaja();
 
-                // Guardar sesión en memoria
-                SesionActual.IdUsuario = datos.IdUsuario;
-                SesionActual.NombreUsuario = datos.Usuario;
-                SesionActual.NombreCompleto = datos.NombreCompleto;
-                SesionActual.Rol = datos.Rol;
+                    // Auditoría: LOGIN
+                    try
+                    {
+                        var bit = new DBitacora();
+                        bit.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Login", "LOGIN", "usuarios", SesionActual.IdUsuario, "Inicio de sesión exitoso", null, Environment.MachineName, "UI");
+                    }
+                    catch { }
 
-                // Auditoría: LOGIN
-                try
-                {
-                    var bit = new DBitacora();
-                    bit.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Login", "LOGIN", "usuarios", SesionActual.IdUsuario, "Inicio de sesión exitoso", null, Environment.MachineName, "UI");
+                    // Abrir principal y ocultar login (NO se cierra para poder reusarlo al cerrar sesión)
+                    var principal = new FrmPrincipal(datos.Rol);
+                    principal.Show();
+                    this.Hide();
                 }
-                catch { }
-
-                // Abrir principal y ocultar login (NO se cierra para poder reusarlo al cerrar sesión)
-                var principal = new FrmPrincipal(datos.Rol);
-                principal.Show();
-                this.Hide();
+                else
+                {
+                    lblMensaje.Text = "Usuario o contraseña incorrectos.";
+                    txtClave.Clear();
+                    txtClave.Focus();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                lblMensaje.Text = "Usuario o contraseña incorrectos.";
+                lblMensaje.Text = ex.Message;
                 txtClave.Clear();
-                txtClave.Focus();
             }
         }
 
         // (Opcional) Método para limpiar los campos cuando se vuelve a mostrar el login
         public void LimpiarCampos()
         {
+            txtCompanyId.Clear();
             txtUsuario.Clear();
             txtClave.Clear();
             lblMensaje.Text = string.Empty;
-            txtUsuario.Focus();
+            txtCompanyId.Focus();
         }
 
         private void BtnCancelar_Click(object sender, EventArgs e)

@@ -1,4 +1,4 @@
-﻿using LogiPharm.Entidades;
+using LogiPharm.Entidades;
 using System.Configuration;
 using System;
 using MySqlConnector;
@@ -10,40 +10,65 @@ namespace LogiPharm.Datos
 {
     public class DUsuario
     {
-        public EUsuario Login(string usuario, string clave)
+        public EUsuario Login(string companyId, string usuario, string clave)
         {
             using (MySqlConnection cn = new MySqlConnection(ConfigurationManager.ConnectionStrings["cadena_conexion"].ConnectionString))
             {
                 cn.Open();
 
-                // Hashea la clave antes de enviarla a la consulta
-                string hashClave = CalcularSHA256(clave);
-
                 MySqlCommand cmd = new MySqlCommand(@"
-                    SELECT u.*, r.nombre AS NombreRol
+                    SELECT u.*, r.nombre AS NombreRol, e.razon_social, e.activo AS EmpresaActiva
                     FROM usuarios u
-                    INNER JOIN roles r ON r.id = u.idRol
+                    INNER JOIN empresas e ON u.idEmpresa = e.id
+                    LEFT JOIN roles r ON r.id = u.idRol
                     WHERE u.nombreUsuario = @usuario 
-                      AND u.contrasenaHash = @clave 
                       AND u.activo = 1 
                       AND u.anulado = 0
+                      AND (e.ruc = @companyId OR e.email = @companyId)
                 ", cn);
 
                 cmd.Parameters.AddWithValue("@usuario", usuario);
-                cmd.Parameters.AddWithValue("@clave", hashClave);  // <--- el hash, no la clave en texto
+                cmd.Parameters.AddWithValue("@companyId", companyId);
 
                 using (var dr = cmd.ExecuteReader())
                 {
                     if (dr.Read())
                     {
-                        return new EUsuario
+                        // Validar si la empresa está activa
+                        bool empresaActiva = Convert.ToBoolean(dr["EmpresaActiva"]);
+                        if (!empresaActiva)
                         {
-                            IdUsuario = Convert.ToInt32(dr["id"]),
-                            Usuario = dr["nombreUsuario"].ToString(),
-                            Clave = dr["contrasenaHash"].ToString(),
-                            Rol = dr["NombreRol"].ToString(),
-                            NombreCompleto = dr["nombreCompleto"].ToString()
-                        };
+                            throw new Exception("La empresa se encuentra inactiva. Contacte a soporte.");
+                        }
+
+                        string contrasenaHash = dr["contrasenaHash"].ToString();
+                        bool valid = false;
+
+                        if (contrasenaHash.StartsWith("pbkdf2_sha256$"))
+                        {
+                            valid = DjangoPasswordHasher.VerifyPassword(clave, contrasenaHash);
+                        }
+                        else if (contrasenaHash.StartsWith("$2y$") || contrasenaHash.StartsWith("$2a$") || contrasenaHash.StartsWith("$2b$"))
+                        {
+                            valid = BCrypt.Verify(clave, contrasenaHash);
+                        }
+                        else if (contrasenaHash.Length == 64) // SHA-256 en hexadecimal
+                        {
+                            valid = contrasenaHash.Equals(CalcularSHA256(clave), StringComparison.OrdinalIgnoreCase);
+                        }
+
+                        if (valid)
+                        {
+                            return new EUsuario
+                            {
+                                IdUsuario = Convert.ToInt32(dr["id"]),
+                                Usuario = dr["nombreUsuario"].ToString(),
+                                Clave = contrasenaHash,
+                                Rol = dr["NombreRol"].ToString(),
+                                NombreCompleto = dr["nombreCompleto"].ToString(),
+                                IdEmpresa = Convert.ToInt32(dr["idEmpresa"])
+                            };
+                        }
                     }
                 }
                 return null;

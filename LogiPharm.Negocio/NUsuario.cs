@@ -1,4 +1,4 @@
-﻿using LogiPharm.Datos;
+using LogiPharm.Datos;
 using LogiPharm.Entidades;
 
 namespace LogiPharm.Negocio
@@ -17,9 +17,9 @@ namespace LogiPharm.Negocio
         //    eUsuario.NombreCompleto = "Administrador";
         //    return eUsuario;
         //}
-        public static EUsuario Login(string usuario, string clave)
+        public static EUsuario Login(string companyId, string usuario, string clave)
         {
-            return new DUsuario().Login(usuario, clave);
+            return new DUsuario().Login(companyId, usuario, clave);
         }
 
     }

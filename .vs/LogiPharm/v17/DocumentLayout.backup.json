@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|c:\\users\\jonag\\onedrive\\im\u00E1genes\\logipharm\\logipharm\\logipharm.presentacion\\frmpuntodeventa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\frmpuntodeventa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{50711665-4918-493A-B531-8D999E166181}|LogiPharm.Datos\\LogiPharm.Datos.csproj|C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\logipharm.datos\\dfacturaelectronica.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50711665-4918-493A-B531-8D999E166181}|LogiPharm.Datos\\LogiPharm.Datos.csproj|solutionrelative:logipharm.datos\\dfacturaelectronica.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|c:\\users\\jonag\\onedrive\\im\u00E1genes\\logipharm\\logipharm\\logipharm.presentacion\\facturaticketp.rdlc||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
-      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\facturaticketp.rdlc||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+      "AbsoluteMoniker": "D:0:0:{50711665-4918-493A-B531-8D999E166181}|LogiPharm.Datos\\LogiPharm.Datos.csproj|C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\logipharm.datos\\dfacturascompra.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50711665-4918-493A-B531-8D999E166181}|LogiPharm.Datos\\LogiPharm.Datos.csproj|solutionrelative:logipharm.datos\\dfacturascompra.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\logipharm.presentacion\\facturaticketp.rdlc||{46F6D2A1-5E86-4080-A799-01F3D0E23796}",
-      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\facturaticketp.rdlc||{46F6D2A1-5E86-4080-A799-01F3D0E23796}"
+      "AbsoluteMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|c:\\users\\jonag\\onedrive\\im\u00E1genes\\logipharm\\logipharm\\logipharm.presentacion\\frmpuntodeventa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{9E98BAA5-248A-4778-835C-EFC48024A168}|LogiPharm.Presentacion\\LogiPharm.Presentacion.csproj|solutionrelative:logipharm.presentacion\\frmpuntodeventa.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
   "DocumentGroupContainers": [
@@ -22,45 +22,52 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 3,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "FacturaTicketP.rdlc [Dise\u00F1o]",
-              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FacturaTicketP.rdlc",
-              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FacturaTicketP.rdlc",
-              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FacturaTicketP.rdlc [Dise\u00F1o]",
-              "RelativeToolTip": "LogiPharm.Presentacion\\FacturaTicketP.rdlc [Dise\u00F1o]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001755|",
-              "WhenOpened": "2025-08-05T03:34:46.554Z",
-              "IsPinned": true,
+              "Title": "FrmPuntoDeVenta.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
+              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
+              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmPuntoDeVenta.cs [Dise\u00F1o]",
+              "RelativeToolTip": "LogiPharm.Presentacion\\FrmPuntoDeVenta.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-12T03:17:25.442Z",
               "EditorCaption": " [Dise\u00F1o]"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "FrmPuntoDeVenta.cs",
-              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
-              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
-              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
-              "RelativeToolTip": "LogiPharm.Presentacion\\FrmPuntoDeVenta.cs",
-              "ViewState": "AgIAAJAAAAAAAAAAAAAMwKkAAAAlAAAAAAAAAA==",
+              "Title": "DFacturaElectronica.cs",
+              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Datos\\DFacturaElectronica.cs",
+              "RelativeDocumentMoniker": "LogiPharm.Datos\\DFacturaElectronica.cs",
+              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Datos\\DFacturaElectronica.cs",
+              "RelativeToolTip": "LogiPharm.Datos\\DFacturaElectronica.cs",
+              "ViewState": "AgIAAHAAAAAAAAAAAAAjwJcAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-06T01:01:41.456Z",
+              "WhenOpened": "2026-06-11T15:22:17.118Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "FacturaTicketP.rdlc",
-              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FacturaTicketP.rdlc",
-              "RelativeDocumentMoniker": "LogiPharm.Presentacion\\FacturaTicketP.rdlc",
-              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Presentacion\\FacturaTicketP.rdlc",
-              "RelativeToolTip": "LogiPharm.Presentacion\\FacturaTicketP.rdlc",
-              "ViewState": "AgIAAOEAAAAAAAAAAADgv2ECAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001755|",
-              "WhenOpened": "2025-08-05T04:11:48.63Z",
+              "Title": "DFacturasCompra.cs",
+              "DocumentMoniker": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Datos\\DFacturasCompra.cs",
+              "RelativeDocumentMoniker": "LogiPharm.Datos\\DFacturasCompra.cs",
+              "ToolTip": "C:\\Users\\jonag\\OneDrive\\Im\u00E1genes\\LogiPharm\\LogiPharm\\LogiPharm.Datos\\DFacturasCompra.cs",
+              "RelativeToolTip": "LogiPharm.Datos\\DFacturasCompra.cs",
+              "ViewState": "AgIAAE8BAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-11T15:10:27.554Z",
               "EditorCaption": ""
             }
           ]
