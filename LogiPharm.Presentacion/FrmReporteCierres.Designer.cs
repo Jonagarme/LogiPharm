@@ -1,4 +1,4 @@
-﻿﻿namespace LogiPharm.Presentacion
+﻿namespace LogiPharm.Presentacion
 {
     partial class FrmReporteCierres
     {
@@ -521,7 +521,6 @@
             this.Name = "FrmReporteCierres";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Reportes de Cierres";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.FrmReporteCierres_Load);
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();

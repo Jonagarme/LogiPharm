@@ -1,4 +1,4 @@
-﻿namespace LogiPharm.Presentacion
+namespace LogiPharm.Presentacion
 {
     partial class FrmLotesVencimientos
     {
@@ -383,7 +383,6 @@
             this.Name = "FrmLotesVencimientos";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Lotes y Vencimientos";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.FrmLotesVencimientos_Load);
             this.pnlTitulo.ResumeLayout(false);
             this.pnlFiltros.ResumeLayout(false);

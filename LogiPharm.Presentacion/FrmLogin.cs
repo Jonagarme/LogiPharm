@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using LogiPharm.Negocio;
 using LogiPharm.Entidades;
@@ -58,6 +58,9 @@ namespace LogiPharm.Presentacion
                     SesionActual.Rol = datos.Rol;
                     SesionActual.IdEmpresa = datos.IdEmpresa;
                     SesionActual.IdUbicacion = datos.IdUbicacion;
+
+                    // Configurar la conexión con la empresa seleccionada
+                    CapaDatos.Conexion.IdEmpresa = datos.IdEmpresa;
 
                     // ✅ DETECTAR AUTOMÁTICAMENTE LA CAJA ABIERTA
                     SesionActual.ConfigurarCaja();

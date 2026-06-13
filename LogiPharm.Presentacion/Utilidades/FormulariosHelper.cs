@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,10 +35,10 @@ namespace LogiPharm.Presentacion.Utilidades
                     // Crear y mostrar el nuevo formulario
                     T nuevoFormulario = new T
                     {
-                        MdiParent = mdiParent,
-                        WindowState = FormWindowState.Maximized
+                        MdiParent = mdiParent
                     };
                     nuevoFormulario.Show();
+                    nuevoFormulario.WindowState = FormWindowState.Maximized;
                     nuevoFormulario.BringToFront();
                 }
                 catch (Exception ex)

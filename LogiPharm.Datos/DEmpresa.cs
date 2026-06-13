@@ -1,4 +1,4 @@
-﻿using MySqlConnector;
+using MySqlConnector;
 using System;
 using System.Data;
 using LogiPharm.Entidades;
@@ -13,9 +13,10 @@ namespace LogiPharm.Datos
             EEmpresa empresa = null;
             using (var cn = new MySqlConnection(Conexion.cadena))
             {
-                string sql = "SELECT * FROM empresas WHERE id = 1 LIMIT 1;";
+                string sql = "SELECT * FROM empresas WHERE id = @id LIMIT 1;";
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
+                    cmd.Parameters.AddWithValue("@id", Conexion.IdEmpresa);
                     cn.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -36,7 +37,7 @@ namespace LogiPharm.Datos
                                 Logo = reader["logo"] as byte[],
                                 CertificadoP12Path = reader["certificado_p12_path"]?.ToString(),
                                 CertificadoPassword = reader["certificado_password"]?.ToString(),
-                                CertificadoFechaExpiracion = reader["certificado_fecha_expira"] as DateTime?
+                                CertificadoFechaExpiracion = reader["certificado_fecha_expiracion"] as DateTime?
                             };
                         }
                     }
@@ -57,7 +58,7 @@ namespace LogiPharm.Datos
                 {
                     // --- LÓGICA PARA INSERTAR (NUEVO) ---
                     string sql = @"INSERT INTO empresas 
-                                   (ruc, razon_social, nombre_comercial, direccion_matriz, contribuyente_especial, obligado_contabilidad, telefono, email, logo, certificado_p12_path, certificado_password, certificado_fecha_expira, sri_ambiente) 
+                                   (ruc, razon_social, nombre_comercial, direccion_matriz, contribuyente_especial, obligado_contabilidad, telefono, email, logo, certificado_p12_path, certificado_password, certificado_fecha_expiracion, sri_ambiente) 
                                    VALUES 
                                    (@ruc, @razonSocial, @nombreComercial, @direccionMatriz, @contribuyenteEspecial, @obligadoContabilidad, @telefono, @email, @logo, @certificadoPath, @certificadoPassword, @certificadoFechaExpiracion, @ambienteSRI)";
                     using (var cmd = new MySqlCommand(sql, cn))
@@ -93,7 +94,7 @@ namespace LogiPharm.Datos
                                    logo = @logo,
                                    certificado_p12_path = @certificadoPath,
                                    certificado_password = @certificadoPassword,
-                                   certificado_fecha_expira = @certificadoFechaExpiracion,
+                                   certificado_fecha_expiracion = @certificadoFechaExpiracion,
                                    sri_ambiente = @ambienteSRI
                                    WHERE id = @id";
                     using (var cmd = new MySqlCommand(sql, cn))

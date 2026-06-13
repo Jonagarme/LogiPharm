@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace LogiPharm.Presentacion.Utilidades
 {
@@ -64,6 +64,7 @@ namespace LogiPharm.Presentacion.Utilidades
             Rol = null;
             IdEmpresa = 1;
             IdUbicacion = null;
+            CapaDatos.Conexion.IdEmpresa = 1;
             // No limpiamos IdCaja porque es específico de la terminal/equipo
         }
     }
