@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmOrdenesCompra
     {
@@ -83,7 +83,7 @@ namespace LogiPharm.Presentacion
             this.btnNuevaOrden.Name = "btnNuevaOrden";
             this.btnNuevaOrden.Size = new System.Drawing.Size(138, 36);
             this.btnNuevaOrden.TabIndex = 4;
-            this.btnNuevaOrden.Text = "? Nueva Orden";
+            this.btnNuevaOrden.Text = "Nueva Orden";
             this.btnNuevaOrden.Click += new System.EventHandler(this.btnNuevaOrden_Click);
             // 
             // btnRefrescar
@@ -100,7 +100,7 @@ namespace LogiPharm.Presentacion
             this.btnRefrescar.Name = "btnRefrescar";
             this.btnRefrescar.Size = new System.Drawing.Size(128, 36);
             this.btnRefrescar.TabIndex = 3;
-            this.btnRefrescar.Text = "?? Refrescar";
+            this.btnRefrescar.Text = "Refrescar";
             this.btnRefrescar.Click += new System.EventHandler(this.btnRefrescar_Click);
             // 
             // btnBuscar
@@ -116,7 +116,7 @@ namespace LogiPharm.Presentacion
             this.btnBuscar.Name = "btnBuscar";
             this.btnBuscar.Size = new System.Drawing.Size(100, 36);
             this.btnBuscar.TabIndex = 2;
-            this.btnBuscar.Text = "?? Buscar";
+            this.btnBuscar.Text = "Buscar";
             this.btnBuscar.Click += new System.EventHandler(this.btnBuscar_Click);
             // 
             // txtBuscar
@@ -134,7 +134,7 @@ namespace LogiPharm.Presentacion
             this.txtBuscar.Location = new System.Drawing.Point(68, 20);
             this.txtBuscar.Name = "txtBuscar";
             this.txtBuscar.PasswordChar = '\0';
-            this.txtBuscar.PlaceholderText = "Número de orden, proveedor, estado...";
+            this.txtBuscar.PlaceholderText = "NÃºmero de orden, proveedor, estado...";
             this.txtBuscar.SelectedText = "";
             this.txtBuscar.Size = new System.Drawing.Size(356, 36);
             this.txtBuscar.TabIndex = 1;
@@ -243,7 +243,7 @@ namespace LogiPharm.Presentacion
             // colNumero
             // 
             this.colNumero.DataPropertyName = "Numero";
-            this.colNumero.HeaderText = "N° Orden";
+            this.colNumero.HeaderText = "NÂ° Orden";
             this.colNumero.Name = "colNumero";
             this.colNumero.ReadOnly = true;
             this.colNumero.Width = 90;
@@ -251,7 +251,7 @@ namespace LogiPharm.Presentacion
             // colFechaEmision
             // 
             this.colFechaEmision.DataPropertyName = "FechaEmision";
-            this.colFechaEmision.HeaderText = "Fecha Emisión";
+            this.colFechaEmision.HeaderText = "Fecha EmisiÃ³n";
             this.colFechaEmision.Name = "colFechaEmision";
             this.colFechaEmision.ReadOnly = true;
             this.colFechaEmision.Width = 110;
@@ -347,7 +347,7 @@ namespace LogiPharm.Presentacion
             this.Controls.Add(this.panelInferior);
             this.Controls.Add(this.panelSuperior);
             this.Name = "FrmOrdenesCompra";
-            this.Text = "Órdenes de Compra";
+            this.Text = "Ã“rdenes de Compra";
             this.Load += new System.EventHandler(this.FrmOrdenesCompra_Load);
             this.panelSuperior.ResumeLayout(false);
             this.panelSuperior.PerformLayout();

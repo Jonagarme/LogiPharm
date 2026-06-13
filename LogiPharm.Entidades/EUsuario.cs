@@ -11,6 +11,7 @@ namespace LogiPharm.Entidades
         public int Id { get; set; }
         public int IdRol { get; set; }
         public int IdEmpresa { get; set; }
+        public int? IdUbicacion { get; set; }
         public string NombreUsuario { get; set; }
         public string ContrasenaHash { get; set; }
         public string Email { get; set; }

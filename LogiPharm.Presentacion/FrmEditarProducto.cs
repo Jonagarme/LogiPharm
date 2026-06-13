@@ -1,5 +1,5 @@
-﻿using LogiPharm.Datos;
-using LogiPharm.Entidades; // <-- importa tu entidad
+﻿using LogiPharm.Entidades; // <-- importa tu entidad
+using LogiPharm.Negocio;
 using System;
 using System.Data;
 using System.Drawing;
@@ -178,8 +178,7 @@ namespace LogiPharm.Presentacion
 
         private void CargarDatosProducto(int id)
         {
-            var dProductos = new DProductos();
-            var producto = dProductos.ObtenerPorId(id);
+            var producto = NProductos.ObtenerPorId(id);
             _producto = producto; // <-- lo guardo para la pestaña de precios
 
             if (producto == null)
@@ -253,8 +252,6 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                var dProd = new DProductos();
-
                 if (_esNuevo)
                 {
                     // MODO CREACIÓN
@@ -294,7 +291,7 @@ namespace LogiPharm.Presentacion
                         CreadoPor = Utilidades.SesionActual.IdUsuario
                     };
 
-                    bool ok = dProd.InsertarProducto(nuevoProducto);
+                    bool ok = NProductos.InsertarProducto(nuevoProducto);
                     
                     if (!ok)
                     {
@@ -309,7 +306,7 @@ namespace LogiPharm.Presentacion
                 else
                 {
                     // MODO EDICIÓN
-                    bool okPrecios = dProd.ActualizarPreciosAutoPorId(_idProducto, pvp);
+                    bool okPrecios = NProductos.ActualizarPreciosAutoPorId(_idProducto, pvp);
 
                     if (!okPrecios)
                     {
@@ -418,9 +415,8 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                var kardex = new DKardex();
                 var desde = DateTime.Today.AddMonths(-3);
-                var movimientos = kardex.ObtenerMovimientos((int)_producto.Id, desde, DateTime.Today);
+                var movimientos = NKardex.ObtenerMovimientos((int)_producto.Id, desde, DateTime.Today);
 
                 if (movimientos != null && movimientos.Rows.Count > 0)
                 {

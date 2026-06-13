@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -114,7 +114,7 @@ namespace LogiPharm.Presentacion
 
                 if (_ordenActual == null)
                 {
-                    MessageBox.Show("No se encontró la orden de compra.", "Error",
+                    MessageBox.Show("No se encontrÃ³ la orden de compra.", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Close();
                     return;
@@ -200,7 +200,7 @@ namespace LogiPharm.Presentacion
                         {
                             if (Convert.ToInt32(row["IdProducto"]) == producto.Id)
                             {
-                                MessageBox.Show("El producto ya está en el detalle.", "Información",
+                                MessageBox.Show("El producto ya estÃ¡ en el detalle.", "InformaciÃ³n",
                                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 existe = true;
                                 break;
@@ -289,7 +289,7 @@ namespace LogiPharm.Presentacion
 
             if (dgvDetalle.Columns[e.ColumnIndex].Name == "colEliminar")
             {
-                var result = MessageBox.Show("¿Está seguro de eliminar este producto del detalle?",
+                var result = MessageBox.Show("Â¿EstÃ¡ seguro de eliminar este producto del detalle?",
                     "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
@@ -382,7 +382,7 @@ namespace LogiPharm.Presentacion
 
                 if (resultado)
                 {
-                    MessageBox.Show("Orden de compra guardada exitosamente.", "Éxito",
+                    MessageBox.Show("Orden de compra guardada exitosamente.", "Ã‰xito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     this.DialogResult = DialogResult.OK;
                     this.Close();
@@ -404,7 +404,7 @@ namespace LogiPharm.Presentacion
         {
             if (cboProveedor.SelectedIndex == -1)
             {
-                MessageBox.Show("Debe seleccionar un proveedor.", "Validación",
+                MessageBox.Show("Debe seleccionar un proveedor.", "ValidaciÃ³n",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cboProveedor.Focus();
                 return false;
@@ -412,7 +412,7 @@ namespace LogiPharm.Presentacion
 
             if (_tablaDetalle.Rows.Count == 0)
             {
-                MessageBox.Show("Debe agregar al menos un producto al detalle.", "Validación",
+                MessageBox.Show("Debe agregar al menos un producto al detalle.", "ValidaciÃ³n",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }

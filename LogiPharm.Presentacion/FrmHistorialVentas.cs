@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
@@ -31,7 +31,7 @@ namespace LogiPharm.Presentacion
             btnConsultar_Click(sender, e);
 
             // Auditoría: VISUALIZAR
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Ventas", "VISUALIZAR", "historial_ventas", null, "Abrir Historial de Ventas", null, Environment.MachineName, "UI"); } catch { }
+            try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Ventas", "VISUALIZAR", "historial_ventas", null, "Abrir Historial de Ventas", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private static string Norm(string s)
@@ -55,8 +55,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                DClientes d_Clientes = new DClientes();
-                DataTable dt = d_Clientes.ListarClientesActivos();
+                DataTable dt = NClientes.ListarClientesActivos();
 
                 // Inserta opción [TODOS]
                 DataRow dr = dt.NewRow();
@@ -166,8 +165,7 @@ namespace LogiPharm.Presentacion
                 DateTime fechaInicio = dtpFechaInicio.Value;
                 DateTime fechaFin = dtpFechaFin.Value;
 
-                DHistorialVentas d_Historial = new DHistorialVentas();
-                dgvHistorial.DataSource = d_Historial.ConsultarHistorial(
+                dgvHistorial.DataSource = NHistorialVentas.ConsultarHistorial(
                     fechaInicio, fechaFin, idClienteSeleccionado, productoBuscado
                 );
 
@@ -175,7 +173,7 @@ namespace LogiPharm.Presentacion
                 CalcularTotales();
 
                 // Auditoría: VISUALIZAR consulta
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Ventas", "VISUALIZAR", "historial_ventas", null, $"Consultar historial {fechaInicio:yyyy-MM-dd} a {fechaFin:yyyy-MM-dd} cliente={idClienteSeleccionado} prod='{productoBuscado}'", null, Environment.MachineName, "UI"); } catch { }
+                try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Ventas", "VISUALIZAR", "historial_ventas", null, $"Consultar historial {fechaInicio:yyyy-MM-dd} a {fechaFin:yyyy-MM-dd} cliente={idClienteSeleccionado} prod='{productoBuscado}'", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {

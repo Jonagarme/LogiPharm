@@ -1,9 +1,9 @@
-using System;
+ï»¿using System;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
@@ -11,33 +11,27 @@ namespace LogiPharm.Presentacion
     public partial class FrmArqueoCaja : Form
     {
         private DataRow _aperturaActual;
-        private DCierreCaja _dCierreCaja;
 
         public FrmArqueoCaja()
         {
             InitializeComponent();
-            _dCierreCaja = new DCierreCaja();
         }
 
         private void FrmArqueoCaja_Load(object sender, EventArgs e)
         {
-            // Auditoría
-            try
-            {
-                new DBitacora().Registrar(
-                    SesionActual.IdUsuario,
-                    SesionActual.NombreUsuario,
-                    "Caja",
-                    "VISUALIZAR",
-                    "arqueo_caja",
-                    null,
-                    "Abrir Arqueo de Caja",
-                    null,
-                    Environment.MachineName,
-                    "UI"
-                );
-            }
-            catch { }
+            // AuditorÃ­a
+            NBitacora.Registrar(
+                SesionActual.IdUsuario,
+                SesionActual.NombreUsuario,
+                "Caja",
+                "VISUALIZAR",
+                "arqueo_caja",
+                null,
+                "Abrir Arqueo de Caja",
+                null,
+                Environment.MachineName,
+                "UI"
+            );
 
             SuscribirEventosArqueo();
             CargarDatosApertura();
@@ -47,14 +41,14 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                int idCajaActual = 1; // TODO: Obtener de configuración
+                int idCajaActual = 1; // TODO: Obtener de configuraciÃ³n
 
-                _aperturaActual = _dCierreCaja.ObtenerDatosAperturaAbierta(idCajaActual);
+                _aperturaActual = NCierreCaja.ObtenerDatosAperturaAbierta(idCajaActual);
 
                 if (_aperturaActual == null)
                 {
                     MessageBox.Show(
-                        "No se encontró una caja abierta. Debe abrir una caja antes de realizar el arqueo.",
+                        "No se encontrÃ³ una caja abierta. Debe abrir una caja antes de realizar el arqueo.",
                         "Caja Cerrada",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning
@@ -73,11 +67,11 @@ namespace LogiPharm.Presentacion
                 decimal saldoInicial = Convert.ToDecimal(_aperturaActual["saldoInicial"]);
 
                 // Actualizar y obtener totales
-                _dCierreCaja.ActualizarTotalesSistema(idAperturaActual);
-                decimal totalIngresos = _dCierreCaja.CalcularIngresosSistema(idAperturaActual);
-                decimal totalEgresos = _dCierreCaja.CalcularEgresosSistema(idAperturaActual);
+                NCierreCaja.ActualizarTotalesSistema(idAperturaActual);
+                decimal totalIngresos = NCierreCaja.CalcularIngresosSistema(idAperturaActual);
+                decimal totalEgresos = NCierreCaja.CalcularEgresosSistema(idAperturaActual);
 
-                // Mostrar información en el panel de información
+                // Mostrar informaciÃ³n en el panel de informaciÃ³n
                 lblFechaApertura.Text = "Apertura: " + Convert.ToDateTime(_aperturaActual["fechaApertura"]).ToString("dd/MM/yyyy HH:mm");
                 lblUsuarioApertura.Text = "Usuario: " + SesionActual.NombreUsuario;
                 
@@ -175,10 +169,10 @@ namespace LogiPharm.Presentacion
                     decimal.TryParse(lblTotalEgresos.Text, NumberStyles.Currency, null, out totalEgresos);
                 }
 
-                // Calcular total contado físicamente
+                // Calcular total contado fÃ­sicamente
                 decimal totalContado = CalcularTotalContado();
                 
-                // Calcular saldo teórico del sistema
+                // Calcular saldo teÃ³rico del sistema
                 decimal saldoTeorico = saldoInicial + totalIngresos - totalEgresos;
                 
                 // Calcular diferencia
@@ -221,7 +215,7 @@ namespace LogiPharm.Presentacion
         private void btnLimpiar_Click(object sender, EventArgs e)
         {
             var confirmacion = MessageBox.Show(
-                "¿Está seguro de limpiar todos los valores del arqueo?",
+                "Â¿EstÃ¡ seguro de limpiar todos los valores del arqueo?",
                 "Confirmar",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
@@ -271,7 +265,7 @@ namespace LogiPharm.Presentacion
             }
 
             var confirmacion = MessageBox.Show(
-                "¿Está seguro de guardar este arqueo de caja?",
+                "Â¿EstÃ¡ seguro de guardar este arqueo de caja?",
                 "Confirmar Arqueo",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
@@ -289,35 +283,31 @@ namespace LogiPharm.Presentacion
                 int idUsuario = SesionActual.IdUsuario;
 
                 // TODO: Guardar el arqueo en una tabla de arqueos si existe
-                // Por ahora solo mostramos mensaje de éxito
+                // Por ahora solo mostramos mensaje de Ã©xito
 
                 MessageBox.Show(
                     $"Arqueo guardado exitosamente.\n\n" +
                     $"Total Contado: {totalContado:C2}\n" +
-                    $"Saldo Teórico: {saldoTeorico:C2}\n" +
+                    $"Saldo TeÃ³rico: {saldoTeorico:C2}\n" +
                     $"Diferencia: {diferencia:C2}",
                     "Arqueo Guardado",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information
                 );
 
-                // Auditoría
-                try
-                {
-                    new DBitacora().Registrar(
-                        SesionActual.IdUsuario,
-                        SesionActual.NombreUsuario,
-                        "Caja",
-                        "CREAR",
-                        "arqueo_caja",
-                        idCierre,
-                        $"Arqueo registrado - Diferencia: {diferencia:C2}",
-                        null,
-                        Environment.MachineName,
-                        "UI"
-                    );
-                }
-                catch { }
+                // AuditorÃ­a
+                NBitacora.Registrar(
+                    SesionActual.IdUsuario,
+                    SesionActual.NombreUsuario,
+                    "Caja",
+                    "CREAR",
+                    "arqueo_caja",
+                    idCierre,
+                    $"Arqueo registrado - Diferencia: {diferencia:C2}",
+                    null,
+                    Environment.MachineName,
+                    "UI"
+                );
 
                 LimpiarArqueo();
             }
@@ -350,10 +340,10 @@ namespace LogiPharm.Presentacion
                 return;
             }
 
-            // TODO: Implementar impresión del arqueo
+            // TODO: Implementar impresiÃ³n del arqueo
             MessageBox.Show(
-                "Función de impresión en desarrollo.",
-                "Información",
+                "FunciÃ³n de impresiÃ³n en desarrollo.",
+                "InformaciÃ³n",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information
             );

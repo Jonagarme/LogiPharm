@@ -1,4 +1,4 @@
-using Guna.UI2.WinForms;
+锘縰sing Guna.UI2.WinForms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
@@ -44,7 +44,7 @@ namespace LogiPharm.Presentacion
             dgvLotes.AllowUserToAddRows = false;
             dgvLotes.RowHeadersVisible = false;
 
-            // Columna de selecci髇 (checkbox)
+            // Columna de selecci贸n (checkbox)
             var colSeleccionar = new DataGridViewCheckBoxColumn
             {
                 Name = "colSeleccionar",
@@ -76,7 +76,7 @@ namespace LogiPharm.Presentacion
             dgvLotes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "colDias",
-                HeaderText = "D韆s",
+                HeaderText = "D铆as",
                 DataPropertyName = "DiasParaCaducidad",
                 Width = 60,
                 DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter },
@@ -111,7 +111,7 @@ namespace LogiPharm.Presentacion
         {
             if (e.RowIndex < 0) return;
 
-            // Colorear seg鷑 d韆s para caducidad
+            // Colorear seg煤n d铆as para caducidad
             if (dgvLotes.Columns[e.ColumnIndex].Name == "colDias")
             {
                 if (int.TryParse(e.Value?.ToString(), out int dias))
@@ -140,10 +140,10 @@ namespace LogiPharm.Presentacion
         {
             if (e.RowIndex < 0) return;
             
-            // Si se hace clic en el checkbox de selecci髇
+            // Si se hace clic en el checkbox de selecci贸n
             if (dgvLotes.Columns[e.ColumnIndex].Name == "colSeleccionar")
             {
-                // Desmarcar todas las dem醩 filas
+                // Desmarcar todas las dem谩s filas
                 foreach (DataGridViewRow row in dgvLotes.Rows)
                 {
                     if (row.Index != e.RowIndex)
@@ -171,8 +171,8 @@ namespace LogiPharm.Presentacion
             string criterio = txtBuscarProducto.Text.Trim();
             if (string.IsNullOrWhiteSpace(criterio))
             {
-                MessageBox.Show("Por favor, ingrese un c骴igo o nombre de producto para buscar.",
-                    "B鷖queda requerida", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Por favor, ingrese un c贸digo o nombre de producto para buscar.",
+                    "B煤squeda requerida", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 txtBuscarProducto.Focus();
                 return;
             }
@@ -184,7 +184,7 @@ namespace LogiPharm.Presentacion
 
                 if (productos == null || productos.Count == 0)
                 {
-                    MessageBox.Show("No se encontraron productos que coincidan con el criterio de b鷖queda.",
+                    MessageBox.Show("No se encontraron productos que coincidan con el criterio de b煤squeda.",
                         "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     txtBuscarProducto.Focus();
                     return;
@@ -206,7 +206,7 @@ namespace LogiPharm.Presentacion
                     }
                 }
 
-                // Auditor韆
+                // Auditor铆a
                 try
                 {
                     new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario,
@@ -227,9 +227,9 @@ namespace LogiPharm.Presentacion
         {
             _productoSeleccionado = producto;
             
-            // Mostrar informaci髇 del producto
+            // Mostrar informaci贸n del producto
             lblProductoNombre.Text = producto.Nombre;
-            lblProductoCodigo.Text = $"C骴igo: {producto.CodigoPrincipal}";
+            lblProductoCodigo.Text = $"C贸digo: {producto.CodigoPrincipal}";
             
             // Obtener stock total disponible
             var dLotes = new DInventarioLotes();
@@ -266,7 +266,7 @@ namespace LogiPharm.Presentacion
 
                 if (lotes.Count == 0)
                 {
-                    MessageBox.Show("No hay lotes disponibles para este producto en la ubicaci髇 de origen.",
+                    MessageBox.Show("No hay lotes disponibles para este producto en la ubicaci贸n de origen.",
                         "Sin lotes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 else
@@ -336,7 +336,7 @@ namespace LogiPharm.Presentacion
             if (numCantidad.Value <= 0)
             {
                 MessageBox.Show("Por favor, ingrese una cantidad mayor a cero.",
-                    "Cantidad inv醠ida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Cantidad inv谩lida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numCantidad.Focus();
                 return;
             }
@@ -346,7 +346,7 @@ namespace LogiPharm.Presentacion
             
             if (lote == null)
             {
-                MessageBox.Show("Error al obtener informaci髇 del lote seleccionado.",
+                MessageBox.Show("Error al obtener informaci贸n del lote seleccionado.",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -355,17 +355,17 @@ namespace LogiPharm.Presentacion
             if (numCantidad.Value > lote.StockDisponible)
             {
                 MessageBox.Show($"La cantidad ingresada ({numCantidad.Value:N2}) excede el stock disponible ({lote.StockDisponible:N2}).",
-                    "Cantidad inv醠ida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Cantidad inv谩lida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numCantidad.Value = lote.StockDisponible;
                 numCantidad.Focus();
                 return;
             }
 
-            // Guardar selecci髇
+            // Guardar selecci贸n
             _loteSeleccionado = lote;
             CantidadSeleccionada = numCantidad.Value;
 
-            // Auditor韆
+            // Auditor铆a
             try
             {
                 new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario,

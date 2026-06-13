@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmLotesVencimientos
     {
@@ -87,7 +87,7 @@ namespace LogiPharm.Presentacion
             this.lblTitulo.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.lblTitulo.Size = new System.Drawing.Size(1200, 50);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Gestión de Lotes y Vencimientos";
+            this.lblTitulo.Text = "GestiÃ³n de Lotes y Vencimientos";
             this.lblTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // pnlFiltros
@@ -153,7 +153,7 @@ namespace LogiPharm.Presentacion
             this.lblUbicacion.Name = "lblUbicacion";
             this.lblUbicacion.Size = new System.Drawing.Size(68, 15);
             this.lblUbicacion.TabIndex = 3;
-            this.lblUbicacion.Text = "Ubicación:";
+            this.lblUbicacion.Text = "UbicaciÃ³n:";
             // 
             // cboUbicacion
             // 

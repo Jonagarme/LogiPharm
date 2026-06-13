@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Data;
 using System.Drawing;
 using System.Threading.Tasks;
@@ -51,7 +51,7 @@ namespace LogiPharm.Presentacion
             {
                 new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario,
                     "Compras", "VISUALIZAR", "ordenes_compra", null,
-                    "Abrir listado de órdenes de compra", null, Environment.MachineName, "UI");
+                    "Abrir listado de Ã³rdenes de compra", null, Environment.MachineName, "UI");
             }
             catch { }
         }
@@ -95,7 +95,7 @@ namespace LogiPharm.Presentacion
             {
                 new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario,
                     "Compras", "VISUALIZAR", "ordenes_compra", null,
-                    "Refrescar listado de órdenes de compra", null, Environment.MachineName, "UI");
+                    "Refrescar listado de Ã³rdenes de compra", null, Environment.MachineName, "UI");
             }
             catch { }
         }
@@ -116,7 +116,7 @@ namespace LogiPharm.Presentacion
                 if (resultado == DialogResult.OK)
                 {
                     await ResetearListadoAsync(_criterioActual);
-                    MessageBox.Show("Orden de compra creada exitosamente.", "Éxito",
+                    MessageBox.Show("Orden de compra creada exitosamente.", "Ã‰xito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     try
@@ -216,7 +216,7 @@ namespace LogiPharm.Presentacion
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error al cargar órdenes", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Error al cargar Ã³rdenes", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 _allLoaded = true;
             }
             finally
@@ -341,7 +341,7 @@ namespace LogiPharm.Presentacion
                     {
                         new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario,
                             "Compras", "VISUALIZAR", "ordenes_compra", idOrden,
-                            "Abrir edición de orden de compra", null, Environment.MachineName, "UI");
+                            "Abrir ediciÃ³n de orden de compra", null, Environment.MachineName, "UI");
                     }
                     catch { }
 
@@ -379,8 +379,8 @@ namespace LogiPharm.Presentacion
             else if (nombreColumna == "colAnular")
             {
                 var result = MessageBox.Show(
-                    "¿Está seguro de que desea anular esta orden de compra?",
-                    "Confirmar Anulación",
+                    "Â¿EstÃ¡ seguro de que desea anular esta orden de compra?",
+                    "Confirmar AnulaciÃ³n",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Warning);
 
@@ -394,7 +394,7 @@ namespace LogiPharm.Presentacion
                         if (ok)
                         {
                             MessageBox.Show("Orden de compra anulada exitosamente.",
-                                "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                "Ã‰xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             await ResetearListadoAsync(_criterioActual);
 
                             try

@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -6,8 +6,8 @@ using System.Windows.Forms;
 namespace LogiPharm.Presentacion.Utilidades
 {
     /// <summary>
-    /// Clase de utilidades para mantener consistencia visual en toda la aplicación.
-    /// Proporciona paleta de colores, fuentes y métodos de estilizado reutilizables.
+    /// Clase de utilidades para mantener consistencia visual en toda la aplicaciÃ³n.
+    /// Proporciona paleta de colores, fuentes y mÃ©todos de estilizado reutilizables.
     /// </summary>
     public static class EstilosHelper
     {
@@ -63,24 +63,24 @@ namespace LogiPharm.Presentacion.Utilidades
             public static readonly Font SubTitulo = new Font("Segoe UI", 12F, FontStyle.Bold);
             public static readonly Font TextoNormal = new Font("Segoe UI", 10F, FontStyle.Regular);
             public static readonly Font TextoNormalBold = new Font("Segoe UI", 10F, FontStyle.Bold);
-            public static readonly Font TextoPequeño = new Font("Segoe UI", 9F, FontStyle.Regular);
-            public static readonly Font TextoPequeñoBold = new Font("Segoe UI", 9F, FontStyle.Bold);
-            public static readonly Font TextoMuyPequeño = new Font("Segoe UI", 8F, FontStyle.Regular);
+            public static readonly Font TextoPequeÃ±o = new Font("Segoe UI", 9F, FontStyle.Regular);
+            public static readonly Font TextoPequeÃ±oBold = new Font("Segoe UI", 9F, FontStyle.Bold);
+            public static readonly Font TextoMuyPequeÃ±o = new Font("Segoe UI", 8F, FontStyle.Regular);
             
-            // Fuentes para números (totales, precios)
+            // Fuentes para nÃºmeros (totales, precios)
             public static readonly Font NumeroGrande = new Font("Segoe UI", 24F, FontStyle.Bold);
             public static readonly Font NumeroMediano = new Font("Segoe UI", 18F, FontStyle.Bold);
-            public static readonly Font NumeroPequeño = new Font("Segoe UI", 14F, FontStyle.Bold);
+            public static readonly Font NumeroPequeÃ±o = new Font("Segoe UI", 14F, FontStyle.Bold);
         }
         
-        // === MÉTODOS DE ESTILIZADO ===
+        // === MÃ‰TODOS DE ESTILIZADO ===
         
         /// <summary>
         /// Aplica estilo profesional a un DataGridView
         /// </summary>
         public static void EstilizarDataGridView(DataGridView dgv, bool mostrarFilasAlternas = true)
         {
-            // Configuración general
+            // ConfiguraciÃ³n general
             dgv.EnableHeadersVisualStyles = false;
             dgv.AllowUserToAddRows = false;
             dgv.AllowUserToDeleteRows = false;
@@ -97,7 +97,7 @@ namespace LogiPharm.Presentacion.Utilidades
             // Estilo del header
             dgv.ColumnHeadersDefaultCellStyle.BackColor = Colores.GridHeaderFondo;
             dgv.ColumnHeadersDefaultCellStyle.ForeColor = Colores.GridHeaderTexto;
-            dgv.ColumnHeadersDefaultCellStyle.Font = Fuentes.TextoPequeñoBold;
+            dgv.ColumnHeadersDefaultCellStyle.Font = Fuentes.TextoPequeÃ±oBold;
             dgv.ColumnHeadersDefaultCellStyle.SelectionBackColor = Colores.GridHeaderFondo;
             dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
             dgv.ColumnHeadersDefaultCellStyle.Padding = new Padding(10, 8, 10, 8);
@@ -107,7 +107,7 @@ namespace LogiPharm.Presentacion.Utilidades
             // Estilo de celdas
             dgv.DefaultCellStyle.BackColor = Colores.FondoPrimario;
             dgv.DefaultCellStyle.ForeColor = Colores.TextoPrincipal;
-            dgv.DefaultCellStyle.Font = Fuentes.TextoPequeño;
+            dgv.DefaultCellStyle.Font = Fuentes.TextoPequeÃ±o;
             dgv.DefaultCellStyle.SelectionBackColor = Colores.GridSeleccion;
             dgv.DefaultCellStyle.SelectionForeColor = Colores.TextoPrincipal;
             dgv.DefaultCellStyle.Padding = new Padding(10, 5, 10, 5);
@@ -147,7 +147,7 @@ namespace LogiPharm.Presentacion.Utilidades
         }
         
         /// <summary>
-        /// Dibuja un botón personalizado con bordes redondeados
+        /// Dibuja un botÃ³n personalizado con bordes redondeados
         /// </summary>
         public static void DibujarBotonRedondeado(Graphics g, Rectangle rect, string texto, Font fuente, 
             Color colorFondo, Color colorTexto, int radio = 8, bool esHover = false)
@@ -206,7 +206,7 @@ namespace LogiPharm.Presentacion.Utilidades
         }
         
         /// <summary>
-        /// Formatea un número con separadores de miles
+        /// Formatea un nÃºmero con separadores de miles
         /// </summary>
         public static string FormatearNumero(decimal valor, int decimales = 2)
         {
@@ -214,7 +214,7 @@ namespace LogiPharm.Presentacion.Utilidades
         }
         
         /// <summary>
-        /// Obtiene un color según el estado (para badges, indicadores, etc.)
+        /// Obtiene un color segÃºn el estado (para badges, indicadores, etc.)
         /// </summary>
         public static Color ObtenerColorEstado(string estado)
         {
@@ -268,7 +268,7 @@ namespace LogiPharm.Presentacion.Utilidades
             Label badge = new Label
             {
                 Text = texto,
-                Font = Fuentes.TextoMuyPequeño,
+                Font = Fuentes.TextoMuyPequeÃ±o,
                 BackColor = colorFondo,
                 ForeColor = colorTexto,
                 AutoSize = false,
@@ -277,14 +277,14 @@ namespace LogiPharm.Presentacion.Utilidades
                 Height = 22
             };
             
-            // Aplicar bordes redondeados (esto requeriría un custom control o paint event)
-            // Por simplicidad, aquí solo configuramos los colores
+            // Aplicar bordes redondeados (esto requerirÃ­a un custom control o paint event)
+            // Por simplicidad, aquÃ­ solo configuramos los colores
             
             return badge;
         }
         
         /// <summary>
-        /// Aplica animación de fade in a un control
+        /// Aplica animaciÃ³n de fade in a un control
         /// </summary>
         public static async System.Threading.Tasks.Task AnimarFadeIn(Control control, int duracionMs = 300)
         {
@@ -295,7 +295,7 @@ namespace LogiPharm.Presentacion.Utilidades
             for (int i = 0; i <= pasos; i++)
             {
                 double opacity = (double)i / pasos;
-                // Nota: Opacity solo funciona en Form, para controles necesitarías un enfoque diferente
+                // Nota: Opacity solo funciona en Form, para controles necesitarÃ­as un enfoque diferente
                 await System.Threading.Tasks.Task.Delay(delay);
             }
         }
@@ -329,7 +329,7 @@ namespace LogiPharm.Presentacion.Utilidades
         }
         
         /// <summary>
-        /// Aplica estilo a un TextBox para búsqueda
+        /// Aplica estilo a un TextBox para bÃºsqueda
         /// </summary>
         public static void EstilizarTextBoxBusqueda(TextBox txt)
         {
@@ -378,7 +378,7 @@ namespace LogiPharm.Presentacion.Utilidades
             
             toast.Show();
             
-            // Auto-cerrar después de la duración
+            // Auto-cerrar despuÃ©s de la duraciÃ³n
             Timer timer = new Timer { Interval = duracionMs };
             timer.Tick += (s, e) =>
             {

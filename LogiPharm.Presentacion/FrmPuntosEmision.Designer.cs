@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+锘縩amespace LogiPharm.Presentacion
 {
     partial class FrmPuntosEmision
     {
@@ -95,7 +95,7 @@ namespace LogiPharm.Presentacion
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(1100, 600);
             this.Name = "FrmPuntosEmision";
-            this.Text = "Configuraci髇 de Puntos de Emisi髇";
+            this.Text = "Configuraci贸n de Puntos de Emisi贸n";
 
             // 
             // splitContainer1
@@ -191,7 +191,7 @@ namespace LogiPharm.Presentacion
             this.colEstId.Visible = false;
 
             this.colEstCodigo.DataPropertyName = "codigo";
-            this.colEstCodigo.HeaderText = "C骴igo";
+            this.colEstCodigo.HeaderText = "C贸digo";
             this.colEstCodigo.FillWeight = 20F;
 
             this.colEstNombre.DataPropertyName = "nombre_comercial";
@@ -219,7 +219,7 @@ namespace LogiPharm.Presentacion
             // lblPuntos
             this.lblPuntos.Dock = System.Windows.Forms.DockStyle.Top;
             this.lblPuntos.Height = 35;
-            this.lblPuntos.Text = "Puntos de emisi髇";
+            this.lblPuntos.Text = "Puntos de emisi贸n";
             this.lblPuntos.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             this.lblPuntos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.lblPuntos.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
@@ -285,11 +285,11 @@ namespace LogiPharm.Presentacion
             this.colPtoId.Visible = false;
 
             this.colPtoCodigo.DataPropertyName = "codigo";
-            this.colPtoCodigo.HeaderText = "C骴igo";
+            this.colPtoCodigo.HeaderText = "C贸digo";
             this.colPtoCodigo.FillWeight = 15F;
 
             this.colPtoDescripcion.DataPropertyName = "descripcion";
-            this.colPtoDescripcion.HeaderText = "Descripci髇";
+            this.colPtoDescripcion.HeaderText = "Descripci贸n";
             this.colPtoDescripcion.FillWeight = 45F;
 
             this.colPtoUsuario.DataPropertyName = "usuario_responsable";

@@ -1,4 +1,4 @@
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using System.Drawing;
 
 namespace LogiPharm.Presentacion
@@ -12,7 +12,7 @@ namespace LogiPharm.Presentacion
         private FontAwesome.Sharp.IconButton btnEliminar;
         private Panel panelTop;
 
-        // --- Componentes a�adidos para mejorar el dise�o ---
+        // --- Componentes añadidos para mejorar el diseño ---
         private FlowLayoutPanel flowLayoutPanelButtons;
         private ToolTip toolTip1;
 
@@ -62,7 +62,7 @@ namespace LogiPharm.Presentacion
             this.panelTop.TabIndex = 0;
 
             // 
-            // flowLayoutPanelButtons: Panel para organizar botones autom�ticamente
+            // flowLayoutPanelButtons: Panel para organizar botones automáticamente
             // 
             this.flowLayoutPanelButtons.Controls.Add(this.btnAgregar);
             this.flowLayoutPanelButtons.Controls.Add(this.btnEliminar);
@@ -92,7 +92,7 @@ namespace LogiPharm.Presentacion
             this.btnAgregar.TabIndex = 1;
             this.btnAgregar.Text = "  Agregar";
             this.btnAgregar.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.toolTip1.SetToolTip(this.btnAgregar, "A�adir una nueva secuencia");
+            this.toolTip1.SetToolTip(this.btnAgregar, "Añadir una nueva secuencia");
             this.btnAgregar.UseVisualStyleBackColor = false;
             this.btnAgregar.Click += new System.EventHandler(this.btnAgregar_Click);
 
@@ -206,7 +206,7 @@ namespace LogiPharm.Presentacion
             this.Controls.Add(this.dgvSecuencias);
             this.Controls.Add(this.panelTop);
             this.Name = "FrmSecuencias";
-            this.Text = "Administraci�n de Secuencias";
+            this.Text = "Administración de Secuencias";
             this.panelTop.ResumeLayout(false);
             this.flowLayoutPanelButtons.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSecuencias)).EndInit();

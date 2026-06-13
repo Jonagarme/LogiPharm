@@ -30,6 +30,15 @@ namespace LogiPharm.Datos
                 cmd.Parameters.AddWithValue("@usuario", usuario);
                 cmd.Parameters.AddWithValue("@companyId", companyId);
 
+                bool valid = false;
+                int userId = 0;
+                string usernameValue = "";
+                string contrasenaHash = "";
+                string rolValue = "";
+                string nombreCompleto = "";
+                int idEmpresa = 0;
+                int? idUbicacion = null;
+
                 using (var dr = cmd.ExecuteReader())
                 {
                     if (dr.Read())
@@ -41,8 +50,7 @@ namespace LogiPharm.Datos
                             throw new Exception("La empresa se encuentra inactiva. Contacte a soporte.");
                         }
 
-                        string contrasenaHash = dr["contrasenaHash"].ToString();
-                        bool valid = false;
+                        contrasenaHash = dr["contrasenaHash"].ToString();
 
                         if (contrasenaHash.StartsWith("pbkdf2_sha256$"))
                         {
@@ -59,17 +67,59 @@ namespace LogiPharm.Datos
 
                         if (valid)
                         {
-                            return new EUsuario
-                            {
-                                IdUsuario = Convert.ToInt32(dr["id"]),
-                                Usuario = dr["nombreUsuario"].ToString(),
-                                Clave = contrasenaHash,
-                                Rol = dr["NombreRol"].ToString(),
-                                NombreCompleto = dr["nombreCompleto"].ToString(),
-                                IdEmpresa = Convert.ToInt32(dr["idEmpresa"])
-                            };
+                            userId = Convert.ToInt32(dr["id"]);
+                            usernameValue = dr["nombreUsuario"].ToString();
+                            rolValue = dr["NombreRol"].ToString();
+                            nombreCompleto = dr["nombreCompleto"].ToString();
+                            idEmpresa = Convert.ToInt32(dr["idEmpresa"]);
+                            idUbicacion = dr["idUbicacion"] != DBNull.Value ? (int?)Convert.ToInt32(dr["idUbicacion"]) : null;
                         }
                     }
+                }
+
+                if (valid)
+                {
+                    // Lógica de fallback para idUbicacion en caso de ser NULL
+                    if (!idUbicacion.HasValue)
+                    {
+                        using (MySqlCommand cmdPrincipal = new MySqlCommand(@"
+                            SELECT id FROM inventario_ubicacion 
+                            WHERE idEmpresa = @idEmpresa AND es_principal = 1 AND activo = 1 AND anulado = 0 LIMIT 1", cn))
+                        {
+                            cmdPrincipal.Parameters.AddWithValue("@idEmpresa", idEmpresa);
+                            object obj = cmdPrincipal.ExecuteScalar();
+                            if (obj != null && obj != DBNull.Value)
+                            {
+                                idUbicacion = Convert.ToInt32(obj);
+                            }
+                        }
+
+                        if (!idUbicacion.HasValue)
+                        {
+                            using (MySqlCommand cmdFirst = new MySqlCommand(@"
+                                SELECT id FROM inventario_ubicacion 
+                                WHERE idEmpresa = @idEmpresa AND activo = 1 AND anulado = 0 LIMIT 1", cn))
+                            {
+                                cmdFirst.Parameters.AddWithValue("@idEmpresa", idEmpresa);
+                                object obj = cmdFirst.ExecuteScalar();
+                                if (obj != null && obj != DBNull.Value)
+                                {
+                                    idUbicacion = Convert.ToInt32(obj);
+                                }
+                            }
+                        }
+                    }
+
+                    return new EUsuario
+                    {
+                        IdUsuario = userId,
+                        Usuario = usernameValue,
+                        Clave = contrasenaHash,
+                        Rol = rolValue,
+                        NombreCompleto = nombreCompleto,
+                        IdEmpresa = idEmpresa,
+                        IdUbicacion = idUbicacion
+                    };
                 }
                 return null;
             }
@@ -84,9 +134,10 @@ namespace LogiPharm.Datos
                 {
                     cn.Open();
                     string query = @"
-                        SELECT u.id, u.nombreCompleto, u.nombreUsuario, u.email, u.idRol, u.activo, r.nombre as rolNombre
+                        SELECT u.id, u.nombreCompleto, u.nombreUsuario, u.email, u.idRol, u.activo, r.nombre as rolNombre, u.idUbicacion, uo.nombre as ubicacionNombre
                         FROM usuarios u
                         INNER JOIN roles r ON u.idRol = r.id
+                        LEFT JOIN inventario_ubicacion uo ON u.idUbicacion = uo.id
                         WHERE u.anulado = 0 AND (u.nombreCompleto LIKE @criterio OR u.nombreUsuario LIKE @criterio)
                         ORDER BY u.nombreCompleto ASC;";
 
@@ -113,8 +164,8 @@ namespace LogiPharm.Datos
                 {
                     cn.Open();
                     string query = @"
-                        INSERT INTO usuarios (idRol, nombreUsuario, contrasenaHash, nombreCompleto, email, activo, creadoPor, creadoDate)
-                        VALUES (@idRol, @nombreUsuario, @contrasenaHash, @nombreCompleto, @email, @activo, @creadoPor, @creadoDate);";
+                        INSERT INTO usuarios (idRol, nombreUsuario, contrasenaHash, nombreCompleto, email, activo, creadoPor, creadoDate, idUbicacion)
+                        VALUES (@idRol, @nombreUsuario, @contrasenaHash, @nombreCompleto, @email, @activo, @creadoPor, @creadoDate, @idUbicacion);";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
                     cmd.Parameters.AddWithValue("@idRol", usuario.IdRol);
@@ -125,6 +176,7 @@ namespace LogiPharm.Datos
                     cmd.Parameters.AddWithValue("@activo", usuario.Activo);
                     cmd.Parameters.AddWithValue("@creadoPor", usuario.CreadoPor);
                     cmd.Parameters.AddWithValue("@creadoDate", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@idUbicacion", (object)usuario.IdUbicacion ?? DBNull.Value);
 
                     filasAfectadas = cmd.ExecuteNonQuery();
                 }
@@ -152,11 +204,12 @@ namespace LogiPharm.Datos
                     // Si la contraseña está vacía, no la actualizamos.
                     string query = string.IsNullOrWhiteSpace(usuario.ContrasenaHash)
                         ? @"UPDATE usuarios SET idRol = @idRol, nombreUsuario = @nombreUsuario, nombreCompleto = @nombreCompleto, 
-                                             email = @email, activo = @activo, editadoPor = @editadoPor, editadoDate = @editadoDate
+                                             email = @email, activo = @activo, editadoPor = @editadoPor, editadoDate = @editadoDate,
+                                             idUbicacion = @idUbicacion
                               WHERE id = @id;"
                         : @"UPDATE usuarios SET idRol = @idRol, nombreUsuario = @nombreUsuario, contrasenaHash = @contrasenaHash, 
                                              nombreCompleto = @nombreCompleto, email = @email, activo = @activo, 
-                                             editadoPor = @editadoPor, editadoDate = @editadoDate
+                                             editadoPor = @editadoPor, editadoDate = @editadoDate, idUbicacion = @idUbicacion
                               WHERE id = @id;";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
@@ -168,6 +221,7 @@ namespace LogiPharm.Datos
                     cmd.Parameters.AddWithValue("@activo", usuario.Activo);
                     cmd.Parameters.AddWithValue("@editadoPor", usuario.EditadoPor);
                     cmd.Parameters.AddWithValue("@editadoDate", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@idUbicacion", (object)usuario.IdUbicacion ?? DBNull.Value);
 
                     if (!string.IsNullOrWhiteSpace(usuario.ContrasenaHash))
                     {

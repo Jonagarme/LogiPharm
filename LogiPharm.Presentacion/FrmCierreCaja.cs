@@ -3,7 +3,7 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades; // Asegúrate de tener tu clase de Sesión aquí
 
 namespace LogiPharm.Presentacion
@@ -21,7 +21,7 @@ namespace LogiPharm.Presentacion
         private void FrmCierreCaja_Load(object sender, EventArgs e)
         {
             // Auditoría: VISUALIZAR
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Caja", "VISUALIZAR", "caja", null, "Abrir Cierre de Caja", null, Environment.MachineName, "UI"); } catch { }
+            NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Caja", "VISUALIZAR", "caja", null, "Abrir Cierre de Caja", null, Environment.MachineName, "UI");
 
             CargarDatosApertura();
         }
@@ -31,11 +31,9 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                DCierreCaja d_Cierre = new DCierreCaja();
-
                 int idCajaActual = 1;
 
-                _aperturaActual = d_Cierre.ObtenerDatosAperturaAbierta(idCajaActual);
+                _aperturaActual = NCierreCaja.ObtenerDatosAperturaAbierta(idCajaActual);
 
                 if (_aperturaActual == null)
                 {
@@ -55,11 +53,11 @@ namespace LogiPharm.Presentacion
                 decimal saldoInicial = Convert.ToDecimal(_aperturaActual["saldoInicial"]);
 
                 // ✨ CORREGIDO: Actualizamos los totales del sistema antes de mostrarlos
-                d_Cierre.ActualizarTotalesSistema(idAperturaActual);
+                NCierreCaja.ActualizarTotalesSistema(idAperturaActual);
 
                 // Obtenemos los totales actualizados
-                decimal totalIngresos = d_Cierre.CalcularIngresosSistema(idAperturaActual);
-                decimal totalEgresos = d_Cierre.CalcularEgresosSistema(idAperturaActual);
+                decimal totalIngresos = NCierreCaja.CalcularIngresosSistema(idAperturaActual);
+                decimal totalEgresos = NCierreCaja.CalcularEgresosSistema(idAperturaActual);
 
                 lblSaldoInicial.Text = saldoInicial.ToString("C2");
                 lblTotalIngresos.Text = totalIngresos.ToString("C2");
@@ -154,12 +152,11 @@ namespace LogiPharm.Presentacion
                 decimal saldoTeorico = decimal.Parse(lblSaldoTeorico.Text, NumberStyles.Currency);
                 decimal diferencia = decimal.Parse(lblDiferencia.Text, NumberStyles.Currency);
 
-                // Llamamos a la capa de datos para ejecutar el UPDATE
-                DCierreCaja d_Cierre = new DCierreCaja();
-                d_Cierre.CerrarCaja(idCierre, totalContado, saldoTeorico, diferencia, idUsuarioCierre);
+                // Llamamos a la capa de negocio para ejecutar el UPDATE
+                NCierreCaja.CerrarCaja(idCierre, totalContado, saldoTeorico, diferencia, idUsuarioCierre);
 
                 // Auditoría: CIERRE
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Caja", "CREAR", "caja", idCierre, $"Cierre de caja con diferencia {diferencia:C2}", null, Environment.MachineName, "UI"); } catch { }
+                NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Caja", "CREAR", "caja", idCierre, $"Cierre de caja con diferencia {diferencia:C2}", null, Environment.MachineName, "UI");
 
                 MessageBox.Show("La caja se ha cerrado exitosamente.", "Cierre Exitoso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();
@@ -203,7 +200,7 @@ namespace LogiPharm.Presentacion
                 }
 
                 // Auditoría: IMPRIMIR
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Caja", "IMPRIMIR", "caja", null, "Imprimir reporte de cierre de caja", null, Environment.MachineName, "UI"); } catch { }
+                NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Caja", "IMPRIMIR", "caja", null, "Imprimir reporte de cierre de caja", null, Environment.MachineName, "UI");
             }
             catch (Exception ex)
             {

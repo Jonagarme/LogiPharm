@@ -20,6 +20,7 @@ namespace LogiPharm.Presentacion
         private void FrmUsuarios_Load(object sender, EventArgs e)
         {
             CargarRoles();
+            CargarUbicaciones();
             CargarUsuarios();
 
             this.txtBuscar.TextChanged += new System.EventHandler(this.txtBuscar_TextChanged);
@@ -46,6 +47,21 @@ namespace LogiPharm.Presentacion
             }
         }
 
+        private void CargarUbicaciones()
+        {
+            try
+            {
+                cboUbicacion.DataSource = NUbicaciones.ListarUbicacionesActivas();
+                cboUbicacion.DisplayMember = "nombre";
+                cboUbicacion.ValueMember = "id";
+                cboUbicacion.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error al Cargar Ubicaciones", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void CargarRoles()
         {
             try
@@ -65,7 +81,7 @@ namespace LogiPharm.Presentacion
         {
             if (dgvUsuarios.Columns.Count > 0)
             {
-                string[] columnasOcultas = { "id", "idRol", "activo" };
+                string[] columnasOcultas = { "id", "idRol", "activo", "idUbicacion" };
                 foreach (var col in columnasOcultas)
                 {
                     if (dgvUsuarios.Columns.Contains(col))
@@ -77,6 +93,10 @@ namespace LogiPharm.Presentacion
                 dgvUsuarios.Columns["nombreUsuario"].HeaderText = "Usuario";
                 dgvUsuarios.Columns["email"].HeaderText = "E-mail";
                 dgvUsuarios.Columns["rolNombre"].HeaderText = "Rol";
+                if (dgvUsuarios.Columns.Contains("ubicacionNombre"))
+                {
+                    dgvUsuarios.Columns["ubicacionNombre"].HeaderText = "Ubicación/Bodega";
+                }
             }
         }
 
@@ -96,6 +116,12 @@ namespace LogiPharm.Presentacion
                 txtNombreUsuario.Text = dgvUsuarios.CurrentRow.Cells["nombreUsuario"].Value.ToString();
                 txtEmail.Text = dgvUsuarios.CurrentRow.Cells["email"].Value.ToString();
                 cboRol.SelectedValue = dgvUsuarios.CurrentRow.Cells["idRol"].Value;
+                
+                if (dgvUsuarios.CurrentRow.Cells["idUbicacion"].Value != DBNull.Value)
+                    cboUbicacion.SelectedValue = dgvUsuarios.CurrentRow.Cells["idUbicacion"].Value;
+                else
+                    cboUbicacion.SelectedIndex = -1;
+
                 chkActivo.Checked = Convert.ToBoolean(dgvUsuarios.CurrentRow.Cells["activo"].Value);
                 txtContrasena.Clear();
 
@@ -126,6 +152,12 @@ namespace LogiPharm.Presentacion
 
             try
             {
+                int? idUbicacionValue = null;
+                if (cboUbicacion.SelectedValue != null && int.TryParse(cboUbicacion.SelectedValue.ToString(), out int parsedUbicacionId))
+                {
+                    idUbicacionValue = parsedUbicacionId;
+                }
+
                 EUsuario usuario = new EUsuario
                 {
                     Id = _idSeleccionado,
@@ -134,6 +166,7 @@ namespace LogiPharm.Presentacion
                     Email = txtEmail.Text.Trim(),
                     ContrasenaHash = txtContrasena.Text,
                     IdRol = Convert.ToInt32(cboRol.SelectedValue),
+                    IdUbicacion = idUbicacionValue,
                     Activo = chkActivo.Checked,
                     CreadoPor = SesionActual.IdUsuario,
                     EditadoPor = SesionActual.IdUsuario
@@ -208,6 +241,7 @@ namespace LogiPharm.Presentacion
             txtEmail.Clear();
             txtContrasena.Clear();
             cboRol.SelectedIndex = -1;
+            cboUbicacion.SelectedIndex = -1;
             chkActivo.Checked = true;
             dgvUsuarios.ClearSelection();
         }

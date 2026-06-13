@@ -34,6 +34,8 @@
             this.groupDatos = new Guna.UI2.WinForms.Guna2GroupBox();
             this.chkActivo = new Guna.UI2.WinForms.Guna2CheckBox();
             this.cboRol = new Guna.UI2.WinForms.Guna2ComboBox();
+            this.cboUbicacion = new Guna.UI2.WinForms.Guna2ComboBox();
+            this.labelUbicacion = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.txtContrasena = new Guna.UI2.WinForms.Guna2TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -229,6 +231,8 @@
             this.groupDatos.BorderColor = System.Drawing.Color.LightGray;
             this.groupDatos.BorderRadius = 8;
             this.groupDatos.Controls.Add(this.chkActivo);
+            this.groupDatos.Controls.Add(this.cboUbicacion);
+            this.groupDatos.Controls.Add(this.labelUbicacion);
             this.groupDatos.Controls.Add(this.cboRol);
             this.groupDatos.Controls.Add(this.label8);
             this.groupDatos.Controls.Add(this.txtContrasena);
@@ -257,7 +261,7 @@
             this.chkActivo.CheckedState.BorderThickness = 0;
             this.chkActivo.CheckedState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.chkActivo.Font = new System.Drawing.Font("Segoe UI", 9.75F);
-            this.chkActivo.Location = new System.Drawing.Point(135, 345);
+            this.chkActivo.Location = new System.Drawing.Point(135, 387);
             this.chkActivo.Name = "chkActivo";
             this.chkActivo.Size = new System.Drawing.Size(62, 21);
             this.chkActivo.TabIndex = 12;
@@ -285,6 +289,35 @@
             this.cboRol.Name = "cboRol";
             this.cboRol.Size = new System.Drawing.Size(534, 36);
             this.cboRol.TabIndex = 11;
+            // 
+            // cboUbicacion
+            // 
+            this.cboUbicacion.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cboUbicacion.BackColor = System.Drawing.Color.Transparent;
+            this.cboUbicacion.BorderRadius = 6;
+            this.cboUbicacion.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.cboUbicacion.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboUbicacion.FocusedColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cboUbicacion.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.cboUbicacion.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.cboUbicacion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(88)))), ((int)(((byte)(112)))));
+            this.cboUbicacion.ItemHeight = 30;
+            this.cboUbicacion.Location = new System.Drawing.Point(135, 336);
+            this.cboUbicacion.Name = "cboUbicacion";
+            this.cboUbicacion.Size = new System.Drawing.Size(534, 36);
+            this.cboUbicacion.TabIndex = 13;
+            // 
+            // labelUbicacion
+            // 
+            this.labelUbicacion.AutoSize = true;
+            this.labelUbicacion.BackColor = System.Drawing.Color.Transparent;
+            this.labelUbicacion.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.labelUbicacion.Location = new System.Drawing.Point(15, 345);
+            this.labelUbicacion.Name = "labelUbicacion";
+            this.labelUbicacion.Size = new System.Drawing.Size(68, 17);
+            this.labelUbicacion.TabIndex = 14;
+            this.labelUbicacion.Text = "Ubicación:";
             // 
             // label8
             // 
@@ -477,6 +510,8 @@
         private System.Windows.Forms.Label label7;
         private Guna.UI2.WinForms.Guna2ComboBox cboRol;
         private System.Windows.Forms.Label label8;
+        private Guna.UI2.WinForms.Guna2ComboBox cboUbicacion;
+        private System.Windows.Forms.Label labelUbicacion;
         private Guna.UI2.WinForms.Guna2CheckBox chkActivo;
     }
 }

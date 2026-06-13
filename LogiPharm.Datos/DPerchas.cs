@@ -1,4 +1,4 @@
-using CapaDatos;
+Ôªøusing CapaDatos;
 using LogiPharm.Entidades;
 using MySqlConnector;
 using System;
@@ -10,7 +10,7 @@ namespace LogiPharm.Datos
     public class DPerchas
     {
         /// <summary>
-        /// Lista todas las perchas con informaciÛn de productos asignados
+        /// Lista todas las perchas con informaci√≥n de productos asignados
         /// </summary>
         public DataTable ListarPerchas(string busqueda = "", int? seccionId = null)
         {
@@ -27,7 +27,7 @@ namespace LogiPharm.Datos
                         p.columnas AS Columnas,
                         p.activo AS Activo,
                         p.seccion_id AS SeccionId,
-                        IFNULL(s.nombre, 'Sin secciÛn') AS SeccionNombre,
+                        IFNULL(s.nombre, 'Sin secci√≥n') AS SeccionNombre,
                         (p.filas * p.columnas) AS CapacidadTotal,
                         IFNULL(COUNT(DISTINCT pu.producto_id), 0) AS ProductosAsignados,
                         ((p.filas * p.columnas) - IFNULL(COUNT(DISTINCT pu.producto_id), 0)) AS EspaciosDisponibles
@@ -60,7 +60,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Obtiene una percha especÌfica
+        /// Obtiene una percha espec√≠fica
         /// </summary>
         public EPercha ObtenerPercha(int id)
         {
@@ -222,7 +222,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Obtiene los productos ubicados en una percha especÌfica
+        /// Obtiene los productos ubicados en una percha espec√≠fica
         /// </summary>
         public DataTable ObtenerProductosEnPercha(int perchaId)
         {
@@ -278,7 +278,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Asigna un producto a una posiciÛn especÌfica en la percha
+        /// Asigna un producto a una posici√≥n espec√≠fica en la percha
         /// </summary>
         public bool AsignarProductoPercha(EUbicacionProducto ubicacion)
         {
@@ -289,7 +289,7 @@ namespace LogiPharm.Datos
 
                 try
                 {
-                    // Verificar que la posiciÛn estÈ dentro de los lÌmites de la percha
+                    // Verificar que la posici√≥n est√© dentro de los l√≠mites de la percha
                     string queryPercha = "SELECT filas, columnas FROM productos_percha WHERE id = @perchaId";
                     MySqlCommand cmdPercha = new MySqlCommand(queryPercha, cn, transaction);
                     cmdPercha.Parameters.AddWithValue("@perchaId", ubicacion.PerchaId);
@@ -313,7 +313,7 @@ namespace LogiPharm.Datos
                         }
                     }
 
-                    // Verificar que la posiciÛn no estÈ ocupada
+                    // Verificar que la posici√≥n no est√© ocupada
                     string queryOcupada = @"
                         SELECT COUNT(*) 
                         FROM productos_ubicacionproducto 
@@ -330,10 +330,10 @@ namespace LogiPharm.Datos
                     int ocupada = Convert.ToInt32(cmdOcupada.ExecuteScalar());
                     if (ocupada > 0)
                     {
-                        throw new Exception($"La posiciÛn (Fila {ubicacion.Fila}, Columna {ubicacion.Columna}) ya est· ocupada");
+                        throw new Exception($"La posici√≥n (Fila {ubicacion.Fila}, Columna {ubicacion.Columna}) ya est√° ocupada");
                     }
 
-                    // Verificar que el producto no estÈ ya asignado a esta percha
+                    // Verificar que el producto no est√© ya asignado a esta percha
                     string queryProductoEnPercha = @"
                         SELECT COUNT(*) 
                         FROM productos_ubicacionproducto 
@@ -348,10 +348,10 @@ namespace LogiPharm.Datos
                     int yaAsignado = Convert.ToInt32(cmdProductoEnPercha.ExecuteScalar());
                     if (yaAsignado > 0)
                     {
-                        throw new Exception("Este producto ya est· asignado a esta percha en otra posiciÛn");
+                        throw new Exception("Este producto ya est√° asignado a esta percha en otra posici√≥n");
                     }
 
-                    // Insertar la ubicaciÛn
+                    // Insertar la ubicaci√≥n
                     string sql = @"
                         INSERT INTO productos_ubicacionproducto 
                         (percha_id, producto_id, fila, columna, observaciones, activo, fecha_ubicacion, usuario_ubicacion_id)
@@ -442,7 +442,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Obtiene el mapa de ocupaciÛn de una percha
+        /// Obtiene el mapa de ocupaci√≥n de una percha
         /// </summary>
         public DataTable ObtenerMapaPercha(int perchaId)
         {

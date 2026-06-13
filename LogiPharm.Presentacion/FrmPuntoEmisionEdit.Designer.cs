@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+锘縩amespace LogiPharm.Presentacion
 {
     partial class FrmPuntoEmisionEdit
     {
@@ -85,7 +85,7 @@ namespace LogiPharm.Presentacion
             this.MinimizeBox = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Name = "FrmPuntoEmisionEdit";
-            this.Text = "Punto de Emisi髇";
+            this.Text = "Punto de Emisi贸n";
 
             // 
             // lblCodigo
@@ -94,7 +94,7 @@ namespace LogiPharm.Presentacion
             this.lblCodigo.Location = new System.Drawing.Point(24, 25);
             this.lblCodigo.Name = "lblCodigo";
             this.lblCodigo.Size = new System.Drawing.Size(96, 13);
-            this.lblCodigo.Text = "C骴igo (3 d韌itos):";
+            this.lblCodigo.Text = "C贸digo (3 d铆gitos):";
 
             // 
             // txtCodigo
@@ -112,7 +112,7 @@ namespace LogiPharm.Presentacion
             this.lblDescripcion.Location = new System.Drawing.Point(24, 60);
             this.lblDescripcion.Name = "lblDescripcion";
             this.lblDescripcion.Size = new System.Drawing.Size(66, 13);
-            this.lblDescripcion.Text = "Descripci髇:";
+            this.lblDescripcion.Text = "Descripci贸n:";
 
             // 
             // txtDescripcion
@@ -181,19 +181,19 @@ namespace LogiPharm.Presentacion
 
             this.lblNotaCredito.AutoSize = true;
             this.lblNotaCredito.Location = new System.Drawing.Point(20, 70);
-            this.lblNotaCredito.Text = "Nota de Cr閐ito:";
+            this.lblNotaCredito.Text = "Nota de Cr茅dito:";
 
             this.lblNotaDebito.AutoSize = true;
             this.lblNotaDebito.Location = new System.Drawing.Point(20, 105);
-            this.lblNotaDebito.Text = "Nota de D閎ito:";
+            this.lblNotaDebito.Text = "Nota de D茅bito:";
 
             this.lblGuia.AutoSize = true;
             this.lblGuia.Location = new System.Drawing.Point(300, 35);
-            this.lblGuia.Text = "Gu韆 Remisi髇:";
+            this.lblGuia.Text = "Gu铆a Remisi贸n:";
 
             this.lblRetencion.AutoSize = true;
             this.lblRetencion.Location = new System.Drawing.Point(300, 70);
-            this.lblRetencion.Text = "Retenci髇:";
+            this.lblRetencion.Text = "Retenci贸n:";
 
             // 
             // NumericUpDowns

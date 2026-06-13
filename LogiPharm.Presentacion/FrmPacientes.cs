@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Data;
 using System.Windows.Forms;
 using LogiPharm.Datos;
@@ -80,7 +80,7 @@ namespace LogiPharm.Presentacion
             try
             {
                 var d = new DPacientes();
-                // Validación de documento duplicado
+                // ValidaciÃ³n de documento duplicado
                 if (d.ExisteDocumento(p.Documento, _id))
                 {
                     MessageBox.Show("El documento ya existe para otro paciente.");
@@ -97,7 +97,7 @@ namespace LogiPharm.Presentacion
         private void BtnEliminar_Click(object sender, EventArgs e)
         {
             if (!_id.HasValue) { MessageBox.Show("Seleccione un registro"); return; }
-            if (MessageBox.Show("¿Eliminar?", "Confirmar", MessageBoxButtons.YesNo)!=DialogResult.Yes) return;
+            if (MessageBox.Show("Â¿Eliminar?", "Confirmar", MessageBoxButtons.YesNo)!=DialogResult.Yes) return;
             try{ new DPacientes().Eliminar(_id.Value); CargarListado(txtBuscar.Text);} catch (Exception ex){ MessageBox.Show("Error: "+ex.Message);}            
         }
     }

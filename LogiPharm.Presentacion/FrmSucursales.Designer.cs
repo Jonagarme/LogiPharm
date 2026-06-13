@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmSucursales
     {
@@ -56,7 +56,7 @@ namespace LogiPharm.Presentacion
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(247, 30);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Gestión de Sucursales";
+            this.lblTitulo.Text = "GestiÃ³n de Sucursales";
             // 
             // panelToolbar
             // 
@@ -84,7 +84,7 @@ namespace LogiPharm.Presentacion
             this.btnActualizar.Name = "btnActualizar";
             this.btnActualizar.Size = new System.Drawing.Size(95, 40);
             this.btnActualizar.TabIndex = 4;
-            this.btnActualizar.Text = "??";
+            this.btnActualizar.Text = "Actualizar";
             this.btnActualizar.Click += new System.EventHandler(this.btnActualizar_Click);
             // 
             // btnEliminar
@@ -98,7 +98,7 @@ namespace LogiPharm.Presentacion
             this.btnEliminar.Name = "btnEliminar";
             this.btnEliminar.Size = new System.Drawing.Size(90, 40);
             this.btnEliminar.TabIndex = 3;
-            this.btnEliminar.Text = "??";
+            this.btnEliminar.Text = "Eliminar";
             this.btnEliminar.Click += new System.EventHandler(this.btnEliminar_Click);
             // 
             // btnEditar
@@ -112,7 +112,7 @@ namespace LogiPharm.Presentacion
             this.btnEditar.Name = "btnEditar";
             this.btnEditar.Size = new System.Drawing.Size(90, 40);
             this.btnEditar.TabIndex = 2;
-            this.btnEditar.Text = "?";
+            this.btnEditar.Text = "Editar";
             this.btnEditar.Click += new System.EventHandler(this.btnEditar_Click);
             // 
             // btnNuevo
@@ -126,7 +126,7 @@ namespace LogiPharm.Presentacion
             this.btnNuevo.Name = "btnNuevo";
             this.btnNuevo.Size = new System.Drawing.Size(170, 40);
             this.btnNuevo.TabIndex = 1;
-            this.btnNuevo.Text = "? Nueva";
+            this.btnNuevo.Text = "Nueva";
             this.btnNuevo.Click += new System.EventHandler(this.btnNuevo_Click);
             // 
             // txtBuscar
@@ -143,7 +143,7 @@ namespace LogiPharm.Presentacion
             this.txtBuscar.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtBuscar.Location = new System.Drawing.Point(20, 15);
             this.txtBuscar.Name = "txtBuscar";
-            this.txtBuscar.PlaceholderText = "Buscar por código, nombre o dirección...";
+            this.txtBuscar.PlaceholderText = "Buscar por cÃ³digo, nombre o direcciÃ³n...";
             this.txtBuscar.SelectedText = "";
             this.txtBuscar.Size = new System.Drawing.Size(520, 40);
             this.txtBuscar.TabIndex = 0;

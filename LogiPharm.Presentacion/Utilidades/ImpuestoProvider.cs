@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using LogiPharm.Datos;
 
 namespace LogiPharm.Presentacion.Utilidades

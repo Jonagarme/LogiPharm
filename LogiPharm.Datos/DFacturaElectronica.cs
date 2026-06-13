@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -27,7 +27,7 @@ namespace LogiPharm.Datos
                     doc.Load(rutaArchivoOContenido);
                 }
 
-                // Verificar si el XML viene envuelto en una estructura de autorizaciÛn del SRI
+                // Verificar si el XML viene envuelto en una estructura de autorizaci√≥n del SRI
                 XmlNode autorizacionNode = doc.SelectSingleNode("//autorizacion");
                 if (autorizacionNode != null)
                 {
@@ -35,7 +35,7 @@ namespace LogiPharm.Datos
                     XmlNode comprobanteNode = autorizacionNode.SelectSingleNode("comprobante");
                     if (comprobanteNode != null && !string.IsNullOrWhiteSpace(comprobanteNode.InnerText))
                     {
-                        // El contenido est· en CDATA, necesitamos parsearlo
+                        // El contenido est√° en CDATA, necesitamos parsearlo
                         string xmlComprobante = comprobanteNode.InnerText;
                         doc = new XmlDocument();
                         doc.LoadXml(xmlComprobante);
@@ -121,7 +121,7 @@ namespace LogiPharm.Datos
 		public async Task<EFacturaElectronica> ConsultarPorClaveAccesoAsync(string claveAcceso, bool? esProduccionOverride = null)
 		{
 			if (string.IsNullOrWhiteSpace(claveAcceso))
-				throw new ArgumentException("La clave de acceso no puede estar vacÌa.");
+				throw new ArgumentException("La clave de acceso no puede estar vac√≠a.");
 			claveAcceso = claveAcceso.Trim();
 
 			bool esProduccion;
@@ -131,7 +131,7 @@ namespace LogiPharm.Datos
 			}
 			else
 			{
-				// Por defecto PRODUCCI”N (si la config no est· disponible)
+				// Por defecto PRODUCCI√ìN (si la config no est√° disponible)
 				esProduccion = true;
 				try
 				{
@@ -155,7 +155,7 @@ namespace LogiPharm.Datos
 			if (string.IsNullOrWhiteSpace(xml))
 			{
 				string estado = resp?.Estado ?? "";
-				throw new Exception("La API no devolviÛ el XML autorizado." + (string.IsNullOrWhiteSpace(estado) ? "" : (" Estado: " + estado)));
+				throw new Exception("La API no devolvi√≥ el XML autorizado." + (string.IsNullOrWhiteSpace(estado) ? "" : (" Estado: " + estado)));
 			}
 
 			return ParsearXML(xml);
@@ -163,7 +163,7 @@ namespace LogiPharm.Datos
 
 		public EFacturaElectronica ConsultarPorClaveAcceso(string claveAcceso)
 		{
-			// Mantener API sÌncrona por compatibilidad, evitando deadlock en UI.
+			// Mantener API s√≠ncrona por compatibilidad, evitando deadlock en UI.
 			return Task.Run(() => ConsultarPorClaveAccesoAsync(claveAcceso)).GetAwaiter().GetResult();
 		}
 
@@ -174,7 +174,7 @@ namespace LogiPharm.Datos
             {
                 bool encontradoExacto = false;
                 
-                // Intentar buscar por cÛdigo exacto
+                // Intentar buscar por c√≥digo exacto
                 var productos = dProd.BuscarProductosActivos(detalle.CodigoPrincipal);
                 if (productos != null && productos.Count == 1)
                 {
@@ -186,7 +186,7 @@ namespace LogiPharm.Datos
                 }
                 else if (productos != null && productos.Count == 0)
                 {
-                    // Intentar por nombre/descripciÛn exacta
+                    // Intentar por nombre/descripci√≥n exacta
                     productos = dProd.BuscarProductosActivos(detalle.Descripcion);
                     if (productos != null && productos.Count == 1)
                     {
@@ -197,7 +197,7 @@ namespace LogiPharm.Datos
                     }
                 }
                 
-                // Si no se encontrÛ exacto O hay m˙ltiples coincidencias, buscar similares
+                // Si no se encontr√≥ exacto O hay m√∫ltiples coincidencias, buscar similares
                 if (!encontradoExacto || (productos != null && productos.Count > 1))
                 {
                     detalle.EsProductoNuevo = true;
@@ -211,10 +211,10 @@ namespace LogiPharm.Datos
         /// </summary>
         private void BuscarProductosSimilares(EDetalleFacturaXML detalle, DProductos dProd)
         {
-            // Buscar primero por cÛdigo con umbral m·s bajo (40%)
+            // Buscar primero por c√≥digo con umbral m√°s bajo (40%)
             var similaresPorCodigo = dProd.BuscarProductosSimilares(detalle.CodigoPrincipal, umbralSimilitud: 40.0, maxResultados: 10);
             
-            // Buscar por nombre/descripciÛn con umbral m·s bajo (40%)
+            // Buscar por nombre/descripci√≥n con umbral m√°s bajo (40%)
             var similaresPorNombre = dProd.BuscarProductosSimilares(detalle.Descripcion, umbralSimilitud: 40.0, maxResultados: 10);
 
             // Combinar resultados y eliminar duplicados

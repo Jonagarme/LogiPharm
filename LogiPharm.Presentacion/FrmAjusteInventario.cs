@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing; // Necesario para los colores
 using System.Windows.Forms;
-using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
@@ -23,7 +23,7 @@ namespace LogiPharm.Presentacion
             ConfigurarGridDetalle();
 
             // Auditoría: VISUALIZAR
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "VISUALIZAR", "ajuste_inventario", null, "Abrir Ajuste de Inventario", null, Environment.MachineName, "UI"); } catch { }
+            try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "VISUALIZAR", "ajuste_inventario", null, "Abrir Ajuste de Inventario", null, Environment.MachineName, "UI"); } catch { }
         }
 
         /// <summary>
@@ -186,8 +186,7 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                DProductos d_Productos = new DProductos();
-                List<EProducto> productosEncontrados = d_Productos.BuscarProductosActivos(textoBuscado);
+                List<EProducto> productosEncontrados = NProductos.BuscarProductosActivos(textoBuscado);
 
                 if (productosEncontrados.Count == 0)
                 {
@@ -217,7 +216,7 @@ namespace LogiPharm.Presentacion
                 }
 
                 // Auditoría: VISUALIZAR búsqueda producto
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "VISUALIZAR", "ajuste_inventario", null, $"Buscar producto '{textoBuscado}' en ajuste", null, Environment.MachineName, "UI"); } catch { }
+                try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "VISUALIZAR", "ajuste_inventario", null, $"Buscar producto '{textoBuscado}' en ajuste", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {

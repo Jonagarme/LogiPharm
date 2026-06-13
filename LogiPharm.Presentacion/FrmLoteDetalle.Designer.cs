@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmLoteDetalle
     {
@@ -93,7 +93,7 @@ namespace LogiPharm.Presentacion
             this.groupBox1.Size = new System.Drawing.Size(660, 120);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Información General";
+            this.groupBox1.Text = "InformaciÃ³n General";
             // 
             // btnBuscarProducto
             // 
@@ -147,7 +147,7 @@ namespace LogiPharm.Presentacion
             this.lblUbicacion.Name = "lblUbicacion";
             this.lblUbicacion.Size = new System.Drawing.Size(68, 15);
             this.lblUbicacion.TabIndex = 4;
-            this.lblUbicacion.Text = "Ubicación:*";
+            this.lblUbicacion.Text = "UbicaciÃ³n:*";
             // 
             // txtNumeroLote
             // 
@@ -165,7 +165,7 @@ namespace LogiPharm.Presentacion
             this.lblNumeroLote.Name = "lblNumeroLote";
             this.lblNumeroLote.Size = new System.Drawing.Size(79, 15);
             this.lblNumeroLote.TabIndex = 6;
-            this.lblNumeroLote.Text = "Número Lote:*";
+            this.lblNumeroLote.Text = "NÃºmero Lote:*";
             // 
             // groupBox2
             // 
@@ -219,7 +219,7 @@ namespace LogiPharm.Presentacion
             this.lblFechaFabricacion.Name = "lblFechaFabricacion";
             this.lblFechaFabricacion.Size = new System.Drawing.Size(91, 15);
             this.lblFechaFabricacion.TabIndex = 3;
-            this.lblFechaFabricacion.Text = "Fecha Fabricación:";
+            this.lblFechaFabricacion.Text = "Fecha FabricaciÃ³n:";
             // 
             // dtpFechaCaducidad
             // 
@@ -321,7 +321,7 @@ namespace LogiPharm.Presentacion
             this.lblNumeroFactura.Name = "lblNumeroFactura";
             this.lblNumeroFactura.Size = new System.Drawing.Size(89, 15);
             this.lblNumeroFactura.TabIndex = 5;
-            this.lblNumeroFactura.Text = "Número Factura:";
+            this.lblNumeroFactura.Text = "NÃºmero Factura:";
             // 
             // groupBox4
             // 

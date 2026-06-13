@@ -229,7 +229,7 @@ namespace LogiPharm.Datos
             return prod;
         }
 
-        public List<EProducto> BuscarProductosActivos(string criterio)
+        public List<EProducto> BuscarProductosActivos(string criterio, int? idUbicacion = null)
         {
             List<EProducto> lista = new List<EProducto>();
             using (MySqlConnection cn = new MySqlConnection(CapaDatos.Conexion.cadena))
@@ -237,13 +237,17 @@ namespace LogiPharm.Datos
                 try
                 {
                     cn.Open();
-                    string query = @"
+                    string stockCol = idUbicacion.HasValue 
+                        ? @"COALESCE((SELECT SUM(lp.cantidad_disponible) FROM inventario_loteproducto lp WHERE lp.producto_id = p.id AND lp.ubicacion_id = @idUbicacion AND lp.activo = 1 AND lp.cantidad_disponible > 0), 0) AS stock" 
+                        : "p.stock";
+
+                    string query = $@"
                         SELECT 
                             p.id, 
                             p.codigoPrincipal, 
                             p.nombre, 
                             p.descripcion,
-                            p.stock, 
+                            {stockCol}, 
                             p.stockMinimo,
                             p.stockMaximo,
                             p.precioVenta,
@@ -267,6 +271,10 @@ namespace LogiPharm.Datos
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
                     cmd.Parameters.AddWithValue("@criterio", "%" + criterio + "%");
+                    if (idUbicacion.HasValue)
+                    {
+                        cmd.Parameters.AddWithValue("@idUbicacion", idUbicacion.Value);
+                    }
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {

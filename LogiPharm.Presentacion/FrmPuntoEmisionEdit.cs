@@ -1,7 +1,7 @@
-using System;
+锘縰sing System;
 using System.Data;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
 
@@ -29,7 +29,7 @@ namespace LogiPharm.Presentacion
 
             if (_model != null)
             {
-                Text = "Editar Punto de Emisi髇";
+                Text = "Editar Punto de Emisi贸n";
                 txtCodigo.Text = _model.Codigo;
                 txtDescripcion.Text = _model.Descripcion;
                 chkActivo.Checked = _model.Activo;
@@ -45,7 +45,7 @@ namespace LogiPharm.Presentacion
             }
             else
             {
-                Text = "Nuevo Punto de Emisi髇";
+                Text = "Nuevo Punto de Emisi贸n";
                 chkActivo.Checked = true;
                 numFactura.Value = 1;
                 numNotaCredito.Value = 1;
@@ -57,7 +57,7 @@ namespace LogiPharm.Presentacion
 
         private void CargarUsuarios()
         {
-            var dt = new DUsuariosLookup().ListarActivos();
+            var dt = NUsuariosLookup.ListarActivos();
             if (dt == null) dt = new DataTable();
 
             if (!dt.Columns.Contains("id")) dt.Columns.Add("id", typeof(int));
@@ -79,7 +79,7 @@ namespace LogiPharm.Presentacion
             string codigo = (txtCodigo.Text ?? "").Trim();
             if (codigo.Length != 3)
             {
-                MessageBox.Show("El c骴igo debe tener exactamente 3 d韌itos.", "Validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("El c贸digo debe tener exactamente 3 d铆gitos.", "Validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtCodigo.Focus();
                 return;
             }
@@ -103,17 +103,16 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                var d = new DPuntosEmision();
                 if (_model == null)
                 {
-                    int id = d.Insertar(p);
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci髇", "CREAR", "puntos_emision", id, $"Crear punto emisi髇 {codigo}", null, Environment.MachineName, "UI"); } catch { }
+                    int id = NPuntoEmision.Insertar(p);
+                    NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci贸n", "CREAR", "puntos_emision", id, $"Crear punto emisi贸n {codigo}", null, Environment.MachineName, "UI");
                 }
                 else
                 {
                     p.Id = _model.Id;
-                    d.Actualizar(p);
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci髇", "EDITAR", "puntos_emision", p.Id, $"Editar punto emisi髇 {codigo}", null, Environment.MachineName, "UI"); } catch { }
+                    NPuntoEmision.Actualizar(p);
+                    NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci贸n", "EDITAR", "puntos_emision", p.Id, $"Editar punto emisi贸n {codigo}", null, Environment.MachineName, "UI");
                 }
 
                 this.DialogResult = DialogResult.OK;

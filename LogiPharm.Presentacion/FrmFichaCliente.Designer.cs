@@ -1,4 +1,4 @@
-﻿using LogiPharm.Presentacion.Properties;
+﻿﻿using LogiPharm.Presentacion.Properties;
 
 namespace LogiPharm.Presentacion
 {

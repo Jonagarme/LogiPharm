@@ -1,28 +1,25 @@
-using System;
+ï»¿using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
     public partial class FrmPerchas : Form
     {
-        private DPerchas datosPerchas;
-
         public FrmPerchas()
         {
             InitializeComponent();
-            datosPerchas = new DPerchas();
             this.Load += FrmPerchas_Load;
         }
 
         private void FrmPerchas_Load(object sender, EventArgs e)
         {
-            // Auditoría: VISUALIZAR
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "VISUALIZAR", "perchas", null, "Abrir Gestión de Perchas", null, Environment.MachineName, "UI"); } catch { }
+            // AuditorÃ­a: VISUALIZAR
+            try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "VISUALIZAR", "perchas", null, "Abrir GestiÃ³n de Perchas", null, Environment.MachineName, "UI"); } catch { }
 
             ConfigurarGrids();
             CargarSecciones();
@@ -65,7 +62,7 @@ namespace LogiPharm.Presentacion
             { 
                 Name = "Descripcion", 
                 DataPropertyName = "Descripcion", 
-                HeaderText = "Descripción", 
+                HeaderText = "DescripciÃ³n", 
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill 
             });
 
@@ -73,7 +70,7 @@ namespace LogiPharm.Presentacion
             { 
                 Name = "SeccionNombre", 
                 DataPropertyName = "SeccionNombre", 
-                HeaderText = "Sección", 
+                HeaderText = "SecciÃ³n", 
                 Width = 120 
             });
 
@@ -121,7 +118,7 @@ namespace LogiPharm.Presentacion
             { 
                 Name = "Codigo", 
                 DataPropertyName = "Codigo", 
-                HeaderText = "Código", 
+                HeaderText = "CÃ³digo", 
                 Width = 120 
             });
 
@@ -165,12 +162,12 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var dt = datosPerchas.ListarSecciones();
+                var dt = NPerchas.ListarSecciones();
                 
                 cboSeccion.DataSource = null;
                 cboSeccion.Items.Clear();
                 
-                // Agregar opción "Todas"
+                // Agregar opciÃ³n "Todas"
                 DataRow drTodas = dt.NewRow();
                 drTodas["Id"] = 0;
                 drTodas["Nombre"] = "TODAS LAS SECCIONES";
@@ -199,12 +196,12 @@ namespace LogiPharm.Presentacion
                 if (cboSeccion.SelectedValue != null && Convert.ToInt32(cboSeccion.SelectedValue) > 0)
                     seccionId = Convert.ToInt32(cboSeccion.SelectedValue);
 
-                var dt = datosPerchas.ListarPerchas(busqueda, seccionId);
+                var dt = NPerchas.ListarPerchas(busqueda, seccionId);
                 dgvPerchas.DataSource = dt;
 
                 lblTotalRegistros.Text = $"Total de Registros: {dt.Rows.Count}";
 
-                // Colorear filas según disponibilidad
+                // Colorear filas segÃºn disponibilidad
                 foreach (DataGridViewRow row in dgvPerchas.Rows)
                 {
                     if (row.Cells["EspaciosDisponibles"].Value != null)
@@ -262,8 +259,8 @@ namespace LogiPharm.Presentacion
 
                 int perchaId = Convert.ToInt32(drv["Id"]);
 
-                // Mostrar información de la percha
-                lblSeccion.Text = drv["SeccionNombre"]?.ToString() ?? "Sin sección";
+                // Mostrar informaciÃ³n de la percha
+                lblSeccion.Text = drv["SeccionNombre"]?.ToString() ?? "Sin secciÃ³n";
                 
                 int filas = Convert.ToInt32(drv["Filas"]);
                 int columnas = Convert.ToInt32(drv["Columnas"]);
@@ -276,7 +273,7 @@ namespace LogiPharm.Presentacion
                 int espaciosDisponibles = Convert.ToInt32(drv["EspaciosDisponibles"]);
                 lblEspaciosDisponibles.Text = $"{espaciosDisponibles} espacios libres";
 
-                // Cambiar color según disponibilidad
+                // Cambiar color segÃºn disponibilidad
                 double porcentaje = (double)espaciosDisponibles / capacidad * 100;
                 if (porcentaje <= 10)
                     lblEspaciosDisponibles.ForeColor = Color.Red;
@@ -286,7 +283,7 @@ namespace LogiPharm.Presentacion
                     lblEspaciosDisponibles.ForeColor = Color.Green;
 
                 // Cargar productos en la percha
-                var dtProductos = datosPerchas.ObtenerProductosEnPercha(perchaId);
+                var dtProductos = NPerchas.ObtenerProductosEnPercha(perchaId);
                 dgvProductos.DataSource = dtProductos;
             }
             catch (Exception ex)
@@ -313,7 +310,7 @@ namespace LogiPharm.Presentacion
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
                     CargarPerchas();
-                    MessageBox.Show("Percha creada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Percha creada correctamente.", "Ã‰xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -322,7 +319,7 @@ namespace LogiPharm.Presentacion
         {
             if (dgvPerchas.CurrentRow == null)
             {
-                MessageBox.Show("Debe seleccionar una percha para editar.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe seleccionar una percha para editar.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -336,7 +333,7 @@ namespace LogiPharm.Presentacion
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
                     CargarPerchas();
-                    MessageBox.Show("Percha actualizada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Percha actualizada correctamente.", "Ã‰xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -345,7 +342,7 @@ namespace LogiPharm.Presentacion
         {
             if (dgvPerchas.CurrentRow == null)
             {
-                MessageBox.Show("Debe seleccionar una percha para eliminar.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe seleccionar una percha para eliminar.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -356,8 +353,8 @@ namespace LogiPharm.Presentacion
             string nombrePercha = drv["Nombre"]?.ToString();
 
             var confirmacion = MessageBox.Show(
-                $"¿Está seguro que desea eliminar la percha '{nombrePercha}'?\n\nNOTA: Solo se pueden eliminar perchas sin productos asignados.",
-                "Confirmar Eliminación",
+                $"Â¿EstÃ¡ seguro que desea eliminar la percha '{nombrePercha}'?\n\nNOTA: Solo se pueden eliminar perchas sin productos asignados.",
+                "Confirmar EliminaciÃ³n",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
             );
@@ -368,14 +365,14 @@ namespace LogiPharm.Presentacion
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                bool resultado = datosPerchas.EliminarPercha(perchaId);
+                bool resultado = NPerchas.EliminarPercha(perchaId);
 
                 if (resultado)
                 {
-                    MessageBox.Show("Percha eliminada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Percha eliminada correctamente.", "Ã‰xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     
-                    // Auditoría
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "ELIMINAR", "perchas", perchaId, $"Eliminar percha {nombrePercha}", null, Environment.MachineName, "UI"); } catch { }
+                    // AuditorÃ­a
+                    try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "ELIMINAR", "perchas", perchaId, $"Eliminar percha {nombrePercha}", null, Environment.MachineName, "UI"); } catch { }
                     
                     CargarPerchas();
                 }
@@ -394,7 +391,7 @@ namespace LogiPharm.Presentacion
         {
             if (dgvPerchas.CurrentRow == null)
             {
-                MessageBox.Show("Debe seleccionar una percha para asignar productos.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe seleccionar una percha para asignar productos.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -410,7 +407,7 @@ namespace LogiPharm.Presentacion
                 {
                     CargarPerchas();
                     
-                    // Refrescar la selección actual para ver los productos actualizados
+                    // Refrescar la selecciÃ³n actual para ver los productos actualizados
                     DgvPerchas_SelectionChanged(null, EventArgs.Empty);
                 }
             }

@@ -3,7 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Guna.UI2.WinForms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
 
@@ -101,15 +101,14 @@ namespace LogiPharm.Presentacion
             CargarDatos();
 
             // Auditoría: VISUALIZAR
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "VISUALIZAR", "empresa", null, "Abrir Configuración de Empresa", null, Environment.MachineName, "UI"); } catch { }
+            NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "VISUALIZAR", "empresa", null, "Abrir Configuración de Empresa", null, Environment.MachineName, "UI");
         }
 
         private void CargarDatos()
         {
             try
             {
-                DEmpresa d_empresa = new DEmpresa();
-                _empresaActual = d_empresa.ObtenerDatosEmpresa();
+                _empresaActual = NEmpresa.ObtenerDatosEmpresa();
 
                 if (_empresaActual == null)
                 {
@@ -233,16 +232,11 @@ namespace LogiPharm.Presentacion
                 _empresaActual.CertificadoFechaExpiracion = dtpFechaExpiracion.Value;
 
                 // Guardamos en la base de datos
-                DEmpresa d_empresa = new DEmpresa();
-                d_empresa.GuardarDatosEmpresa(_empresaActual);
+                NEmpresa.GuardarDatosEmpresa(_empresaActual);
 
                 // Auditoría: CREAR / EDITAR
-                try
-                {
-                    string accion = esNuevo ? "CREAR" : "EDITAR";
-                    new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", accion, "empresa", null, "Guardar configuración de empresa", null, Environment.MachineName, "UI");
-                }
-                catch { }
+                string accion = esNuevo ? "CREAR" : "EDITAR";
+                NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", accion, "empresa", null, "Guardar configuración de empresa", null, Environment.MachineName, "UI");
 
                 MessageBox.Show("Datos de la empresa actualizados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.Close();

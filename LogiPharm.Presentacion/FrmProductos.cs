@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Drawing;
 using System.Threading;
@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
@@ -148,8 +149,7 @@ namespace LogiPharm.Presentacion
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    var d = new DProductos();
-                    DataTable dt = d.ListarProductosFiltradoPaginado(_criterioActual, _filtroCategoria, _filtroLaboratorio, 0, 1000000);
+                    DataTable dt = NProductos.ListarProductosFiltradoPaginado(_criterioActual, _filtroCategoria, _filtroLaboratorio, 0, 1000000);
 
                     using (var sw = new System.IO.StreamWriter(sfd.FileName, false, System.Text.Encoding.UTF8))
                     {
@@ -312,7 +312,7 @@ namespace LogiPharm.Presentacion
             // Data loadings
             try
             {
-                DataTable dtCategorias = new DProductos().ListarCategorias();
+                DataTable dtCategorias = NProductos.ListarCategorias();
                 DataRow rowCat = dtCategorias.NewRow();
                 rowCat["id"] = 0;
                 rowCat["nombre"] = "-- Todas las Categorías --";
@@ -326,7 +326,7 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                DataTable dtLabs = new DLaboratorios().Listar();
+                DataTable dtLabs = NLaboratorios.Listar();
                 DataRow rowLab = dtLabs.NewRow();
                 rowLab["id"] = 0;
                 rowLab["nombre"] = "-- Todos los Laboratorios --";
@@ -344,7 +344,7 @@ namespace LogiPharm.Presentacion
             await ResetearListadoAsync(null);
 
             // Auditoría: VISUALIZAR listado
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, "Abrir listado de productos", null, Environment.MachineName, "UI"); } catch { }
+            try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, "Abrir listado de productos", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private async void BtnFiltrar_Click(object sender, EventArgs e)
@@ -386,14 +386,13 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var empData = new DEmpresa().ObtenerDatosEmpresa();
+                var empData = NEmpresa.ObtenerDatosEmpresa();
                 string razonSocial = empData?.RazonSocial ?? "LOGIPHARM SYSTEM";
                 string nombreComercial = empData?.NombreComercial ?? "LOGIPHARM";
                 string ruc = empData?.Ruc ?? "0999999999001";
                 string direccion = empData?.DireccionMatriz ?? "Av. Principal";
 
-                var d = new DProductos();
-                DataTable dt = d.ListarProductosFiltradoPaginado(_criterioActual, _filtroCategoria, _filtroLaboratorio, 0, 1000000);
+                DataTable dt = NProductos.ListarProductosFiltradoPaginado(_criterioActual, _filtroCategoria, _filtroLaboratorio, 0, 1000000);
 
                 int totalItems = dt.Rows.Count;
                 decimal totalStock = 0;
@@ -665,7 +664,7 @@ namespace LogiPharm.Presentacion
             try
             {
                 int total, enStock, stockBajo, totalCategorias;
-                new DProductos().ObtenerEstadisticasProductos(out total, out enStock, out stockBajo, out totalCategorias);
+                NProductos.ObtenerEstadisticasProductos(out total, out enStock, out stockBajo, out totalCategorias);
 
                 if (lblTotalVal != null) lblTotalVal.Text = total.ToString("N0");
                 if (lblEnStockVal != null) lblEnStockVal.Text = enStock.ToString("N0");
@@ -743,7 +742,7 @@ namespace LogiPharm.Presentacion
             using (var frm = new FrmEditarProducto())
             {
                 // Auditoría: VISUALIZAR formulario nuevo
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, "Abrir formulario nuevo producto", null, Environment.MachineName, "UI"); } catch { }
+                try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "VISUALIZAR", "productos", null, "Abrir formulario nuevo producto", null, Environment.MachineName, "UI"); } catch { }
 
                 DialogResult resultado = frm.ShowDialog();
                 if (resultado == DialogResult.OK)
@@ -753,7 +752,7 @@ namespace LogiPharm.Presentacion
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     // Auditoría: CREAR
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "CREAR", "productos", null, "Producto creado desde editor", null, Environment.MachineName, "UI"); } catch { }
+                    try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "CREAR", "productos", null, "Producto creado desde editor", null, Environment.MachineName, "UI"); } catch { }
                 }
             }
         }
@@ -1137,8 +1136,7 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                var d = new DProductos();
-                bool ok = d.InsertarProducto(nuevo);
+                bool ok = NProductos.InsertarProducto(nuevo);
 
                 if (ok)
                 {
@@ -1148,7 +1146,7 @@ namespace LogiPharm.Presentacion
                     _ = ResetearListadoAsync(_criterioActual);
 
                     // Auditoría: CREAR
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "CREAR", "productos", null, $"Creación de producto '{nuevo.Nombre}'", null, Environment.MachineName, "UI"); } catch { }
+                    try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Productos", "CREAR", "productos", null, $"Creación de producto '{nuevo.Nombre}'", null, Environment.MachineName, "UI"); } catch { }
                 }
                 else
                 {
@@ -1173,8 +1171,7 @@ namespace LogiPharm.Presentacion
             DgvListado.DataSource = null;
 
             // Total with filters
-            var d = new DProductos();
-            _totalRegistros = d.ContarProductosFiltrado(_criterioActual, _filtroCategoria, _filtroLaboratorio);
+            _totalRegistros = NProductos.ContarProductosFiltrado(_criterioActual, _filtroCategoria, _filtroLaboratorio);
 
             // Automatically refresh global stats on lists reload
             ActualizarEstadisticas();
@@ -1197,10 +1194,9 @@ namespace LogiPharm.Presentacion
             try
             {
                 DataTable pagina;
-                var d = new DProductos();
                 await Task.Yield(); // ceder UI
 
-                pagina = d.ListarProductosFiltradoPaginado(_criterioActual, _filtroCategoria, _filtroLaboratorio, _offset, _pageSize);
+                pagina = NProductos.ListarProductosFiltradoPaginado(_criterioActual, _filtroCategoria, _filtroLaboratorio, _offset, _pageSize);
 
                 if (pagina == null || pagina.Rows.Count == 0)
                 {

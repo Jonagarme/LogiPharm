@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmIngresoXML
     {
@@ -144,7 +144,7 @@ namespace LogiPharm.Presentacion
             this.lblArchivoSeleccionado.Name = "lblArchivoSeleccionado";
             this.lblArchivoSeleccionado.Size = new System.Drawing.Size(460, 40);
             this.lblArchivoSeleccionado.TabIndex = 2;
-            this.lblArchivoSeleccionado.Text = "Seleccione el archivo XML de la factura electrónica";
+            this.lblArchivoSeleccionado.Text = "Seleccione el archivo XML de la factura electrÃ³nica";
             this.lblArchivoSeleccionado.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnProcesarXML
@@ -161,7 +161,7 @@ namespace LogiPharm.Presentacion
             this.btnProcesarXML.Name = "btnProcesarXML";
             this.btnProcesarXML.Size = new System.Drawing.Size(200, 50);
             this.btnProcesarXML.TabIndex = 3;
-            this.btnProcesarXML.Text = "? Procesar XML";
+            this.btnProcesarXML.Text = "Procesar XML";
             this.btnProcesarXML.Click += new System.EventHandler(this.btnProcesarXML_Click);
             // 
             // panelClave
@@ -204,7 +204,7 @@ namespace LogiPharm.Presentacion
             this.txtClaveAcceso.MaxLength = 49;
             this.txtClaveAcceso.Name = "txtClaveAcceso";
             this.txtClaveAcceso.PasswordChar = '\0';
-            this.txtClaveAcceso.PlaceholderText = "Ingrese la clave de acceso (49 dígitos)";
+            this.txtClaveAcceso.PlaceholderText = "Ingrese la clave de acceso (49 dÃ­gitos)";
             this.txtClaveAcceso.SelectedText = "";
             this.txtClaveAcceso.Size = new System.Drawing.Size(430, 40);
             this.txtClaveAcceso.TabIndex = 1;
@@ -223,7 +223,7 @@ namespace LogiPharm.Presentacion
             this.btnConsultarSRI.Name = "btnConsultarSRI";
             this.btnConsultarSRI.Size = new System.Drawing.Size(200, 50);
             this.btnConsultarSRI.TabIndex = 2;
-            this.btnConsultarSRI.Text = "?? Consultar SRI";
+            this.btnConsultarSRI.Text = "Consultar SRI";
             this.btnConsultarSRI.Click += new System.EventHandler(this.btnConsultarSRI_Click);
             // 
             // tabRevisar
@@ -254,7 +254,7 @@ namespace LogiPharm.Presentacion
             this.groupProveedor.Name = "groupProveedor";
             this.groupProveedor.Size = new System.Drawing.Size(750, 100);
             this.groupProveedor.TabIndex = 0;
-            this.groupProveedor.Text = "Información del Proveedor";
+            this.groupProveedor.Text = "InformaciÃ³n del Proveedor";
             // 
             // lblRazonSocial
             // 
@@ -367,7 +367,7 @@ namespace LogiPharm.Presentacion
             this.btnSeleccionarTodo.Name = "btnSeleccionarTodo";
             this.btnSeleccionarTodo.Size = new System.Drawing.Size(180, 45);
             this.btnSeleccionarTodo.TabIndex = 3;
-            this.btnSeleccionarTodo.Text = "? Seleccionar Todo";
+            this.btnSeleccionarTodo.Text = "Seleccionar Todo";
             this.btnSeleccionarTodo.Click += new System.EventHandler(this.btnSeleccionarTodo_Click);
             // 
             // btnDeseleccionarTodo
@@ -384,7 +384,7 @@ namespace LogiPharm.Presentacion
             this.btnDeseleccionarTodo.Name = "btnDeseleccionarTodo";
             this.btnDeseleccionarTodo.Size = new System.Drawing.Size(200, 45);
             this.btnDeseleccionarTodo.TabIndex = 4;
-            this.btnDeseleccionarTodo.Text = "? Deseleccionar Todo";
+            this.btnDeseleccionarTodo.Text = "Deseleccionar Todo";
             this.btnDeseleccionarTodo.Click += new System.EventHandler(this.btnDeseleccionarTodo_Click);
             // 
             // btnProcesarIngreso
@@ -401,7 +401,7 @@ namespace LogiPharm.Presentacion
             this.btnProcesarIngreso.Name = "btnProcesarIngreso";
             this.btnProcesarIngreso.Size = new System.Drawing.Size(230, 50);
             this.btnProcesarIngreso.TabIndex = 5;
-            this.btnProcesarIngreso.Text = "? Procesar Ingreso";
+            this.btnProcesarIngreso.Text = "Procesar Ingreso";
             this.btnProcesarIngreso.Click += new System.EventHandler(this.btnProcesarIngreso_Click);
             // 
             // tabResultado

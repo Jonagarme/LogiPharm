@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmEmitirResultado
     {
@@ -120,7 +120,7 @@ namespace LogiPharm.Presentacion
             this.groupPaciente.Name = "groupPaciente";
             this.groupPaciente.Size = new System.Drawing.Size(670, 133);
             this.groupPaciente.TabIndex = 2;
-            this.groupPaciente.Text = "Información del Paciente";
+            this.groupPaciente.Text = "InformaciÃ³n del Paciente";
             // 
             // btnPacBuscar
             // 
@@ -176,7 +176,7 @@ namespace LogiPharm.Presentacion
             this.txtMedico.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtMedico.Location = new System.Drawing.Point(14, 88);
             this.txtMedico.Name = "txtMedico";
-            this.txtMedico.PlaceholderText = "Médico Solicitante";
+            this.txtMedico.PlaceholderText = "MÃ©dico Solicitante";
             this.txtMedico.SelectedText = "";
             this.txtMedico.Size = new System.Drawing.Size(640, 36);
             this.txtMedico.TabIndex = 2;
@@ -253,7 +253,7 @@ namespace LogiPharm.Presentacion
             this.lblTitulo.Padding = new System.Windows.Forms.Padding(0, 0, 0, 15);
             this.lblTitulo.Size = new System.Drawing.Size(201, 40);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Emisión de Resultado";
+            this.lblTitulo.Text = "EmisiÃ³n de Resultado";
             // 
             // FrmEmitirResultado
             // 
@@ -266,7 +266,7 @@ namespace LogiPharm.Presentacion
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FrmEmitirResultado";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Emisión de Resultado";
+            this.Text = "EmisiÃ³n de Resultado";
             this.guna2Panel1.ResumeLayout(false);
             this.guna2Panel1.PerformLayout();
             this.groupResultado.ResumeLayout(false);

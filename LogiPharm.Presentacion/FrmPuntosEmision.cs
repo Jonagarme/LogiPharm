@@ -1,9 +1,9 @@
-using System;
+ï»¿using System;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
 
@@ -34,7 +34,7 @@ namespace LogiPharm.Presentacion
 
         private void FrmPuntosEmision_Load(object sender, EventArgs e)
         {
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "VISUALIZAR", "puntos_emision", null, "Abrir Configuración de Puntos de Emisión", null, Environment.MachineName, "UI"); } catch { }
+            NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "ConfiguraciÃ³n", "VISUALIZAR", "puntos_emision", null, "Abrir ConfiguraciÃ³n de Puntos de EmisiÃ³n", null, Environment.MachineName, "UI");
             CargarEstablecimientos();
         }
 
@@ -42,7 +42,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var dt = new DEstablecimientos().Listar();
+                var dt = NEstablecimiento.Listar();
                 dgvEstablecimientos.DataSource = dt;
 
                 if (dgvEstablecimientos.Rows.Count > 0)
@@ -66,12 +66,12 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var dt = new DPuntosEmision().ListarPorEstablecimiento(idEstablecimiento);
+                var dt = NPuntoEmision.ListarPorEstablecimiento(idEstablecimiento);
                 dgvPuntos.DataSource = dt;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al cargar puntos de emisión: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al cargar puntos de emisiÃ³n: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -133,13 +133,13 @@ namespace LogiPharm.Presentacion
             int id = Convert.ToInt32(drv["id"]);
             string codigo = Convert.ToString(drv["codigo"]);
 
-            var r = MessageBox.Show($"¿Eliminar el establecimiento '{codigo}'?\n\nEsto eliminará también sus puntos de emisión.", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var r = MessageBox.Show($"Â¿Eliminar el establecimiento '{codigo}'?\n\nEsto eliminarÃ¡ tambiÃ©n sus puntos de emisiÃ³n.", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (r != DialogResult.Yes) return;
 
             try
             {
-                new DEstablecimientos().Eliminar(id);
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "ELIMINAR", "establecimientos", id, $"Eliminar establecimiento {codigo}", null, Environment.MachineName, "UI"); } catch { }
+                NEstablecimiento.Eliminar(id);
+                NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "ConfiguraciÃ³n", "ELIMINAR", "establecimientos", id, $"Eliminar establecimiento {codigo}", null, Environment.MachineName, "UI");
                 CargarEstablecimientos();
             }
             catch (Exception ex)
@@ -152,7 +152,7 @@ namespace LogiPharm.Presentacion
         {
             if (_idEstablecimientoActual <= 0)
             {
-                MessageBox.Show("Seleccione un establecimiento primero.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Seleccione un establecimiento primero.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -202,13 +202,13 @@ namespace LogiPharm.Presentacion
             int id = Convert.ToInt32(drv["id"]);
             string codigo = Convert.ToString(drv["codigo"]);
 
-            var r = MessageBox.Show($"¿Eliminar el punto de emisión '{codigo}'?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var r = MessageBox.Show($"Â¿Eliminar el punto de emisiÃ³n '{codigo}'?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (r != DialogResult.Yes) return;
 
             try
             {
-                new DPuntosEmision().Eliminar(id);
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "ELIMINAR", "puntos_emision", id, $"Eliminar punto emisión {codigo}", null, Environment.MachineName, "UI"); } catch { }
+                NPuntoEmision.Eliminar(id);
+                NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "ConfiguraciÃ³n", "ELIMINAR", "puntos_emision", id, $"Eliminar punto emisiÃ³n {codigo}", null, Environment.MachineName, "UI");
                 CargarPuntos(_idEstablecimientoActual);
             }
             catch (Exception ex)

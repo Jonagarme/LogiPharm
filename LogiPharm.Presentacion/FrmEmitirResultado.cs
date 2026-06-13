@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -61,7 +61,7 @@ namespace LogiPharm.Presentacion
 
         private void CboPaciente_KeyUp(object sender, KeyEventArgs e)
         {
-            // búsqueda incremental simple
+            // bÃºsqueda incremental simple
             if (e.KeyCode == Keys.Enter) return;
             var text = cboPaciente.Text;
             CargarPacientes(text);
@@ -88,7 +88,7 @@ namespace LogiPharm.Presentacion
             {
                 if (sel.ShowDialog(this) == DialogResult.OK)
                 {
-                    // Cargar en combo la selección
+                    // Cargar en combo la selecciÃ³n
                     CargarPacientes(sel.FiltroAplicado);
                     // Buscar el paciente por Id y seleccionarlo
                     if (sel.PacienteSeleccionadoId.HasValue)
@@ -136,7 +136,7 @@ namespace LogiPharm.Presentacion
             dgvResultados.AutoGenerateColumns = false;
             dgvResultados.Columns.Clear();
 
-            dgvResultados.Columns.Add(new DataGridViewTextBoxColumn { Name = "Parametro", HeaderText = "Parámetro", DataPropertyName = "Parametro", ReadOnly = true, FillWeight = 35 });
+            dgvResultados.Columns.Add(new DataGridViewTextBoxColumn { Name = "Parametro", HeaderText = "ParÃ¡metro", DataPropertyName = "Parametro", ReadOnly = true, FillWeight = 35 });
             dgvResultados.Columns.Add(new DataGridViewTextBoxColumn { Name = "Valor", HeaderText = "Valor", DataPropertyName = "Valor", ReadOnly = false, FillWeight = 20 });
             dgvResultados.Columns.Add(new DataGridViewTextBoxColumn { Name = "Unidad", HeaderText = "Unidad", DataPropertyName = "Unidad", ReadOnly = true, FillWeight = 10 });
             dgvResultados.Columns.Add(new DataGridViewTextBoxColumn { Name = "RefMin", HeaderText = "Ref. Min", DataPropertyName = "RefMin", ReadOnly = true, FillWeight = 10 });
@@ -242,7 +242,7 @@ namespace LogiPharm.Presentacion
 
         private void BtnImprimir_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Función de impresión en desarrollo.");
+            MessageBox.Show("FunciÃ³n de impresiÃ³n en desarrollo.");
         }
     }
 }

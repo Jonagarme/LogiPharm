@@ -1,8 +1,8 @@
-using System;
+锘縰sing System;
 using System.Data;
 using System.Windows.Forms;
-using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
@@ -10,13 +10,11 @@ namespace LogiPharm.Presentacion
     public partial class FrmPerchaEditor : Form
     {
         private int? perchaId;
-        private DPerchas datosPerchas;
 
         public FrmPerchaEditor(int? idPercha)
         {
             InitializeComponent();
             perchaId = idPercha;
-            datosPerchas = new DPerchas();
             
             this.Load += FrmPerchaEditor_Load;
         }
@@ -46,12 +44,12 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var dt = datosPerchas.ListarSecciones();
+                var dt = NPerchas.ListarSecciones();
                 
-                // Agregar opci髇 "Sin secci髇"
+                // Agregar opci贸n "Sin secci贸n"
                 DataRow drNinguna = dt.NewRow();
                 drNinguna["Id"] = 0;
-                drNinguna["Nombre"] = "(Sin secci髇)";
+                drNinguna["Nombre"] = "(Sin secci贸n)";
                 dt.Rows.InsertAt(drNinguna, 0);
                 
                 cboSeccion.DataSource = dt;
@@ -69,7 +67,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var percha = datosPerchas.ObtenerPercha(perchaId.Value);
+                var percha = NPerchas.ObtenerPercha(perchaId.Value);
                 
                 if (percha != null)
                 {
@@ -115,22 +113,22 @@ namespace LogiPharm.Presentacion
 
                 if (perchaId.HasValue)
                 {
-                    resultado = datosPerchas.ActualizarPercha(percha);
+                    resultado = NPerchas.ActualizarPercha(percha);
                     accion = "EDITAR";
                 }
                 else
                 {
-                    int nuevoId = datosPerchas.GuardarPercha(percha);
+                    int nuevoId = NPerchas.GuardarPercha(percha);
                     resultado = nuevoId > 0;
                     accion = "CREAR";
                 }
 
                 if (resultado)
                 {
-                    // Auditor韆
+                    // Auditor铆a
                     try 
                     { 
-                        new DBitacora().Registrar(
+                        NBitacora.Registrar(
                             SesionActual.IdUsuario, 
                             SesionActual.NombreUsuario, 
                             "Inventario", 
@@ -159,15 +157,15 @@ namespace LogiPharm.Presentacion
         {
             if (string.IsNullOrWhiteSpace(txtNombre.Text))
             {
-                MessageBox.Show("Debe ingresar el nombre de la percha.", "Validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe ingresar el nombre de la percha.", "Validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtNombre.Focus();
                 return false;
             }
 
             // Verificar si el nombre ya existe
-            if (datosPerchas.ExisteNombrePercha(txtNombre.Text.Trim(), perchaId))
+            if (NPerchas.ExisteNombrePercha(txtNombre.Text.Trim(), perchaId))
             {
-                MessageBox.Show("Ya existe una percha con ese nombre. Por favor, elija otro nombre.", "Validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Ya existe una percha con ese nombre. Por favor, elija otro nombre.", "Validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtNombre.Focus();
                 txtNombre.SelectAll();
                 return false;
@@ -175,14 +173,14 @@ namespace LogiPharm.Presentacion
 
             if (numFilas.Value < 1 || numFilas.Value > 20)
             {
-                MessageBox.Show("El n鷐ero de filas debe estar entre 1 y 20.", "Validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("El n煤mero de filas debe estar entre 1 y 20.", "Validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numFilas.Focus();
                 return false;
             }
 
             if (numColumnas.Value < 1 || numColumnas.Value > 20)
             {
-                MessageBox.Show("El n鷐ero de columnas debe estar entre 1 y 20.", "Validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("El n煤mero de columnas debe estar entre 1 y 20.", "Validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numColumnas.Focus();
                 return false;
             }

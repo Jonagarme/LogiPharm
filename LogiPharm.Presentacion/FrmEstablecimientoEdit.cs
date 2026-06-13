@@ -1,6 +1,6 @@
-using System;
+锘縰sing System;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
 
@@ -48,31 +48,29 @@ namespace LogiPharm.Presentacion
 
             if (codigo.Length != 3)
             {
-                MessageBox.Show("El c骴igo debe tener exactamente 3 d韌itos.", "Validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("El c贸digo debe tener exactamente 3 d铆gitos.", "Validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtCodigo.Focus();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(nombre))
             {
-                MessageBox.Show("El nombre comercial es obligatorio.", "Validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("El nombre comercial es obligatorio.", "Validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtNombre.Focus();
                 return;
             }
 
             try
             {
-                var d = new DEstablecimientos();
-
                 if (_model == null)
                 {
-                    int id = d.Insertar(codigo, nombre, direccion, estado);
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci髇", "CREAR", "establecimientos", id, $"Crear establecimiento {codigo}", null, Environment.MachineName, "UI"); } catch { }
+                    int id = NEstablecimiento.Insertar(codigo, nombre, direccion, estado);
+                    NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci贸n", "CREAR", "establecimientos", id, $"Crear establecimiento {codigo}", null, Environment.MachineName, "UI");
                 }
                 else
                 {
-                    d.Actualizar(_model.Id, codigo, nombre, direccion, estado);
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci髇", "EDITAR", "establecimientos", _model.Id, $"Editar establecimiento {codigo}", null, Environment.MachineName, "UI"); } catch { }
+                    NEstablecimiento.Actualizar(_model.Id, codigo, nombre, direccion, estado);
+                    NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci贸n", "EDITAR", "establecimientos", _model.Id, $"Editar establecimiento {codigo}", null, Environment.MachineName, "UI");
                 }
 
                 this.DialogResult = DialogResult.OK;

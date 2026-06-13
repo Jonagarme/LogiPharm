@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Windows.Forms;
 using LogiPharm.Negocio;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
-using LogiPharm.Datos;
 
 namespace LogiPharm.Presentacion
 {
@@ -58,17 +57,13 @@ namespace LogiPharm.Presentacion
                     SesionActual.NombreCompleto = datos.NombreCompleto;
                     SesionActual.Rol = datos.Rol;
                     SesionActual.IdEmpresa = datos.IdEmpresa;
+                    SesionActual.IdUbicacion = datos.IdUbicacion;
 
                     // ✅ DETECTAR AUTOMÁTICAMENTE LA CAJA ABIERTA
                     SesionActual.ConfigurarCaja();
 
                     // Auditoría: LOGIN
-                    try
-                    {
-                        var bit = new DBitacora();
-                        bit.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Login", "LOGIN", "usuarios", SesionActual.IdUsuario, "Inicio de sesión exitoso", null, Environment.MachineName, "UI");
-                    }
-                    catch { }
+                    NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Login", "LOGIN", "usuarios", SesionActual.IdUsuario, "Inicio de sesión exitoso", null, Environment.MachineName, "UI");
 
                     // Abrir principal y ocultar login (NO se cierra para poder reusarlo al cerrar sesión)
                     var principal = new FrmPrincipal(datos.Rol);

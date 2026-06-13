@@ -1,8 +1,8 @@
-using System;
+ï»¿using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
@@ -19,16 +19,15 @@ namespace LogiPharm.Presentacion
 
             CargarSecuencias();
 
-            // Auditoría: VISUALIZAR
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "VISUALIZAR", "secuencias", null, "Abrir Secuencias", null, Environment.MachineName, "UI"); } catch { }
+            // AuditorÃ­a: VISUALIZAR
+            NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "ConfiguraciÃ³n", "VISUALIZAR", "secuencias", null, "Abrir Secuencias", null, Environment.MachineName, "UI");
         }
 
         private void CargarSecuencias()
         {
             try
             {
-                var d = new DSecuencias();
-                var tabla = d.ListarSecuencias();
+                var tabla = NSecuencia.ListarSecuencias();
                 dgvSecuencias.DataSource = tabla;
             }
             catch (Exception ex)
@@ -42,7 +41,6 @@ namespace LogiPharm.Presentacion
             try
             {
                 dgvSecuencias.EndEdit();
-                var d = new DSecuencias();
                 foreach (DataGridViewRow row in dgvSecuencias.Rows)
                 {
                     if (row.IsNewRow) continue;
@@ -56,13 +54,13 @@ namespace LogiPharm.Presentacion
                     if (longitud <= 0) longitud = 6;
                     bool activo = Convert.ToBoolean(row.Cells["colActivo"].Value ?? true);
 
-                    d.GuardarSecuencia(nombre, valor, prefijo, longitud, activo);
+                    NSecuencia.GuardarSecuencia(nombre, valor, prefijo, longitud, activo);
 
-                    // Auditoría: CREAR/EDITAR
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "EDITAR", "secuencias", null, $"Guardar secuencia '{nombre}'", null, Environment.MachineName, "UI"); } catch { }
+                    // AuditorÃ­a: CREAR/EDITAR
+                    NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "ConfiguraciÃ³n", "EDITAR", "secuencias", null, $"Guardar secuencia '{nombre}'", null, Environment.MachineName, "UI");
                 }
 
-                MessageBox.Show("Secuencias guardadas.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Secuencias guardadas.", "Ã‰xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 CargarSecuencias();
             }
             catch (Exception ex)
@@ -89,17 +87,16 @@ namespace LogiPharm.Presentacion
                     dgvSecuencias.Rows.Remove(dgvSecuencias.CurrentRow);
                     return;
                 }
-                var r = MessageBox.Show($"¿Eliminar secuencia '{nombre}'?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                var r = MessageBox.Show($"Â¿Eliminar secuencia '{nombre}'?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (r == DialogResult.Yes)
                 {
                     try
                     {
-                        var d = new DSecuencias();
-                        d.EliminarSecuencia(nombre);
+                        NSecuencia.EliminarSecuencia(nombre);
                         dgvSecuencias.Rows.Remove(dgvSecuencias.CurrentRow);
 
-                        // Auditoría: ELIMINAR
-                        try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuración", "ELIMINAR", "secuencias", null, $"Eliminar secuencia '{nombre}'", null, Environment.MachineName, "UI"); } catch { }
+                        // AuditorÃ­a: ELIMINAR
+                        NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "ConfiguraciÃ³n", "ELIMINAR", "secuencias", null, $"Eliminar secuencia '{nombre}'", null, Environment.MachineName, "UI");
                     }
                     catch (Exception ex)
                     {

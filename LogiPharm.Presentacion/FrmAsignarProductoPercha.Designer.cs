@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmAsignarProductoPercha
     {
@@ -89,7 +89,7 @@ namespace LogiPharm.Presentacion
             this.groupUbicacion.Name = "groupUbicacion";
             this.groupUbicacion.Size = new System.Drawing.Size(660, 235);
             this.groupUbicacion.TabIndex = 3;
-            this.groupUbicacion.Text = "Ubicación en la Percha";
+            this.groupUbicacion.Text = "UbicaciÃ³n en la Percha";
             // 
             // txtObservaciones
             // 
@@ -304,7 +304,7 @@ namespace LogiPharm.Presentacion
             this.txtBusqueda.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtBusqueda.Location = new System.Drawing.Point(162, 47);
             this.txtBusqueda.Name = "txtBusqueda";
-            this.txtBusqueda.PlaceholderText = "Buscar por código o nombre...";
+            this.txtBusqueda.PlaceholderText = "Buscar por cÃ³digo o nombre...";
             this.txtBusqueda.SelectedText = "";
             this.txtBusqueda.Size = new System.Drawing.Size(478, 36);
             this.txtBusqueda.TabIndex = 1;
@@ -336,7 +336,7 @@ namespace LogiPharm.Presentacion
             this.groupInfo.Name = "groupInfo";
             this.groupInfo.Size = new System.Drawing.Size(660, 85);
             this.groupInfo.TabIndex = 1;
-            this.groupInfo.Text = "Información de la Percha";
+            this.groupInfo.Text = "InformaciÃ³n de la Percha";
             // 
             // lblCapacidad
             // 

@@ -1,46 +1,39 @@
-using System;
+锘縰sing System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
     public partial class FrmMovimientosCaja : Form
     {
-        private DCierreCaja _dCierreCaja;
-
         public FrmMovimientosCaja()
         {
             InitializeComponent();
-            _dCierreCaja = new DCierreCaja();
         }
 
         private void FrmMovimientosCaja_Load(object sender, EventArgs e)
         {
-            // Auditor韆
-            try
-            {
-                new DBitacora().Registrar(
-                    SesionActual.IdUsuario,
-                    SesionActual.NombreUsuario,
-                    "Caja",
-                    "VISUALIZAR",
-                    "movimientos_caja",
-                    null,
-                    "Ver Movimientos de Caja",
-                    null,
-                    Environment.MachineName,
-                    "UI"
-                );
-            }
-            catch { }
+            // Auditor铆a
+            NBitacora.Registrar(
+                SesionActual.IdUsuario,
+                SesionActual.NombreUsuario,
+                "Caja",
+                "VISUALIZAR",
+                "movimientos_caja",
+                null,
+                "Ver Movimientos de Caja",
+                null,
+                Environment.MachineName,
+                "UI"
+            );
 
             ConfigurarDataGridView();
             CargarCajas();
             
-            // Configurar fechas por defecto (鷏timo mes)
+            // Configurar fechas por defecto (煤ltimo mes)
             dtpFechaInicio.Value = DateTime.Now.AddMonths(-1);
             dtpFechaFin.Value = DateTime.Now;
             
@@ -142,8 +135,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var dCaja = new DCaja();
-                var cajas = dCaja.ObtenerActivas();
+                var cajas = NCaja.ObtenerActivas();
                 
                 cboCaja.Items.Clear();
                 cboCaja.Items.Add(new { Id = 0, Texto = "TODAS LAS CAJAS" });
@@ -181,7 +173,7 @@ namespace LogiPharm.Presentacion
                 }
 
                 // Obtener datos de cierres de caja
-                var cierres = _dCierreCaja.ObtenerCierresPorRango(fechaInicio, fechaFin, idCaja);
+                var cierres = NCierreCaja.ObtenerCierresPorRango(fechaInicio, fechaFin, idCaja);
                 
                 // Crear DataTable para el grid
                 var dt = new DataTable();
@@ -249,7 +241,7 @@ namespace LogiPharm.Presentacion
             if (dtpFechaInicio.Value > dtpFechaFin.Value)
             {
                 MessageBox.Show("La fecha de inicio no puede ser mayor que la fecha fin.", 
-                    "Validaci髇", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Validaci贸n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             
@@ -262,7 +254,7 @@ namespace LogiPharm.Presentacion
             {
                 if (dgvMovimientos.Rows.Count == 0)
                 {
-                    MessageBox.Show("No hay datos para exportar.", "Informaci髇", 
+                    MessageBox.Show("No hay datos para exportar.", "Informaci贸n", 
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
@@ -276,8 +268,8 @@ namespace LogiPharm.Presentacion
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    // TODO: Implementar exportaci髇 a Excel/CSV
-                    MessageBox.Show("Exportaci髇 en desarrollo.", "Informaci髇",
+                    // TODO: Implementar exportaci贸n a Excel/CSV
+                    MessageBox.Show("Exportaci贸n en desarrollo.", "Informaci贸n",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }

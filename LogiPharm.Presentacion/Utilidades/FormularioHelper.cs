@@ -1,10 +1,10 @@
-using System;
+ï»¿using System;
 using System.Windows.Forms;
 
 namespace LogiPharm.Presentacion.Utilidades
 {
     /// <summary>
-    /// Clase helper con métodos útiles para configurar formularios
+    /// Clase helper con mÃ©todos Ãºtiles para configurar formularios
     /// </summary>
     public static class FormularioHelper
     {
@@ -12,8 +12,8 @@ namespace LogiPharm.Presentacion.Utilidades
         /// Habilita el cierre del formulario con la tecla ESC
         /// </summary>
         /// <param name="form">Formulario al que aplicar la funcionalidad</param>
-        /// <param name="confirmarSiTieneDatos">Si es true, pide confirmación antes de cerrar</param>
-        /// <param name="validarDatos">Función opcional para verificar si hay datos que perder</param>
+        /// <param name="confirmarSiTieneDatos">Si es true, pide confirmaciÃ³n antes de cerrar</param>
+        /// <param name="validarDatos">FunciÃ³n opcional para verificar si hay datos que perder</param>
         public static void HabilitarCierreConEsc(
             this Form form, 
             bool confirmarSiTieneDatos = false,
@@ -29,7 +29,7 @@ namespace LogiPharm.Presentacion.Utilidades
                     if (confirmarSiTieneDatos && tieneDatos)
                     {
                         var result = MessageBox.Show(
-                            "Hay datos sin guardar. ¿Seguro que deseas salir?",
+                            "Hay datos sin guardar. Â¿Seguro que deseas salir?",
                             "Confirmar Salida",
                             MessageBoxButtons.YesNo,
                             MessageBoxIcon.Question);
@@ -60,7 +60,7 @@ namespace LogiPharm.Presentacion.Utilidades
         /// </summary>
         /// <param name="form">Formulario al que aplicar el atajo</param>
         /// <param name="tecla">Tecla del atajo (ej: Keys.F12)</param>
-        /// <param name="accion">Acción a ejecutar cuando se presione la tecla</param>
+        /// <param name="accion">AcciÃ³n a ejecutar cuando se presione la tecla</param>
         /// <param name="modificador">Modificador opcional (ej: Keys.Control)</param>
         public static void AgregarAtajoTeclado(
             this Form form,
@@ -82,7 +82,7 @@ namespace LogiPharm.Presentacion.Utilidades
         }
 
         /// <summary>
-        /// Configura comportamiento estándar de formulario modal
+        /// Configura comportamiento estÃ¡ndar de formulario modal
         /// </summary>
         /// <param name="form">Formulario a configurar</param>
         public static void ConfigurarComoModal(this Form form)

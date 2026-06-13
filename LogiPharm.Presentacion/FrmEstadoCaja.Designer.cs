@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmEstadoCaja
     {
@@ -79,7 +79,7 @@ namespace LogiPharm.Presentacion
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(48, 30);
             this.btnCerrar.TabIndex = 1;
-            this.btnCerrar.Text = "?";
+            this.btnCerrar.Text = "X";
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
             // gbInfo
@@ -105,7 +105,7 @@ namespace LogiPharm.Presentacion
             this.gbInfo.Name = "gbInfo";
             this.gbInfo.Size = new System.Drawing.Size(496, 182);
             this.gbInfo.TabIndex = 1;
-            this.gbInfo.Text = "Información";
+            this.gbInfo.Text = "InformaciÃ³n";
             // 
             // lblAperturaActiva
             // 
@@ -225,7 +225,7 @@ namespace LogiPharm.Presentacion
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(46, 15);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Código:";
+            this.label1.Text = "CÃ³digo:";
             // 
             // pnlApertura
             // 

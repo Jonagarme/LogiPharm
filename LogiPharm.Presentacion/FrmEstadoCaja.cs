@@ -1,19 +1,17 @@
-using System;
+ï»¿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 
 namespace LogiPharm.Presentacion
 {
     public partial class FrmEstadoCaja : Form
     {
         private readonly int _idCaja;
-        private readonly DCaja _dCaja;
 
         public FrmEstadoCaja(int idCaja)
         {
             _idCaja = idCaja;
-            _dCaja = new DCaja();
             InitializeComponent();
         }
 
@@ -28,10 +26,10 @@ namespace LogiPharm.Presentacion
             {
                 Cursor = Cursors.WaitCursor;
 
-                var caja = _dCaja.ObtenerPorId(_idCaja);
+                var caja = NCaja.ObtenerPorId(_idCaja);
                 if (caja == null)
                 {
-                    MessageBox.Show("No se encontró la caja.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("No se encontrÃ³ la caja.", "InformaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     Close();
                     return;
                 }
@@ -41,9 +39,9 @@ namespace LogiPharm.Presentacion
                 lblEstado.Text = caja.EstadoTexto;
                 lblEstado.ForeColor = Color.FromName(caja.EstadoColor);
 
-                lblActiva.Text = caja.Activa ? "Sí" : "No";
-                lblAnulada.Text = caja.Anulado ? "Sí" : "No";
-                lblAperturaActiva.Text = caja.TieneAperturaActiva ? "Sí" : "No";
+                lblActiva.Text = caja.Activa ? "SÃ­" : "No";
+                lblAnulada.Text = caja.Anulado ? "SÃ­" : "No";
+                lblAperturaActiva.Text = caja.TieneAperturaActiva ? "SÃ­" : "No";
 
                 if (caja.TieneAperturaActiva)
                 {

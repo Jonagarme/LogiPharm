@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+锘縩amespace LogiPharm.Presentacion
 {
     partial class FrmPerchas
     {
@@ -207,7 +207,7 @@ namespace LogiPharm.Presentacion
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(57, 17);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Secci髇:";
+            this.label2.Text = "Secci贸n:";
             // 
             // txtBusqueda
             // 
@@ -224,7 +224,7 @@ namespace LogiPharm.Presentacion
             this.txtBusqueda.Location = new System.Drawing.Point(71, 8);
             this.txtBusqueda.Name = "txtBusqueda";
             this.txtBusqueda.PasswordChar = '\0';
-            this.txtBusqueda.PlaceholderText = "Buscar por nombre o descripci髇...";
+            this.txtBusqueda.PlaceholderText = "Buscar por nombre o descripci贸n...";
             this.txtBusqueda.SelectedText = "";
             this.txtBusqueda.Size = new System.Drawing.Size(363, 36);
             this.txtBusqueda.TabIndex = 1;
@@ -354,7 +354,7 @@ namespace LogiPharm.Presentacion
             this.groupInfo.Name = "groupInfo";
             this.groupInfo.Size = new System.Drawing.Size(506, 145);
             this.groupInfo.TabIndex = 0;
-            this.groupInfo.Text = "Informaci髇 de Percha";
+            this.groupInfo.Text = "Informaci贸n de Percha";
             // 
             // lblEspaciosDisponibles
             // 
@@ -438,7 +438,7 @@ namespace LogiPharm.Presentacion
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(54, 15);
             this.label3.TabIndex = 0;
-            this.label3.Text = "Secci髇:";
+            this.label3.Text = "Secci贸n:";
             // 
             // dgvProductos
             // 
@@ -507,7 +507,7 @@ namespace LogiPharm.Presentacion
             this.Controls.Add(this.panelToolbar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "FrmPerchas";
-            this.Text = "Gesti髇 de Perchas";
+            this.Text = "Gesti贸n de Perchas";
             this.panelToolbar.ResumeLayout(false);
             this.panelFiltros.ResumeLayout(false);
             this.panelFiltros.PerformLayout();

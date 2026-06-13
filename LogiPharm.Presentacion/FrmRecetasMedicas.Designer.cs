@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmRecetasMedicas
     {
@@ -229,7 +229,7 @@ namespace LogiPharm.Presentacion
             this.txtBuscar.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtBuscar.Location = new System.Drawing.Point(0, 0);
             this.txtBuscar.Name = "txtBuscar";
-            this.txtBuscar.PlaceholderText = "Buscar por número, paciente o médico...";
+            this.txtBuscar.PlaceholderText = "Buscar por nÃºmero, paciente o mÃ©dico...";
             this.txtBuscar.SelectedText = "";
             this.txtBuscar.Size = new System.Drawing.Size(696, 32);
             this.txtBuscar.TabIndex = 0;
@@ -333,7 +333,7 @@ namespace LogiPharm.Presentacion
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(154, 25);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Recetas médicas";
+            this.lblTitulo.Text = "Recetas mÃ©dicas";
             // 
             // panelEditor
             // 
@@ -449,7 +449,7 @@ namespace LogiPharm.Presentacion
             this.txtNumeroReceta.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtNumeroReceta.Location = new System.Drawing.Point(3, 37);
             this.txtNumeroReceta.Name = "txtNumeroReceta";
-            this.txtNumeroReceta.PlaceholderText = "N° Receta";
+            this.txtNumeroReceta.PlaceholderText = "NÂ° Receta";
             this.txtNumeroReceta.SelectedText = "";
             this.txtNumeroReceta.Size = new System.Drawing.Size(220, 34);
             this.txtNumeroReceta.TabIndex = 1;
@@ -509,7 +509,7 @@ namespace LogiPharm.Presentacion
             this.txtMedico.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtMedico.Location = new System.Drawing.Point(3, 117);
             this.txtMedico.Name = "txtMedico";
-            this.txtMedico.PlaceholderText = "Médico";
+            this.txtMedico.PlaceholderText = "MÃ©dico";
             this.txtMedico.SelectedText = "";
             this.txtMedico.Size = new System.Drawing.Size(220, 34);
             this.txtMedico.TabIndex = 5;
@@ -539,7 +539,7 @@ namespace LogiPharm.Presentacion
             this.txtRegistro.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtRegistro.Location = new System.Drawing.Point(3, 157);
             this.txtRegistro.Name = "txtRegistro";
-            this.txtRegistro.PlaceholderText = "Registro médico";
+            this.txtRegistro.PlaceholderText = "Registro mÃ©dico";
             this.txtRegistro.SelectedText = "";
             this.txtRegistro.Size = new System.Drawing.Size(220, 34);
             this.txtRegistro.TabIndex = 7;
@@ -671,7 +671,7 @@ namespace LogiPharm.Presentacion
             this.ClientSize = new System.Drawing.Size(1200, 720);
             this.Controls.Add(this.splitContainer1);
             this.Name = "FrmRecetasMedicas";
-            this.Text = "Recetas médicas";
+            this.Text = "Recetas mÃ©dicas";
             this.Load += new System.EventHandler(this.FrmRecetasMedicas_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);

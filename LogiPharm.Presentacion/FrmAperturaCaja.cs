@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using LogiPharm.Datos; // ✨ Asegúrate de tener este using
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
@@ -36,9 +36,8 @@ namespace LogiPharm.Presentacion
                     int idUsuarioActual = SesionActual.IdUsuario; // Debes tener el ID del usuario en tu sesión
                     int idCajaActual = 1; // Asumiendo que CAJA 001 es el ID 1. Deberías obtenerlo de forma dinámica.
 
-                    // ✨ 2. Llamamos a la capa de datos para registrar la apertura
-                    DCierreCaja d_Cierre = new DCierreCaja();
-                    d_Cierre.RegistrarApertura(this.MontoInicial, idUsuarioActual, idCajaActual);
+                    // ✨ 2. Llamamos a la capa de negocio para registrar la apertura
+                    NCierreCaja.RegistrarApertura(this.MontoInicial, idUsuarioActual, idCajaActual);
 
                     // ✨ 3. Si todo sale bien, confirmamos y cerramos
                     this.DialogResult = DialogResult.OK;

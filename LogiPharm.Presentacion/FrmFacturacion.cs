@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using System.Xml.Linq;
 using System.Linq;
 using LogiPharm.Entidades;
@@ -28,7 +28,7 @@ namespace LogiPharm.Presentacion
         private void FrmFacturacion_Load(object sender, EventArgs e)
         {
             // Auditoría: VISUALIZAR
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Facturación", "VISUALIZAR", "facturas", null, "Abrir pantalla de facturación", null, Environment.MachineName, "UI"); } catch { }
+            try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Facturación", "VISUALIZAR", "facturas", null, "Abrir pantalla de facturación", null, Environment.MachineName, "UI"); } catch { }
 
             // Configura las columnas del grid principal antes de cargar datos
             ConfigurarGridPrincipal();
@@ -47,10 +47,8 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var d = new DFacturacion();
-
                 // Cargar Cajas
-                var dtCajas = d.ObtenerCajas();
+                var dtCajas = NFacturacion.ObtenerCajas();
                 cboCaja.DataSource = dtCajas;
                 cboCaja.DisplayMember = "nombre";
                 cboCaja.ValueMember = "id";
@@ -87,7 +85,7 @@ namespace LogiPharm.Presentacion
                 cboEstadoSRI.SelectedIndex = 0; // "TODOS"
 
                 // Cargar Cajeros
-                var dtCajeros = d.ObtenerCajeros();
+                var dtCajeros = NFacturacion.ObtenerCajeros();
                 cboCajero.DataSource = dtCajeros;
                 cboCajero.DisplayMember = "nombreUsuario";
                 cboCajero.ValueMember = "id";
@@ -146,7 +144,6 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var d = new DFacturacion();
                 dgvListaFacturas.AutoGenerateColumns = false;
 
                 // Obtener valores de los filtros
@@ -163,7 +160,7 @@ namespace LogiPharm.Presentacion
                     : (int?)null;
 
                 // Realizar la búsqueda con todos los filtros
-                dgvListaFacturas.DataSource = d.ListarFacturas(
+                dgvListaFacturas.DataSource = NFacturacion.ListarFacturas(
                     dtpFechaInicio.Value, 
                     dtpFechaFin.Value, 
                     txtCliente.Text,
@@ -178,7 +175,7 @@ namespace LogiPharm.Presentacion
 
                 // Auditoría: VISUALIZAR (consulta)
                 try { 
-                    new DBitacora().Registrar(
+                    NBitacora.Registrar(
                         SesionActual.IdUsuario, 
                         SesionActual.NombreUsuario, 
                         "Facturación", 
@@ -224,8 +221,7 @@ namespace LogiPharm.Presentacion
                 _cargandoDetalle = true;
                 this.Cursor = Cursors.WaitCursor;
 
-                var d = new DFacturacion();
-                var res = d.ObtenerFacturaDesdeDb(idFactura);
+                var res = NFacturacion.ObtenerFacturaDesdeDb(idFactura);
 
                 if (res.Encabezado == null)
                 {
@@ -322,8 +318,7 @@ namespace LogiPharm.Presentacion
                 _cargandoDetalle = true;
                 this.Cursor = Cursors.WaitCursor;
 
-                var d_Facturacion = new DFacturacion();
-                var detalleFactura = await d_Facturacion.ObtenerDetalleDesdeApi(claveAcceso);
+                var detalleFactura = await NFacturacion.ObtenerDetalleDesdeApi(claveAcceso);
 
                 if (detalleFactura != null)
                 {
@@ -600,8 +595,7 @@ namespace LogiPharm.Presentacion
                 this.Cursor = Cursors.WaitCursor;
                 btnReenviarSRI.Enabled = false;
 
-                var d = new DFacturacion();
-                var respuesta = await d.ReenviarFacturaAlSri(claveAcceso);
+                var respuesta = await NFacturacion.ReenviarFacturaAlSri(claveAcceso);
 
                 if (respuesta != null)
                 {
@@ -640,7 +634,7 @@ namespace LogiPharm.Presentacion
                     // Auditoría
                     try
                     {
-                        new DBitacora().Registrar(
+                        NBitacora.Registrar(
                             SesionActual.IdUsuario,
                             SesionActual.NombreUsuario,
                             "Facturación",
@@ -666,7 +660,7 @@ namespace LogiPharm.Presentacion
                 // Auditoría de error
                 try
                 {
-                    new DBitacora().Registrar(
+                    NBitacora.Registrar(
                         SesionActual.IdUsuario,
                         SesionActual.NombreUsuario,
                         "Facturación",

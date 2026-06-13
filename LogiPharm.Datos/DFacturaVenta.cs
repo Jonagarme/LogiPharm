@@ -9,7 +9,7 @@ namespace LogiPharm.Datos
 {
     public class DFacturaVenta
     {
-        public void GuardarFactura(ECliente cliente, List<ProductoVenta> productos, string numeroFactura, int idCierreCaja, int idUsuario, string numeroAutorizacion, int idEmpresa, bool esEntrega = false, string estadoFactura = "PENDIENTE")
+        public void GuardarFactura(ECliente cliente, List<ProductoVenta> productos, string numeroFactura, int idCierreCaja, int idUsuario, string numeroAutorizacion, int idEmpresa, bool esEntrega = false, string estadoFactura = "PENDIENTE", int? idUbicacion = null)
         {
             using (var cn = new MySqlConnection(Conexion.cadena))
             {
@@ -84,6 +84,92 @@ namespace LogiPharm.Datos
                                 cmdDetalle.ExecuteNonQuery();
                             }
 
+                            // Descontar stock específico por ubicación/bodega en la tabla de lotes (inventario_loteproducto)
+                            if (idUbicacion.HasValue)
+                            {
+                                decimal cantidadRestante = prod.Cantidad;
+                                List<Tuple<int, decimal>> lotes = new List<Tuple<int, decimal>>();
+                                string sqlSelectLotes = @"SELECT id, cantidad_disponible 
+                                                         FROM inventario_loteproducto 
+                                                         WHERE producto_id = @idProducto AND ubicacion_id = @idUbicacion AND activo = 1 AND cantidad_disponible > 0
+                                                         ORDER BY fecha_caducidad ASC, id ASC;";
+                                                         
+                                using (var cmdLotes = new MySqlCommand(sqlSelectLotes, cn, tran))
+                                {
+                                    cmdLotes.Parameters.AddWithValue("@idProducto", prod.Id);
+                                    cmdLotes.Parameters.AddWithValue("@idUbicacion", idUbicacion.Value);
+                                    using (var readerLotes = cmdLotes.ExecuteReader())
+                                    {
+                                        while (readerLotes.Read())
+                                        {
+                                            lotes.Add(new Tuple<int, decimal>(
+                                                Convert.ToInt32(readerLotes["id"]),
+                                                Convert.ToDecimal(readerLotes["cantidad_disponible"])
+                                            ));
+                                        }
+                                    }
+                                }
+
+                                foreach (var lote in lotes)
+                                {
+                                    if (cantidadRestante <= 0) break;
+
+                                    int loteId = lote.Item1;
+                                    decimal disponible = lote.Item2;
+
+                                    if (disponible >= cantidadRestante)
+                                    {
+                                        string sqlUpdateL = "UPDATE inventario_loteproducto SET cantidad_disponible = cantidad_disponible - @cantidad WHERE id = @loteId;";
+                                        using (var cmdUpdateL = new MySqlCommand(sqlUpdateL, cn, tran))
+                                        {
+                                            cmdUpdateL.Parameters.AddWithValue("@cantidad", cantidadRestante);
+                                            cmdUpdateL.Parameters.AddWithValue("@loteId", loteId);
+                                            cmdUpdateL.ExecuteNonQuery();
+                                        }
+                                        cantidadRestante = 0;
+                                    }
+                                    else
+                                    {
+                                        string sqlUpdateL = "UPDATE inventario_loteproducto SET cantidad_disponible = 0 WHERE id = @loteId;";
+                                        using (var cmdUpdateL = new MySqlCommand(sqlUpdateL, cn, tran))
+                                        {
+                                            cmdUpdateL.Parameters.AddWithValue("@loteId", loteId);
+                                            cmdUpdateL.ExecuteNonQuery();
+                                        }
+                                        cantidadRestante -= disponible;
+                                    }
+                                }
+
+                                if (cantidadRestante > 0)
+                                {
+                                    if (lotes.Count > 0)
+                                    {
+                                        int firstLoteId = lotes[0].Item1;
+                                        string sqlUpdateL = "UPDATE inventario_loteproducto SET cantidad_disponible = cantidad_disponible - @cantidad WHERE id = @loteId;";
+                                        using (var cmdUpdateL = new MySqlCommand(sqlUpdateL, cn, tran))
+                                        {
+                                            cmdUpdateL.Parameters.AddWithValue("@cantidad", cantidadRestante);
+                                            cmdUpdateL.Parameters.AddWithValue("@loteId", firstLoteId);
+                                            cmdUpdateL.ExecuteNonQuery();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string sqlInsertL = @"INSERT INTO inventario_loteproducto 
+                                            (producto_id, ubicacion_id, numero_lote, fecha_caducidad, cantidad_disponible, activo, creadoDate, editadoDate, idEmpresa) 
+                                            VALUES (@idProducto, @idUbicacion, 'GENERICO', DATE_ADD(NOW(), INTERVAL 1 YEAR), @cantidadNegativa, 1, NOW(), NOW(), @idEmpresa);";
+                                        using (var cmdInsertL = new MySqlCommand(sqlInsertL, cn, tran))
+                                        {
+                                            cmdInsertL.Parameters.AddWithValue("@idProducto", prod.Id);
+                                            cmdInsertL.Parameters.AddWithValue("@idUbicacion", idUbicacion.Value);
+                                            cmdInsertL.Parameters.AddWithValue("@cantidadNegativa", -cantidadRestante);
+                                            cmdInsertL.Parameters.AddWithValue("@idEmpresa", idEmpresa);
+                                            cmdInsertL.ExecuteNonQuery();
+                                        }
+                                    }
+                                }
+                            }
+
                             string sqlSaldo = "SELECT stock FROM productos WHERE id = @idProducto;";
                             decimal saldoActual;
                             using (var cmdSaldo = new MySqlCommand(sqlSaldo, cn, tran))
@@ -94,11 +180,12 @@ namespace LogiPharm.Datos
 
                             decimal nuevoSaldo = saldoActual - prod.Cantidad;
 
-                            // ✨ 2. INSERTAR EL MOVIMIENTO EN EL KARDEX
+                            // ✨ 2. INSERTAR EL MOVIMIENTO EN EL KARDEX DETALLADO
                             string sqlKardex = @"INSERT INTO kardex_movimientos 
-                                        (idProducto, tipoMovimiento, detalle, egreso, saldo)
+                                        (idProducto, tipoMovimiento, detalle, egreso, saldo, fecha, costo, costo_promedio, precio, usuario, cliente_proveedor, numero_documento, idEmpresa, idUbicacion, ingreso)
                                         VALUES 
-                                        (@idProducto, 'VENTA', @detalle, @egreso, @saldo);";
+                                        (@idProducto, 'EGRESO', @detalle, @egreso, @saldo, NOW(), @costo, @costo_promedio, @precio, @usuario, @cliente_proveedor, @numero_documento, @idEmpresa, @idUbicacion, 0);";
+                            
                             using (var cmdKardex = new MySqlCommand(sqlKardex, cn, tran))
                             {
                                 cmdKardex.Parameters.AddWithValue("@idProducto", prod.Id);
@@ -106,6 +193,41 @@ namespace LogiPharm.Datos
                                 cmdKardex.Parameters.AddWithValue("@detalle", $"{tipoDocText} N° {numeroFactura}");
                                 cmdKardex.Parameters.AddWithValue("@egreso", prod.Cantidad);
                                 cmdKardex.Parameters.AddWithValue("@saldo", nuevoSaldo);
+
+                                // Obtener costo unitario
+                                decimal costoU = 0m;
+                                string sqlGetCosto = "SELECT costoUnidad FROM productos WHERE id = @idProducto;";
+                                using (var cmdCosto = new MySqlCommand(sqlGetCosto, cn, tran))
+                                {
+                                    cmdCosto.Parameters.AddWithValue("@idProducto", prod.Id);
+                                    var resCosto = cmdCosto.ExecuteScalar();
+                                    if (resCosto != null && resCosto != DBNull.Value)
+                                    {
+                                        costoU = Convert.ToDecimal(resCosto);
+                                    }
+                                }
+
+                                // Obtener nombre del usuario
+                                string nombreUsuario = "";
+                                string sqlGetUsuario = "SELECT nombreCompleto FROM usuarios WHERE id = @idUsuario;";
+                                using (var cmdUser = new MySqlCommand(sqlGetUsuario, cn, tran))
+                                {
+                                    cmdUser.Parameters.AddWithValue("@idUsuario", idUsuario);
+                                    var resUser = cmdUser.ExecuteScalar();
+                                    if (resUser != null && resUser != DBNull.Value)
+                                    {
+                                        nombreUsuario = resUser.ToString();
+                                    }
+                                }
+
+                                cmdKardex.Parameters.AddWithValue("@costo", costoU);
+                                cmdKardex.Parameters.AddWithValue("@costo_promedio", costoU);
+                                cmdKardex.Parameters.AddWithValue("@precio", prod.PrecioUnitario);
+                                cmdKardex.Parameters.AddWithValue("@usuario", nombreUsuario);
+                                cmdKardex.Parameters.AddWithValue("@cliente_proveedor", cliente.RazonSocial);
+                                cmdKardex.Parameters.AddWithValue("@numero_documento", (esEntrega ? "N/E-" : "FAC-") + numeroFactura);
+                                cmdKardex.Parameters.AddWithValue("@idEmpresa", idEmpresa);
+                                cmdKardex.Parameters.AddWithValue("@idUbicacion", (object)idUbicacion ?? DBNull.Value);
                                 cmdKardex.ExecuteNonQuery();
                             }
 

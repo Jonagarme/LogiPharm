@@ -1,4 +1,4 @@
-using MySqlConnector;
+Ôªøusing MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -139,11 +139,11 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Obtiene o crea una categorÌa por defecto en productos_categoria
+        /// Obtiene o crea una categor√≠a por defecto en productos_categoria
         /// </summary>
         private int ObtenerOCrearCategoriaDefault(MySqlConnection cn, MySqlTransaction transaction, int idCategoriaOriginal)
         {
-            // Verificar si existe la categorÌa con el ID original
+            // Verificar si existe la categor√≠a con el ID original
             string queryExiste = "SELECT COUNT(*) FROM productos_categoria WHERE id = @id";
             MySqlCommand cmdExiste = new MySqlCommand(queryExiste, cn, transaction);
             cmdExiste.Parameters.AddWithValue("@id", idCategoriaOriginal);
@@ -154,8 +154,8 @@ namespace LogiPharm.Datos
                 return idCategoriaOriginal;
             }
 
-            // Buscar si existe una categorÌa "General" o "Sin categorÌa"
-            string queryGeneral = "SELECT id FROM productos_categoria WHERE nombre IN ('General', 'Sin categorÌa', 'GENERAL') LIMIT 1";
+            // Buscar si existe una categor√≠a "General" o "Sin categor√≠a"
+            string queryGeneral = "SELECT id FROM productos_categoria WHERE nombre IN ('General', 'Sin categor√≠a', 'GENERAL') LIMIT 1";
             MySqlCommand cmdGeneral = new MySqlCommand(queryGeneral, cn, transaction);
             object resultado = cmdGeneral.ExecuteScalar();
             
@@ -164,10 +164,10 @@ namespace LogiPharm.Datos
                 return Convert.ToInt32(resultado);
             }
 
-            // Crear categorÌa por defecto
+            // Crear categor√≠a por defecto
             string insertCategoria = @"
                 INSERT INTO productos_categoria (nombre, descripcion, activo, fecha_creacion) 
-                VALUES ('General', 'CategorÌa general para productos sincronizados', 1, NOW());
+                VALUES ('General', 'Categor√≠a general para productos sincronizados', 1, NOW());
                 SELECT LAST_INSERT_ID();";
             MySqlCommand cmdInsert = new MySqlCommand(insertCategoria, cn, transaction);
             return Convert.ToInt32(cmdInsert.ExecuteScalar());
@@ -233,7 +233,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Lista todas las Ûrdenes de compra con paginaciÛn
+        /// Lista todas las √≥rdenes de compra con paginaci√≥n
         /// </summary>
         public DataTable ListarOrdenesPaginado(int offset, int limit)
         {
@@ -269,7 +269,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Busca Ûrdenes de compra por criterio
+        /// Busca √≥rdenes de compra por criterio
         /// </summary>
         public DataTable BuscarOrdenesPaginado(string criterio, int offset, int limit)
         {
@@ -311,7 +311,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Cuenta el total de Ûrdenes de compra
+        /// Cuenta el total de √≥rdenes de compra
         /// </summary>
         public int ContarOrdenes()
         {
@@ -325,7 +325,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Cuenta Ûrdenes seg˙n criterio de b˙squeda
+        /// Cuenta √≥rdenes seg√∫n criterio de b√∫squeda
         /// </summary>
         public int ContarOrdenesBusqueda(string criterio)
         {
@@ -466,7 +466,7 @@ namespace LogiPharm.Datos
 
                 try
                 {
-                    // Obtener el ID de un usuario v·lido de usuarios
+                    // Obtener el ID de un usuario v√°lido de usuarios
                     int idUsuarioAuth = 1;
                     string queryUsuario = "SELECT id FROM usuarios LIMIT 1";
                     MySqlCommand cmdUsuario = new MySqlCommand(queryUsuario, cn, transaction);
@@ -479,7 +479,7 @@ namespace LogiPharm.Datos
                     // Sincronizar el proveedor de proveedores a proveedores_proveedor
                     SincronizarProveedor(orden.IdProveedor, cn, transaction);
 
-                    // Obtener el siguiente n˙mero de orden
+                    // Obtener el siguiente n√∫mero de orden
                     string queryNumero = "SELECT IFNULL(MAX(numero_orden), 0) + 1 FROM inventario_ordencompra";
                     MySqlCommand cmdNumero = new MySqlCommand(queryNumero, cn, transaction);
                     int numeroOrden = Convert.ToInt32(cmdNumero.ExecuteScalar());
@@ -562,7 +562,7 @@ namespace LogiPharm.Datos
 
                 try
                 {
-                    // Obtener el ID de un usuario v·lido de usuarios
+                    // Obtener el ID de un usuario v√°lido de usuarios
                     int idUsuarioAuth = 1;
                     string queryUsuario = "SELECT id FROM usuarios LIMIT 1";
                     MySqlCommand cmdUsuario = new MySqlCommand(queryUsuario, cn, transaction);
@@ -652,7 +652,7 @@ namespace LogiPharm.Datos
             {
                 cn.Open();
 
-                // Obtener el ID de un usuario v·lido de usuarios
+                // Obtener el ID de un usuario v√°lido de usuarios
                 int idUsuarioAuth = 1;
                 string queryUsuario = "SELECT id FROM usuarios LIMIT 1";
                 MySqlCommand cmdUsuario = new MySqlCommand(queryUsuario, cn);
@@ -705,7 +705,7 @@ namespace LogiPharm.Datos
             {
                 cn.Open();
 
-                // Obtener el ID de un usuario v·lido de usuarios
+                // Obtener el ID de un usuario v√°lido de usuarios
                 int idUsuarioAuth = 1;
                 string queryUsuario = "SELECT id FROM usuarios LIMIT 1";
                 MySqlCommand cmdUsuario = new MySqlCommand(queryUsuario, cn);

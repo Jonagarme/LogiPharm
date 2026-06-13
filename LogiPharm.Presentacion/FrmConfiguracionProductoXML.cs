@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿﻿﻿﻿using System;
 using System.Windows.Forms;
 using System.Linq;
 using LogiPharm.Entidades;
@@ -78,16 +78,16 @@ namespace LogiPharm.Presentacion
         {
             if (_detalleProducto == null) return;
 
-            // T�tulo del panel
+            // Título del panel
             lblTitulo.Text = _detalleProducto.EsProductoNuevo ? "NUEVO PRODUCTO" : "ACTUALIZAR PRODUCTO";
             
-            // Informaci�n b�sica
+            // Información básica
             txtCodigoPrincipal.Text = _detalleProducto.CodigoPrincipal;
             txtDescripcion.Text = _detalleProducto.Descripcion;
 
             // Precios desde el XML
             numCostoPorUnidad.Value = _detalleProducto.PrecioUnitario;
-            numCostoPorCaja.Value = 0; // Se calcular� si ingresa unidades por caja
+            numCostoPorCaja.Value = 0; // Se calculará si ingresa unidades por caja
 
             // Si el producto existe, cargar sus datos actuales
             if (!_detalleProducto.EsProductoNuevo && _detalleProducto.IdProductoEncontrado.HasValue && _detalleProducto.IdProductoEncontrado.Value > 0)
@@ -110,7 +110,7 @@ namespace LogiPharm.Presentacion
                 }
             }
 
-            // C�lculo inicial
+            // Cálculo inicial
             CalcularPrecios();
         }
 
@@ -194,7 +194,7 @@ namespace LogiPharm.Presentacion
 
         private void chkEsFraccionable_CheckedChanged(object sender, EventArgs e)
         {
-            // Habilitar/deshabilitar secci�n de fraccionamiento
+            // Habilitar/deshabilitar sección de fraccionamiento
             panelFraccionamiento.Enabled = chkEsFraccionable.Checked;
             
             if (!chkEsFraccionable.Checked)
@@ -219,13 +219,13 @@ namespace LogiPharm.Presentacion
                 _detalleProducto.EsDivisible = chkEsFraccionable.Checked;
                 _detalleProducto.CantDivision = (int)numDivision.Value;
                 
-                // Aqu� podr�as guardar directamente o retornar el objeto modificado
+                // Aquí podrías guardar directamente o retornar el objeto modificado
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar configuraci�n: {ex.Message}", 
+                MessageBox.Show($"Error al guardar configuración: {ex.Message}", 
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -235,7 +235,7 @@ namespace LogiPharm.Presentacion
             if (numCostoPorUnidad.Value <= 0)
             {
                 MessageBox.Show("El costo por unidad debe ser mayor a 0.", 
-                    "Validaci�n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numCostoPorUnidad.Focus();
                 return false;
             }
@@ -243,7 +243,7 @@ namespace LogiPharm.Presentacion
             if (numPVPUnidad.Value <= 0)
             {
                 MessageBox.Show("El precio de venta debe ser mayor a 0.", 
-                    "Validaci�n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numPVPUnidad.Focus();
                 return false;
             }
@@ -251,7 +251,7 @@ namespace LogiPharm.Presentacion
             if (numPVPUnidad.Value < numCostoPorUnidad.Value)
             {
                 var result = MessageBox.Show(
-                    "El precio de venta es menor al costo. �Desea continuar de todas formas?", 
+                    "El precio de venta es menor al costo. ¿Desea continuar de todas formas?", 
                     "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 
                 if (result == DialogResult.No)
@@ -275,7 +275,7 @@ namespace LogiPharm.Presentacion
         /// </summary>
         private void MostrarPanelSimilares()
         {
-            // Ajustar tama�o del formulario
+            // Ajustar tamaño del formulario
             this.Width = 900;
             this.Height = 750;
 
@@ -290,7 +290,7 @@ namespace LogiPharm.Presentacion
                 BorderThickness = 2
             };
 
-            // �cono de advertencia
+            // Ícono de advertencia
             var lblIcono = new System.Windows.Forms.Label
             {
                 Text = "!",
@@ -336,7 +336,7 @@ namespace LogiPharm.Presentacion
                 BorderRadius = 8
             };
 
-            // Campo de b�squeda/filtro
+            // Campo de búsqueda/filtro
             var lblBuscar = new System.Windows.Forms.Label
             {
                 Text = "Buscar por Codigo o Nombre",
@@ -355,7 +355,7 @@ namespace LogiPharm.Presentacion
                 Font = new System.Drawing.Font("Segoe UI", 10F)
             };
 
-            // Bot�n para limpiar b�squeda
+            // Botón para limpiar búsqueda
             var btnLimpiar = new Guna.UI2.WinForms.Guna2Button
             {
                 Text = "X",
@@ -526,7 +526,7 @@ namespace LogiPharm.Presentacion
                 }
             };
 
-            // Evento de b�squeda/filtro en tiempo real
+            // Evento de búsqueda/filtro en tiempo real
             txtBuscar.TextChanged += (s, e) =>
             {
                 string filtro = txtBuscar.Text.Trim().ToUpper();
@@ -539,7 +539,7 @@ namespace LogiPharm.Presentacion
                 }
                 else
                 {
-                    // Filtrar por c�digo o nombre
+                    // Filtrar por código o nombre
                     var filtrados = _detalleProducto.ProductosSimilares
                         .Where(p => p.CodigoPrincipal.ToUpper().Contains(filtro) || 
                                    p.Nombre.ToUpper().Contains(filtro))
@@ -548,7 +548,7 @@ namespace LogiPharm.Presentacion
                     dgvSimilares.DataSource = new BindingSource(filtrados, null);
                     lblResultados.Text = $"Mostrando {filtrados.Count} de {_detalleProducto.ProductosSimilares.Count} producto(s)";
                     
-                    // Si solo hay un resultado, seleccionarlo autom�ticamente
+                    // Si solo hay un resultado, seleccionarlo automáticamente
                     if (filtrados.Count == 1 && dgvSimilares.Rows.Count > 0)
                     {
                         dgvSimilares.Rows[0].Selected = true;
@@ -556,7 +556,7 @@ namespace LogiPharm.Presentacion
                 }
             };
 
-            // Evento Enter para b�squeda r�pida
+            // Evento Enter para búsqueda rápida
             txtBuscar.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter)
@@ -571,7 +571,7 @@ namespace LogiPharm.Presentacion
                 }
             };
 
-            // Bot�n para crear como nuevo producto
+            // Botón para crear como nuevo producto
             var btnNuevo = new Guna.UI2.WinForms.Guna2Button
             {
                 Text = "CREAR COMO NUEVO PRODUCTO",
@@ -607,7 +607,7 @@ namespace LogiPharm.Presentacion
                 }
             };
 
-            // Bot�n para confirmar selecci�n
+            // Botón para confirmar selección
             var btnConfirmar = new Guna.UI2.WinForms.Guna2Button
             {
                 Text = "VINCULAR PRODUCTO SELECCIONADO",
@@ -621,7 +621,7 @@ namespace LogiPharm.Presentacion
 
             btnConfirmar.Click += (s, e) => VincularProductoSeleccionado(dgvSimilares);
 
-            // Doble clic en el grid tambi�n vincula
+            // Doble clic en el grid también vincula
             dgvSimilares.CellDoubleClick += (s, e) =>
             {
                 if (e.RowIndex >= 0)
@@ -639,7 +639,7 @@ namespace LogiPharm.Presentacion
             groupSimilares.Controls.Add(btnNuevo);
             groupSimilares.Controls.Add(btnConfirmar);
 
-            // A�adir al formulario
+            // Añadir al formulario
             panelPrincipal.Controls.Add(panelAdvertencia);
             panelPrincipal.Controls.Add(groupSimilares);
 
@@ -651,7 +651,7 @@ namespace LogiPharm.Presentacion
             btnGuardar.Visible = false;
             btnCancelar.Location = new System.Drawing.Point(panelPrincipal.Width - 140, 620);
 
-            // Dar foco al campo de b�squeda
+            // Dar foco al campo de búsqueda
             txtBuscar.Focus();
         }
 
@@ -660,7 +660,7 @@ namespace LogiPharm.Presentacion
             if (dgvSimilares.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Debe seleccionar un producto de la lista.",
-                    "Selecci�n Requerida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Selección Requerida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -677,7 +677,7 @@ namespace LogiPharm.Presentacion
                 // Cargar datos del producto existente
                 CargarDatosProductoExistente((int)productoSeleccionado.Id);
                 
-                // Mostrar configuraci�n normal
+                // Mostrar configuración normal
                 MostrarConfiguracionNormal();
                 
                 MessageBox.Show($"Producto vinculado con:\n{productoSeleccionado.Nombre}\n\nAhora puedes ajustar precios y costos.",
@@ -687,7 +687,7 @@ namespace LogiPharm.Presentacion
 
         private void MostrarConfiguracionNormal()
         {
-            // Mostrar paneles de configuraci�n
+            // Mostrar paneles de configuración
             groupInfo.Visible = true;
             groupInfo.Location = new System.Drawing.Point(20, 70);
             
@@ -705,7 +705,7 @@ namespace LogiPharm.Presentacion
             
             btnCancelar.Location = new System.Drawing.Point(460, 650);
             
-            // Ajustar tama�o del formulario
+            // Ajustar tamaño del formulario
             this.Width = 600;
             this.Height = 720;
         }
@@ -727,11 +727,11 @@ namespace LogiPharm.Presentacion
                     _detalleProducto.NombreProductoEncontrado = producto.Nombre;
                     CargarDatosProductoExistente((int)producto.Id);
                     MessageBox.Show($"Producto encontrado: {producto.Nombre}",
-                        "Vinculaci�n Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        "Vinculación Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("No se encontr� ning�n producto con ese c�digo de barras.",
+                    MessageBox.Show("No se encontró ningún producto con ese código de barras.",
                         "No Encontrado", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }

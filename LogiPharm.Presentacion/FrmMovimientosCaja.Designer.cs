@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+﻿﻿namespace LogiPharm.Presentacion
 {
     partial class FrmMovimientosCaja
     {
@@ -113,7 +113,7 @@ namespace LogiPharm.Presentacion
             this.btnBuscar.Name = "btnBuscar";
             this.btnBuscar.Size = new System.Drawing.Size(120, 40);
             this.btnBuscar.TabIndex = 6;
-            this.btnBuscar.Text = "?? Buscar";
+            this.btnBuscar.Text = "Buscar";
             this.btnBuscar.Click += new System.EventHandler(this.btnBuscar_Click);
             // 
             // cboCaja
@@ -297,7 +297,7 @@ namespace LogiPharm.Presentacion
             this.btnExportar.Name = "btnExportar";
             this.btnExportar.Size = new System.Drawing.Size(120, 40);
             this.btnExportar.TabIndex = 2;
-            this.btnExportar.Text = "?? Exportar";
+            this.btnExportar.Text = "Exportar";
             this.btnExportar.Click += new System.EventHandler(this.btnExportar_Click);
             // 
             // btnCerrar
@@ -314,7 +314,7 @@ namespace LogiPharm.Presentacion
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(120, 40);
             this.btnCerrar.TabIndex = 1;
-            this.btnCerrar.Text = "? Cerrar";
+            this.btnCerrar.Text = "Cerrar";
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
             // guna2GroupBox1

@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+锘縩amespace LogiPharm.Presentacion
 {
     partial class FrmConfiguracionProductoXML
     {
@@ -83,7 +83,7 @@ namespace LogiPharm.Presentacion
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(350, 30);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Configuraci髇 de Precios y Costos";
+            this.lblTitulo.Text = "Configuraci贸n de Precios y Costos";
             // 
             // groupInfo
             // 
@@ -100,7 +100,7 @@ namespace LogiPharm.Presentacion
             this.groupInfo.Name = "groupInfo";
             this.groupInfo.Size = new System.Drawing.Size(560, 140);
             this.groupInfo.TabIndex = 1;
-            this.groupInfo.Text = "Informaci髇 del Producto";
+            this.groupInfo.Text = "Informaci贸n del Producto";
             // 
             // label1
             // 
@@ -111,7 +111,7 @@ namespace LogiPharm.Presentacion
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(51, 15);
             this.label1.TabIndex = 0;
-            this.label1.Text = "C骴igo:";
+            this.label1.Text = "C贸digo:";
             // 
             // txtCodigoPrincipal
             // 
@@ -143,7 +143,7 @@ namespace LogiPharm.Presentacion
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(72, 15);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Descripci髇:";
+            this.label2.Text = "Descripci贸n:";
             // 
             // txtDescripcion
             // 
@@ -193,7 +193,7 @@ namespace LogiPharm.Presentacion
             this.groupPrecios.Name = "groupPrecios";
             this.groupPrecios.Size = new System.Drawing.Size(560, 160);
             this.groupPrecios.TabIndex = 2;
-            this.groupPrecios.Text = "Configuraci髇 de Precios";
+            this.groupPrecios.Text = "Configuraci贸n de Precios";
             // 
             // label3
             // 
@@ -362,7 +362,7 @@ namespace LogiPharm.Presentacion
             this.lblNotaFraccionamiento.Name = "lblNotaFraccionamiento";
             this.lblNotaFraccionamiento.Size = new System.Drawing.Size(310, 35);
             this.lblNotaFraccionamiento.TabIndex = 3;
-            this.lblNotaFraccionamiento.Text = "Solo se puede vender por unidad completa (gotas oft醠micas, inyectables, etc.)";
+            this.lblNotaFraccionamiento.Text = "Solo se puede vender por unidad completa (gotas oft谩lmicas, inyectables, etc.)";
             // 
             // groupResumen
             // 
@@ -504,7 +504,7 @@ namespace LogiPharm.Presentacion
             this.MinimizeBox = false;
             this.Name = "FrmConfiguracionProductoXML";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Configuraci髇 de Producto";
+            this.Text = "Configuraci贸n de Producto";
             this.panelPrincipal.ResumeLayout(false);
             this.panelPrincipal.PerformLayout();
             this.groupInfo.ResumeLayout(false);

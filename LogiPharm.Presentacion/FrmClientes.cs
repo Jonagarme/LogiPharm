@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
 
@@ -25,15 +25,14 @@ namespace LogiPharm.Presentacion
             this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
 
             // Auditoría: VISUALIZAR
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", "VISUALIZAR", "clientes", null, "Abrir Gestión de Clientes", null, Environment.MachineName, "UI"); } catch { }
+            NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", "VISUALIZAR", "clientes", null, "Abrir Gestión de Clientes", null, Environment.MachineName, "UI");
         }
 
         private void CargarClientes()
         {
             try
             {
-                DClientes d_Clientes = new DClientes();
-                dgvClientes.DataSource = d_Clientes.ListarClientes(txtBuscar.Text.Trim());
+                dgvClientes.DataSource = NClientes.ListarClientes(txtBuscar.Text.Trim());
                 EstilizarGrid();
             }
             catch (Exception ex)
@@ -62,7 +61,7 @@ namespace LogiPharm.Presentacion
         {
             CargarClientes();
             // Auditoría: VISUALIZAR filtro
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", "VISUALIZAR", "clientes", null, $"Buscar clientes '{txtBuscar.Text}'", null, Environment.MachineName, "UI"); } catch { }
+            NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", "VISUALIZAR", "clientes", null, $"Buscar clientes '{txtBuscar.Text}'", null, Environment.MachineName, "UI");
         }
 
         private void dgvClientes_SelectionChanged(object sender, EventArgs e)
@@ -78,7 +77,7 @@ namespace LogiPharm.Presentacion
                 txtEmail.Text = dgvClientes.CurrentRow.Cells["email"].Value?.ToString();
 
                 // Auditoría: VISUALIZAR cliente seleccionado
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", "VISUALIZAR", "clientes", _idClienteSeleccionado, "Ver ficha de cliente", null, Environment.MachineName, "UI"); } catch { }
+                NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", "VISUALIZAR", "clientes", _idClienteSeleccionado, "Ver ficha de cliente", null, Environment.MachineName, "UI");
             }
         }
 
@@ -113,17 +112,16 @@ namespace LogiPharm.Presentacion
                     EditadoPor = SesionActual.IdUsuario
                 };
 
-                DClientes d_Clientes = new DClientes();
                 bool resultado;
 
                 bool esNuevo = cliente.Id == 0;
                 if (esNuevo)
                 {
-                    resultado = d_Clientes.InsertarCliente(cliente);
+                    resultado = NClientes.InsertarCliente(cliente);
                 }
                 else
                 {
-                    resultado = d_Clientes.ActualizarCliente(cliente);
+                    resultado = NClientes.ActualizarCliente(cliente);
                 }
 
                 if (resultado)
@@ -133,7 +131,7 @@ namespace LogiPharm.Presentacion
                     LimpiarCampos();
 
                     // Auditoría: CREAR/EDITAR
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", esNuevo ? "CREAR" : "EDITAR", "clientes", _idClienteSeleccionado, $"Guardar cliente '{cliente.RazonSocial}'", null, Environment.MachineName, "UI"); } catch { }
+                    NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Clientes", esNuevo ? "CREAR" : "EDITAR", "clientes", _idClienteSeleccionado, $"Guardar cliente '{cliente.RazonSocial}'", null, Environment.MachineName, "UI");
                 }
             }
             catch (Exception ex)

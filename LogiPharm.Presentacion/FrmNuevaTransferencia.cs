@@ -1,4 +1,4 @@
-using Guna.UI2.WinForms;
+ï»¿using Guna.UI2.WinForms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
@@ -28,7 +28,7 @@ namespace LogiPharm.Presentacion
 
         private void FrmNuevaTransferencia_Load(object sender, EventArgs e)
         {
-            // Generar número automático
+            // Generar nÃºmero automÃ¡tico
             txtNumero.Text = _dTransferencias.GenerarNumeroTransferencia();
             txtNumero.ReadOnly = true;
             
@@ -91,17 +91,17 @@ namespace LogiPharm.Presentacion
         private void CargarMotivos()
         {
             cboMotivo.Items.Clear();
-            cboMotivo.Items.Add("Reposición de stock");
+            cboMotivo.Items.Add("ReposiciÃ³n de stock");
             cboMotivo.Items.Add("Traslado entre sucursales");
             cboMotivo.Items.Add("Ajuste de inventario");
-            cboMotivo.Items.Add("Redistribución");
+            cboMotivo.Items.Add("RedistribuciÃ³n");
             cboMotivo.Items.Add("Otro");
             cboMotivo.SelectedIndex = 0;
         }
 
         private void btnCancelar_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("¿Está seguro de cancelar la transferencia?", "Confirmar",
+            if (MessageBox.Show("Â¿EstÃ¡ seguro de cancelar la transferencia?", "Confirmar",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 this.DialogResult = DialogResult.Cancel;
@@ -113,10 +113,10 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                // Validaciones básicas
+                // Validaciones bÃ¡sicas
                 if (cboOrigen.SelectedIndex == -1)
                 {
-                    MessageBox.Show("Seleccione la ubicación de origen", "Validación",
+                    MessageBox.Show("Seleccione la ubicaciÃ³n de origen", "ValidaciÃ³n",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     cboOrigen.Focus();
                     return;
@@ -124,7 +124,7 @@ namespace LogiPharm.Presentacion
 
                 if (cboDestino.SelectedIndex == -1)
                 {
-                    MessageBox.Show("Seleccione la ubicación de destino", "Validación",
+                    MessageBox.Show("Seleccione la ubicaciÃ³n de destino", "ValidaciÃ³n",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     cboDestino.Focus();
                     return;
@@ -132,7 +132,7 @@ namespace LogiPharm.Presentacion
 
                 if (cboOrigen.SelectedValue.ToString() == cboDestino.SelectedValue.ToString())
                 {
-                    MessageBox.Show("La ubicación origen y destino no pueden ser iguales", "Validación",
+                    MessageBox.Show("La ubicaciÃ³n origen y destino no pueden ser iguales", "ValidaciÃ³n",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     cboDestino.Focus();
                     return;
@@ -140,7 +140,7 @@ namespace LogiPharm.Presentacion
 
                 if (cboMotivo.SelectedIndex == -1)
                 {
-                    MessageBox.Show("Seleccione el motivo de la transferencia", "Validación",
+                    MessageBox.Show("Seleccione el motivo de la transferencia", "ValidaciÃ³n",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     cboMotivo.Focus();
                     return;
@@ -149,7 +149,7 @@ namespace LogiPharm.Presentacion
                 // Validar que haya al menos un producto
                 if (_detallesTransferencia == null || _detallesTransferencia.Count == 0)
                 {
-                    MessageBox.Show("Debe agregar al menos un producto a la transferencia", "Validación",
+                    MessageBox.Show("Debe agregar al menos un producto a la transferencia", "ValidaciÃ³n",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -171,7 +171,7 @@ namespace LogiPharm.Presentacion
                 // Guardar
                 if (_dTransferencias.InsertarTransferencia(transferencia))
                 {
-                    MessageBox.Show("Transferencia creada exitosamente", "Éxito",
+                    MessageBox.Show("Transferencia creada exitosamente", "Ã‰xito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     this.DialogResult = DialogResult.OK;
                     this.Close();
@@ -202,7 +202,7 @@ namespace LogiPharm.Presentacion
             dgvDetalles.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "colCodigo",
-                HeaderText = "Código",
+                HeaderText = "CÃ³digo",
                 DataPropertyName = "CodigoProducto",
                 Width = 100
             });
@@ -250,12 +250,12 @@ namespace LogiPharm.Presentacion
                 DefaultCellStyle = new DataGridViewCellStyle { Format = "N2", Alignment = DataGridViewContentAlignment.MiddleRight }
             });
 
-            // Columna de acción (eliminar)
+            // Columna de acciÃ³n (eliminar)
             var colEliminar = new DataGridViewButtonColumn
             {
                 Name = "colEliminar",
                 HeaderText = "",
-                Text = "?",
+                Text = "X",
                 UseColumnTextForButtonValue = true,
                 Width = 40
             };
@@ -270,7 +270,7 @@ namespace LogiPharm.Presentacion
 
             if (dgvDetalles.Columns[e.ColumnIndex].Name == "colEliminar")
             {
-                if (MessageBox.Show("¿Está seguro de eliminar este producto de la transferencia?",
+                if (MessageBox.Show("Â¿EstÃ¡ seguro de eliminar este producto de la transferencia?",
                     "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     _detallesTransferencia.RemoveAt(e.RowIndex);
@@ -281,11 +281,11 @@ namespace LogiPharm.Presentacion
 
         private void btnAgregarProducto_Click(object sender, EventArgs e)
         {
-            // Validar que se haya seleccionado ubicación de origen
+            // Validar que se haya seleccionado ubicaciÃ³n de origen
             if (cboOrigen.SelectedIndex == -1)
             {
-                MessageBox.Show("Por favor, seleccione la ubicación de origen antes de agregar productos",
-                    "Ubicación requerida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Por favor, seleccione la ubicaciÃ³n de origen antes de agregar productos",
+                    "UbicaciÃ³n requerida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cboOrigen.Focus();
                 return;
             }
@@ -296,7 +296,7 @@ namespace LogiPharm.Presentacion
             {
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
-                    // Verificar que el producto no esté ya agregado con el mismo lote
+                    // Verificar que el producto no estÃ© ya agregado con el mismo lote
                     var productoExistente = _detallesTransferencia.FirstOrDefault(d =>
                         d.IdProducto == frm.ProductoSeleccionado.Id &&
                         d.Lote == frm.LoteSeleccionado.NumeroLote);

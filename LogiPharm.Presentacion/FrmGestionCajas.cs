@@ -1,7 +1,7 @@
-using System;
+ï»¿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
 
@@ -9,35 +9,29 @@ namespace LogiPharm.Presentacion
 {
     public partial class FrmGestionCajas : Form
     {
-        private DCaja d_Caja;
         private bool modoEdicion = false;
         private int? idCajaSeleccionada = null;
 
         public FrmGestionCajas()
         {
             InitializeComponent();
-            d_Caja = new DCaja();
         }
 
         private void FrmGestionCajas_Load(object sender, EventArgs e)
         {
-            // Auditoría
-            try
-            {
-                new DBitacora().Registrar(
-                    SesionActual.IdUsuario,
-                    SesionActual.NombreUsuario,
-                    "Caja",
-                    "VISUALIZAR",
-                    "cajas",
-                    null,
-                    "Abrir Gestión de Cajas",
-                    null,
-                    Environment.MachineName,
-                    "UI"
-                );
-            }
-            catch { }
+            // AuditorÃ­a
+            NBitacora.Registrar(
+                SesionActual.IdUsuario,
+                SesionActual.NombreUsuario,
+                "Caja",
+                "VISUALIZAR",
+                "cajas",
+                null,
+                "Abrir GestiÃ³n de Cajas",
+                null,
+                Environment.MachineName,
+                "UI"
+            );
 
             ConfigurarDataGridView();
             CargarCajas();
@@ -69,7 +63,7 @@ namespace LogiPharm.Presentacion
             try
             {
                 Cursor = Cursors.WaitCursor;
-                var tabla = d_Caja.ObtenerParaListado(chkMostrarAnuladas.Checked);
+                var tabla = NCaja.ObtenerParaListado(chkMostrarAnuladas.Checked);
                 dgvCajas.DataSource = tabla;
 
                 // Personalizar columnas
@@ -133,19 +127,19 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                var caja = d_Caja.ObtenerPorId(idCajaSeleccionada.Value);
+                var caja = NCaja.ObtenerPorId(idCajaSeleccionada.Value);
                 if (caja != null)
                 {
-                    // Información básica
+                    // InformaciÃ³n bÃ¡sica
                     lblCodigoDetalle.Text = caja.Codigo;
                     lblNombreDetalle.Text = caja.Nombre;
-                    lblDescripcionDetalle.Text = !string.IsNullOrEmpty(caja.Descripcion) ? caja.Descripcion : "Sin descripción";
+                    lblDescripcionDetalle.Text = !string.IsNullOrEmpty(caja.Descripcion) ? caja.Descripcion : "Sin descripciÃ³n";
                     
                     // Estado
                     lblEstadoDetalle.Text = $"{caja.EstadoIcono} {caja.EstadoTexto}";
                     lblEstadoDetalle.ForeColor = Color.FromName(caja.EstadoColor);
 
-                    // Si está abierta, mostrar info de apertura
+                    // Si estÃ¡ abierta, mostrar info de apertura
                     if (caja.TieneAperturaActiva)
                     {
                         pnlAperturaActiva.Visible = true;
@@ -158,7 +152,7 @@ namespace LogiPharm.Presentacion
                         pnlAperturaActiva.Visible = false;
                     }
 
-                    // Estadísticas
+                    // EstadÃ­sticas
                     CargarEstadisticas(caja.Id);
                 }
             }
@@ -177,7 +171,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var stats = d_Caja.ObtenerEstadisticas(idCaja);
+                var stats = NCaja.ObtenerEstadisticas(idCaja);
                 
                 lblTotalCierresStats.Text = stats["TotalCierres"].ToString();
                 lblTotalIngresosStats.Text = Convert.ToDecimal(stats["TotalIngresos"]).ToString("C2");
@@ -230,7 +224,7 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                var caja = d_Caja.ObtenerPorId(idCajaSeleccionada.Value);
+                var caja = NCaja.ObtenerPorId(idCajaSeleccionada.Value);
                 if (caja == null) return;
 
                 modoEdicion = true;
@@ -274,55 +268,47 @@ namespace LogiPharm.Presentacion
                 {
                     caja.Id = idCajaSeleccionada.Value;
                     caja.EditadoPor = SesionActual.IdUsuario;
-                    exito = d_Caja.Actualizar(caja);
+                    exito = NCaja.Actualizar(caja);
 
-                    // Auditoría
-                    try
-                    {
-                        new DBitacora().Registrar(
-                            SesionActual.IdUsuario,
-                            SesionActual.NombreUsuario,
-                            "Caja",
-                            "EDITAR",
-                            "cajas",
-                            caja.Id,
-                            $"Caja editada: {caja.Codigo}",
-                            null,
-                            Environment.MachineName,
-                            "UI"
-                        );
-                    }
-                    catch { }
+                    // AuditorÃ­a
+                    NBitacora.Registrar(
+                        SesionActual.IdUsuario,
+                        SesionActual.NombreUsuario,
+                        "Caja",
+                        "EDITAR",
+                        "cajas",
+                        caja.Id,
+                        $"Caja editada: {caja.Codigo}",
+                        null,
+                        Environment.MachineName,
+                        "UI"
+                    );
                 }
                 else
                 {
                     caja.CreadoPor = SesionActual.IdUsuario;
-                    exito = d_Caja.Insertar(caja);
+                    exito = NCaja.Insertar(caja);
 
-                    // Auditoría
-                    try
-                    {
-                        new DBitacora().Registrar(
-                            SesionActual.IdUsuario,
-                            SesionActual.NombreUsuario,
-                            "Caja",
-                            "CREAR",
-                            "cajas",
-                            null,
-                            $"Nueva caja creada: {caja.Codigo}",
-                            null,
-                            Environment.MachineName,
-                            "UI"
-                        );
-                    }
-                    catch { }
+                    // AuditorÃ­a
+                    NBitacora.Registrar(
+                        SesionActual.IdUsuario,
+                        SesionActual.NombreUsuario,
+                        "Caja",
+                        "CREAR",
+                        "cajas",
+                        null,
+                        $"Nueva caja creada: {caja.Codigo}",
+                        null,
+                        Environment.MachineName,
+                        "UI"
+                    );
                 }
 
                 if (exito)
                 {
                     MessageBox.Show(
                         modoEdicion ? "Caja actualizada correctamente" : "Caja creada correctamente",
-                        "Éxito",
+                        "Ã‰xito",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information
                     );
@@ -364,10 +350,10 @@ namespace LogiPharm.Presentacion
 
             bool activa = Convert.ToBoolean(dgvCajas.CurrentRow.Cells["Activa"].Value);
             string accion = activa ? "desactivar" : "activar";
-            string codigo = dgvCajas.CurrentRow.Cells["Código"].Value.ToString();
+            string codigo = dgvCajas.CurrentRow.Cells["CÃ³digo"].Value.ToString();
 
             var confirmacion = MessageBox.Show(
-                $"¿Está seguro que desea {accion} la caja '{codigo}'?",
+                $"Â¿EstÃ¡ seguro que desea {accion} la caja '{codigo}'?",
                 "Confirmar",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
@@ -377,34 +363,30 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                bool exito = d_Caja.CambiarEstadoActiva(idCajaSeleccionada.Value, !activa, SesionActual.IdUsuario);
+                bool exito = NCaja.CambiarEstadoActiva(idCajaSeleccionada.Value, !activa, SesionActual.IdUsuario);
 
                 if (exito)
                 {
                     MessageBox.Show(
                         $"Caja {(activa ? "desactivada" : "activada")} correctamente",
-                        "Éxito",
+                        "Ã‰xito",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information
                     );
 
-                    // Auditoría
-                    try
-                    {
-                        new DBitacora().Registrar(
-                            SesionActual.IdUsuario,
-                            SesionActual.NombreUsuario,
-                            "Caja",
-                            activa ? "DESACTIVAR" : "ACTIVAR",
-                            "cajas",
-                            idCajaSeleccionada.Value,
-                            $"Caja {codigo} {(activa ? "desactivada" : "activada")}",
-                            null,
-                            Environment.MachineName,
-                            "UI"
-                        );
-                    }
-                    catch { }
+                    // AuditorÃ­a
+                    NBitacora.Registrar(
+                        SesionActual.IdUsuario,
+                        SesionActual.NombreUsuario,
+                        "Caja",
+                        activa ? "DESACTIVAR" : "ACTIVAR",
+                        "cajas",
+                        idCajaSeleccionada.Value,
+                        $"Caja {codigo} {(activa ? "desactivada" : "activada")}",
+                        null,
+                        Environment.MachineName,
+                        "UI"
+                    );
 
                     CargarCajas();
                 }
@@ -433,10 +415,10 @@ namespace LogiPharm.Presentacion
         {
             if (!idCajaSeleccionada.HasValue || dgvCajas.CurrentRow == null) return;
 
-            string codigo = dgvCajas.CurrentRow.Cells["Código"].Value.ToString();
+            string codigo = dgvCajas.CurrentRow.Cells["CÃ³digo"].Value.ToString();
             var confirmacion = MessageBox.Show(
-                $"¿Está seguro que desea ANULAR la caja '{codigo}'?\n\nEsta acción no se puede deshacer.",
-                "Confirmar Anulación",
+                $"Â¿EstÃ¡ seguro que desea ANULAR la caja '{codigo}'?\n\nEsta acciÃ³n no se puede deshacer.",
+                "Confirmar AnulaciÃ³n",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Warning
             );
@@ -445,34 +427,30 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                bool exito = d_Caja.Anular(idCajaSeleccionada.Value, SesionActual.IdUsuario);
+                bool exito = NCaja.Anular(idCajaSeleccionada.Value, SesionActual.IdUsuario);
 
                 if (exito)
                 {
                     MessageBox.Show(
                         "Caja anulada correctamente",
-                        "Éxito",
+                        "Ã‰xito",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information
                     );
 
-                    // Auditoría
-                    try
-                    {
-                        new DBitacora().Registrar(
-                            SesionActual.IdUsuario,
-                            SesionActual.NombreUsuario,
-                            "Caja",
-                            "ANULAR",
-                            "cajas",
-                            idCajaSeleccionada.Value,
-                            $"Caja {codigo} anulada",
-                            null,
-                            Environment.MachineName,
-                            "UI"
-                        );
-                    }
-                    catch { }
+                    // AuditorÃ­a
+                    NBitacora.Registrar(
+                        SesionActual.IdUsuario,
+                        SesionActual.NombreUsuario,
+                        "Caja",
+                        "ANULAR",
+                        "cajas",
+                        idCajaSeleccionada.Value,
+                        $"Caja {codigo} anulada",
+                        null,
+                        Environment.MachineName,
+                        "UI"
+                    );
 
                     CargarCajas();
                 }
@@ -507,7 +485,7 @@ namespace LogiPharm.Presentacion
                 frm.ShowDialog();
             }
 
-            // Refrescar después de cerrar
+            // Refrescar despuÃ©s de cerrar
             CargarCajas();
             MostrarDetallesCaja();
         }
@@ -529,7 +507,7 @@ namespace LogiPharm.Presentacion
                 }
                 else
                 {
-                    dt.DefaultView.RowFilter = $"Código LIKE '%{filtro}%' OR Nombre LIKE '%{filtro}%'";
+                    dt.DefaultView.RowFilter = $"CÃ³digo LIKE '%{filtro}%' OR Nombre LIKE '%{filtro}%'";
                 }
             }
         }
@@ -538,23 +516,23 @@ namespace LogiPharm.Presentacion
         {
             if (string.IsNullOrWhiteSpace(txtCodigo.Text))
             {
-                MessageBox.Show("Debe ingresar un código", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe ingresar un cÃ³digo", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtCodigo.Focus();
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(txtNombre.Text))
             {
-                MessageBox.Show("Debe ingresar un nombre", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe ingresar un nombre", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtNombre.Focus();
                 return false;
             }
 
-            // Verificar código único
+            // Verificar cÃ³digo Ãºnico
             string codigo = txtCodigo.Text.Trim().ToUpper();
-            if (d_Caja.ExisteCodigo(codigo, idCajaSeleccionada))
+            if (NCaja.ExisteCodigo(codigo, idCajaSeleccionada))
             {
-                MessageBox.Show($"El código '{codigo}' ya existe", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"El cÃ³digo '{codigo}' ya existe", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtCodigo.Focus();
                 return false;
             }
@@ -572,7 +550,7 @@ namespace LogiPharm.Presentacion
 
         private void HabilitarControles(bool habilitar)
         {
-            txtCodigo.Enabled = habilitar && !modoEdicion; // El código no se puede editar
+            txtCodigo.Enabled = habilitar && !modoEdicion; // El cÃ³digo no se puede editar
             txtNombre.Enabled = habilitar;
             txtDescripcion.Enabled = habilitar;
             chkActiva.Enabled = habilitar;

@@ -1,4 +1,4 @@
-using LogiPharm.Entidades;
+锘縰sing LogiPharm.Entidades;
 using MySqlConnector;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace LogiPharm.Datos
     public class DInventarioLotes
     {
         /// <summary>
-        /// Obtiene todos los lotes de un producto buscando por c骴igo de producto
+        /// Obtiene todos los lotes de un producto buscando por c贸digo de producto
         /// </summary>
         public List<EInventarioLote> ObtenerLotesPorCodigoProducto(string codigoProducto, int? idUbicacion = null, bool? soloActivos = true)
         {
@@ -81,7 +81,7 @@ namespace LogiPharm.Datos
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Error al obtener lotes por c骴igo de producto: " + ex.Message);
+                    throw new Exception("Error al obtener lotes por c贸digo de producto: " + ex.Message);
                 }
             }
 
@@ -89,7 +89,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Obtiene los lotes disponibles de un producto en una ubicaci髇 espec韋ica
+        /// Obtiene los lotes disponibles de un producto en una ubicaci贸n espec铆fica
         /// </summary>
         public List<EInventarioLote> ObtenerLotesDisponiblesPorProductoYUbicacion(int idProducto, int idUbicacion)
         {
@@ -235,7 +235,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Obtiene el stock total disponible de un producto en una ubicaci髇
+        /// Obtiene el stock total disponible de un producto en una ubicaci贸n
         /// </summary>
         public decimal ObtenerStockTotalDisponible(int idProducto, int idUbicacion)
         {
@@ -266,7 +266,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Reserva stock de un lote espec韋ico
+        /// Reserva stock de un lote espec铆fico
         /// </summary>
         public bool ReservarStock(int idLote, decimal cantidad)
         {
@@ -445,7 +445,7 @@ namespace LogiPharm.Datos
         }
 
         /// <summary>
-        /// Obtiene un lote espec韋ico por su ID
+        /// Obtiene un lote espec铆fico por su ID
         /// </summary>
         public EInventarioLote ObtenerLotePorId(int idLote)
         {

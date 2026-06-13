@@ -1,4 +1,4 @@
-﻿namespace LogiPharm.Presentacion
+﻿﻿namespace LogiPharm.Presentacion
 {
     partial class FrmLaboratorios
     {

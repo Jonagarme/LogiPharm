@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
 
@@ -65,8 +65,7 @@ namespace LogiPharm.Presentacion
             // Mostrar el próximo número sin reservarlo
             try
             {
-                var d = new DCotizaciones();
-                int siguiente = d.ObtenerProximoNumeroPreview();
+                int siguiente = NCotizacion.ObtenerProximoNumeroPreview();
                 txtNumeroCotizacion.Text = siguiente.ToString("D6");
             }
             catch { }
@@ -78,8 +77,7 @@ namespace LogiPharm.Presentacion
             // Actualiza con el próximo número
             try
             {
-                var d = new DCotizaciones();
-                int siguiente = d.ObtenerProximoNumeroPreview();
+                int siguiente = NCotizacion.ObtenerProximoNumeroPreview();
                 txtNumeroCotizacion.Text = siguiente.ToString("D6");
             }
             catch { }
@@ -113,8 +111,7 @@ namespace LogiPharm.Presentacion
 
                 try
                 {
-                    DClientes d_Clientes = new DClientes();
-                    ECliente cliente = d_Clientes.BuscarClientePorId(id);
+                    ECliente cliente = NClientes.BuscarClientePorId(id);
 
                     if (cliente != null)
                     {
@@ -138,7 +135,7 @@ namespace LogiPharm.Presentacion
                                 if (frm.ShowDialog() == DialogResult.OK)
                                 {
                                     // Reconsultar para obtener el ID asignado en la BD
-                                    _clienteActual = d_Clientes.BuscarClientePorId(id);
+                                    _clienteActual = NClientes.BuscarClientePorId(id);
                                     if (_clienteActual != null)
                                     {
                                         txtCliente.Text = _clienteActual.RazonSocial;
@@ -183,8 +180,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                DProductos d_Productos = new DProductos();
-                List<EProducto> productos = d_Productos.BuscarProductosActivos(terminoBusqueda);
+                List<EProducto> productos = NProductos.BuscarProductosActivos(terminoBusqueda);
 
                 if (productos.Count == 1)
                 {
@@ -440,12 +436,11 @@ namespace LogiPharm.Presentacion
                     Detalles = detalles
                 };
 
-                DCotizaciones d = new DCotizaciones();
-                long idGenerado = d.GuardarCotizacion(cot, SesionActual.IdUsuario);
+                long idGenerado = NCotizacion.GuardarCotizacion(cot, SesionActual.IdUsuario);
                 _idCotizacionActual = idGenerado;
 
                 // Mostrar número asignado
-                int numero = d.ObtenerNumeroPorId(idGenerado);
+                int numero = NCotizacion.ObtenerNumeroPorId(idGenerado);
                 if (numero > 0)
                     txtNumeroCotizacion.Text = numero.ToString("D6");
 
@@ -456,7 +451,7 @@ namespace LogiPharm.Presentacion
                 {
                     string accion = (cot.Id == 0) ? "CREAR" : "EDITAR";
                     string desc = $"Cotización No. {txtNumeroCotizacion.Text} guardada";
-                    new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Cotizaciones", accion, "cotizaciones", (long)idGenerado, desc, null, Environment.MachineName, "UI");
+                    NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Cotizaciones", accion, "cotizaciones", (long)idGenerado, desc, null, Environment.MachineName, "UI");
                 }
                 catch { }
 
@@ -481,13 +476,12 @@ namespace LogiPharm.Presentacion
                 var resp = MessageBox.Show("¿Confirma anular esta cotización?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (resp != DialogResult.Yes) return;
 
-                DCotizaciones d = new DCotizaciones();
-                d.AnularCotizacion(_idCotizacionActual.Value, SesionActual.IdUsuario);
+                NCotizacion.AnularCotizacion(_idCotizacionActual.Value, SesionActual.IdUsuario);
 
                 ActualizarEstadoVisual("ANULADA", dtpFecha.Value, (int)numValidez.Value);
 
                 // Auditoría: ANULAR
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Cotizaciones", "ANULAR", "cotizaciones", (long)_idCotizacionActual.Value, $"Cotización No. {txtNumeroCotizacion.Text} anulada", null, Environment.MachineName, "UI"); } catch { }
+                try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Cotizaciones", "ANULAR", "cotizaciones", (long)_idCotizacionActual.Value, $"Cotización No. {txtNumeroCotizacion.Text} anulada", null, Environment.MachineName, "UI"); } catch { }
 
                 MessageBox.Show("Cotización anulada.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -509,13 +503,12 @@ namespace LogiPharm.Presentacion
             ActualizarEstadoVisual(cot.Estado, cot.Fecha, cot.ValidezDias);
 
             // Auditoría: VISUALIZAR
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Cotizaciones", "VISUALIZAR", "cotizaciones", cot.Id, $"Ver cotización No. {txtNumeroCotizacion.Text}", null, Environment.MachineName, "UI"); } catch { }
+            try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Cotizaciones", "VISUALIZAR", "cotizaciones", cot.Id, $"Ver cotización No. {txtNumeroCotizacion.Text}", null, Environment.MachineName, "UI"); } catch { }
 
             // Cargar cliente
             try
             {
-                var dCli = new DClientes();
-                var cli = dCli.ObtenerClientePorId(cot.IdCliente);
+                var cli = NClientes.ObtenerClientePorId(cot.IdCliente);
                 _clienteActual = cli;
                 if (cli != null)
                 {
@@ -589,8 +582,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var d = new DCotizaciones();
-                var cot = d.ObtenerUltimaCotizacion();
+                var cot = NCotizacion.ObtenerUltimaCotizacion();
                 if (cot == null)
                 {
                     MessageBox.Show("No existen cotizaciones.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -608,8 +600,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var d = new DCotizaciones();
-                var cot = d.ObtenerCotizacionPorNumero(numero);
+                var cot = NCotizacion.ObtenerCotizacionPorNumero(numero);
                 if (cot == null)
                 {
                     MessageBox.Show("No se encontró la cotización.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);

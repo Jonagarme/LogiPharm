@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmImpuestos
     {
@@ -324,7 +324,7 @@ namespace LogiPharm.Presentacion
             this.txtCodigo.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtCodigo.Location = new System.Drawing.Point(19, 53);
             this.txtCodigo.Name = "txtCodigo";
-            this.txtCodigo.PlaceholderText = "Código (Ej: 2)";
+            this.txtCodigo.PlaceholderText = "CÃ³digo (Ej: 2)";
             this.txtCodigo.SelectedText = "";
             this.txtCodigo.Size = new System.Drawing.Size(180, 36);
             this.txtCodigo.TabIndex = 1;
@@ -348,7 +348,7 @@ namespace LogiPharm.Presentacion
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(271, 25);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Administración de Impuestos";
+            this.label1.Text = "AdministraciÃ³n de Impuestos";
             // 
             // guna2ShadowForm1
             // 
@@ -364,7 +364,7 @@ namespace LogiPharm.Presentacion
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "FrmImpuestos";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Administración de Impuestos";
+            this.Text = "AdministraciÃ³n de Impuestos";
             this.guna2Panel1.ResumeLayout(false);
             this.guna2Panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvImpuestos)).EndInit();

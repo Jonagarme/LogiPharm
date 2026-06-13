@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmPacientes
     {
@@ -53,9 +53,9 @@ namespace LogiPharm.Presentacion
             this.txtNombre.PlaceholderText = "Nombre (*)"; this.txtNombre.Location = new System.Drawing.Point(179, 49); this.txtNombre.Size = new System.Drawing.Size(360, 36);
             this.dtpNac.Location = new System.Drawing.Point(545, 49); this.dtpNac.Size = new System.Drawing.Size(160, 36);
             this.chkActivo.Text = "Activo"; this.chkActivo.Location = new System.Drawing.Point(711, 58); this.chkActivo.Checked = true;
-            this.txtTel.PlaceholderText = "Teléfono"; this.txtTel.Location = new System.Drawing.Point(13, 91); this.txtTel.Size = new System.Drawing.Size(160, 36);
+            this.txtTel.PlaceholderText = "TelÃ©fono"; this.txtTel.Location = new System.Drawing.Point(13, 91); this.txtTel.Size = new System.Drawing.Size(160, 36);
             this.txtEmail.PlaceholderText = "Email"; this.txtEmail.Location = new System.Drawing.Point(179, 91); this.txtEmail.Size = new System.Drawing.Size(220, 36);
-            this.txtDir.PlaceholderText = "Dirección"; this.txtDir.Location = new System.Drawing.Point(405, 91); this.txtDir.Size = new System.Drawing.Size(300, 36);
+            this.txtDir.PlaceholderText = "DirecciÃ³n"; this.txtDir.Location = new System.Drawing.Point(405, 91); this.txtDir.Size = new System.Drawing.Size(300, 36);
             // flowBtns
             this.flowBtns.Dock = System.Windows.Forms.DockStyle.Fill; this.flowBtns.Controls.Add(this.btnNuevo); this.flowBtns.Controls.Add(this.btnGuardar); this.flowBtns.Controls.Add(this.btnEliminar); this.flowBtns.Controls.Add(this.btnCerrar);
             this.btnNuevo.Text = "Nuevo"; this.btnGuardar.Text = "Guardar"; this.btnEliminar.Text = "Eliminar"; this.btnCerrar.Text = "Cerrar";
@@ -72,7 +72,7 @@ namespace LogiPharm.Presentacion
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Controls.Add(this.panelMain);
             this.Name = "FrmPacientes";
-            this.Text = "Administración de Pacientes";
+            this.Text = "AdministraciÃ³n de Pacientes";
             this.panelMain.ResumeLayout(false);
             this.table.ResumeLayout(false);
             this.grpEdit.ResumeLayout(false);

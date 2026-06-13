@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmEstablecimientoEdit
     {
@@ -60,7 +60,7 @@ namespace LogiPharm.Presentacion
             this.lblCodigo.Location = new System.Drawing.Point(24, 28);
             this.lblCodigo.Name = "lblCodigo";
             this.lblCodigo.Size = new System.Drawing.Size(96, 13);
-            this.lblCodigo.Text = "Código (3 dígitos):";
+            this.lblCodigo.Text = "CÃ³digo (3 dÃ­gitos):";
 
             this.lblNombre.AutoSize = true;
             this.lblNombre.Location = new System.Drawing.Point(24, 68);
@@ -72,7 +72,7 @@ namespace LogiPharm.Presentacion
             this.lblDireccion.Location = new System.Drawing.Point(24, 108);
             this.lblDireccion.Name = "lblDireccion";
             this.lblDireccion.Size = new System.Drawing.Size(55, 13);
-            this.lblDireccion.Text = "Dirección:";
+            this.lblDireccion.Text = "DirecciÃ³n:";
 
             this.lblEstado.AutoSize = true;
             this.lblEstado.Location = new System.Drawing.Point(24, 188);

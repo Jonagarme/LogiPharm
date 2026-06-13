@@ -1,5 +1,5 @@
-using LogiPharm.Datos;
-using LogiPharm.Entidades;
+ï»¿using LogiPharm.Entidades;
+using LogiPharm.Negocio;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,8 +11,6 @@ namespace LogiPharm.Presentacion
 {
     public partial class FrmLotesVencimientos : Form
     {
-        private readonly DInventarioLotes _dInventarioLotes = new DInventarioLotes();
-        private readonly DUbicaciones _dUbicaciones = new DUbicaciones();
         private long? _idProductoSeleccionado;
 
         public FrmLotesVencimientos()
@@ -44,7 +42,7 @@ namespace LogiPharm.Presentacion
             dgvLotes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "NumeroLote",
-                HeaderText = "N° Lote",
+                HeaderText = "NÂ° Lote",
                 DataPropertyName = "NumeroLote",
                 Width = 100
             });
@@ -52,7 +50,7 @@ namespace LogiPharm.Presentacion
             dgvLotes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Ubicacion",
-                HeaderText = "Ubicación",
+                HeaderText = "UbicaciÃ³n",
                 DataPropertyName = "NombreUbicacion",
                 Width = 120
             });
@@ -105,7 +103,7 @@ namespace LogiPharm.Presentacion
             dgvLotes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "DiasParaCaducidad",
-                HeaderText = "Días para vto.",
+                HeaderText = "DÃ­as para vto.",
                 DataPropertyName = "DiasParaCaducidad",
                 Width = 80
             });
@@ -156,12 +154,11 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                var dProductos = new DProductos();
-                var productosEncontrados = dProductos.BuscarProductosActivos(textoBusqueda);
+                var productosEncontrados = NProductos.BuscarProductosActivos(textoBusqueda);
 
                 if (productosEncontrados.Count == 0)
                 {
-                    MessageBox.Show("No se encontraron productos con ese criterio.", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("No se encontraron productos con ese criterio.", "BÃºsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -194,8 +191,8 @@ namespace LogiPharm.Presentacion
         {
             CargarUbicaciones();
             // Cambiar el rango de fechas para incluir lotes vencidos y futuros
-            dtpDesde.Value = DateTime.Today.AddYears(-2); // 2 años atrás
-            dtpHasta.Value = DateTime.Today.AddYears(5);  // 5 años adelante
+            dtpDesde.Value = DateTime.Today.AddYears(-2); // 2 aÃ±os atrÃ¡s
+            dtpHasta.Value = DateTime.Today.AddYears(5);  // 5 aÃ±os adelante
             CargarLotes();
         }
 
@@ -214,7 +211,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                DataTable tabla = _dUbicaciones.ListarUbicacionesActivas();
+                DataTable tabla = NUbicaciones.ListarUbicacionesActivas();
                 cboUbicacion.DataSource = tabla;
                 cboUbicacion.DisplayMember = "nombre";
                 cboUbicacion.ValueMember = "id";
@@ -236,7 +233,7 @@ namespace LogiPharm.Presentacion
                 DateTime? fechaHasta = dtpHasta.Value.Date;
                 bool? soloActivos = chkSoloActivos.Checked;
 
-                var lotes = _dInventarioLotes.ObtenerTodosLotes(idProducto, idUbicacion, fechaDesde, fechaHasta, soloActivos);
+                var lotes = NInventarioLote.ObtenerTodosLotes(idProducto, idUbicacion, fechaDesde, fechaHasta, soloActivos);
 
                 // Limpiar el DataSource antes de asignar uno nuevo
                 dgvLotes.DataSource = null;
@@ -253,13 +250,13 @@ namespace LogiPharm.Presentacion
                 int lotesPorVencer = lotes.Count(l => l.DiasParaCaducidad > 0 && l.DiasParaCaducidad <= 30);
 
                 lblResumen.Text = string.Format(
-                    "Total lotes: {0} | Disponible: {1:N2} | Reservado: {2:N2} | Vencidos: {3} | Por vencer (30 días): {4}",
+                    "Total lotes: {0} | Disponible: {1:N2} | Reservado: {2:N2} | Vencidos: {3} | Por vencer (30 dÃ­as): {4}",
                     cantidadLotes, totalDisponible, totalReservado, lotesVencidos, lotesPorVencer
                 );
 
                 if (lotes.Count == 0)
                 {
-                    MessageBox.Show("No se encontraron lotes con los criterios especificados.\n\nVerifica:\n- Las fechas de vencimiento\n- Que los lotes estén activos\n- Que tengan cantidad disponible", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("No se encontraron lotes con los criterios especificados.\n\nVerifica:\n- Las fechas de vencimiento\n- Que los lotes estÃ©n activos\n- Que tengan cantidad disponible", "Sin resultados", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
@@ -319,7 +316,7 @@ namespace LogiPharm.Presentacion
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
                     CargarLotes();
-                    MessageBox.Show("Lote creado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Lote creado exitosamente.", "Ã‰xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -340,7 +337,7 @@ namespace LogiPharm.Presentacion
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
                     CargarLotes();
-                    MessageBox.Show("Lote actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Lote actualizado exitosamente.", "Ã‰xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -357,15 +354,15 @@ namespace LogiPharm.Presentacion
             if (lote == null) return;
 
             var result = MessageBox.Show(
-                string.Format("¿Está seguro de desactivar el lote '{0}' del producto '{1}'?", lote.NumeroLote, lote.NombreProducto),
-                "Confirmar desactivación",
+                string.Format("Â¿EstÃ¡ seguro de desactivar el lote '{0}' del producto '{1}'?", lote.NumeroLote, lote.NombreProducto),
+                "Confirmar desactivaciÃ³n",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
             );
 
             if (result == DialogResult.Yes)
             {
-                MessageBox.Show("Funcionalidad en desarrollo.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Funcionalidad en desarrollo.", "InformaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -412,7 +409,7 @@ namespace LogiPharm.Presentacion
                         }
                     }
 
-                    MessageBox.Show("Datos exportados correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Datos exportados correctamente.", "Ã‰xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)

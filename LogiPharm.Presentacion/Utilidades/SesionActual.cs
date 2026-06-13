@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace LogiPharm.Presentacion.Utilidades
 {
@@ -9,6 +9,7 @@ namespace LogiPharm.Presentacion.Utilidades
         public static string NombreCompleto { get; set; }
         public static string Rol { get; set; }
         public static int IdEmpresa { get; set; } = 1;
+        public static int? IdUbicacion { get; set; }
         public static int IdCaja { get; set; } = 0; // ID de la caja asignada (0 = detectar automáticamente)
         public static string NombreCaja { get; set; } = "SIN CAJA"; // Nombre de la caja
         public static bool Activa => IdUsuario > 0;
@@ -62,6 +63,7 @@ namespace LogiPharm.Presentacion.Utilidades
             NombreCompleto = null;
             Rol = null;
             IdEmpresa = 1;
+            IdUbicacion = null;
             // No limpiamos IdCaja porque es específico de la terminal/equipo
         }
     }

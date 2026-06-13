@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmPerchaEditor
     {
@@ -180,7 +180,7 @@ namespace LogiPharm.Presentacion
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(57, 17);
             this.label4.TabIndex = 5;
-            this.label4.Text = "Sección:";
+            this.label4.Text = "SecciÃ³n:";
             // 
             // txtDescripcion
             // 
@@ -198,7 +198,7 @@ namespace LogiPharm.Presentacion
             this.txtDescripcion.Multiline = true;
             this.txtDescripcion.Name = "txtDescripcion";
             this.txtDescripcion.PasswordChar = '\0';
-            this.txtDescripcion.PlaceholderText = "Ingrese una descripción...";
+            this.txtDescripcion.PlaceholderText = "Ingrese una descripciÃ³n...";
             this.txtDescripcion.SelectedText = "";
             this.txtDescripcion.Size = new System.Drawing.Size(381, 60);
             this.txtDescripcion.TabIndex = 4;
@@ -211,7 +211,7 @@ namespace LogiPharm.Presentacion
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(82, 17);
             this.label3.TabIndex = 3;
-            this.label3.Text = "Descripción:";
+            this.label3.Text = "DescripciÃ³n:";
             // 
             // txtNombre
             // 

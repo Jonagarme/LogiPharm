@@ -1,4 +1,4 @@
-using LogiPharm.Entidades;
+ï»¿using LogiPharm.Entidades;
 using MySqlConnector;
 using System;
 using System.Collections.Generic;
@@ -41,7 +41,7 @@ namespace LogiPharm.Datos
             {
                 cn.Open();
                 var obj = cmd.ExecuteScalar();
-                if (obj == null || obj == DBNull.Value) return 1; // si no existe, el primero será 1
+                if (obj == null || obj == DBNull.Value) return 1; // si no existe, el primero serÃ¡ 1
                 return Convert.ToInt32(obj) + 1;
             }
         }
@@ -55,7 +55,7 @@ namespace LogiPharm.Datos
                 {
                     try
                     {
-                        // Generar número si no viene
+                        // Generar nÃºmero si no viene
                         if (cot.Numero <= 0)
                         {
                             cot.Numero = ObtenerSiguienteNumero(cn, tran);

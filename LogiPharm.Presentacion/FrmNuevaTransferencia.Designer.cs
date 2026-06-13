@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmNuevaTransferencia
     {
@@ -114,7 +114,7 @@ namespace LogiPharm.Presentacion
             this.groupBox1.Size = new System.Drawing.Size(860, 280);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Información General";
+            this.groupBox1.Text = "InformaciÃ³n General";
             // 
             // groupBox2
             // 
@@ -255,7 +255,7 @@ namespace LogiPharm.Presentacion
             this.lblNumero.Name = "lblNumero";
             this.lblNumero.Size = new System.Drawing.Size(141, 15);
             this.lblNumero.TabIndex = 0;
-            this.lblNumero.Text = "N° Transferencia (AUTO)";
+            this.lblNumero.Text = "NÂ° Transferencia (AUTO)";
             // 
             // cboDestino
             // 
@@ -282,7 +282,7 @@ namespace LogiPharm.Presentacion
             this.lblDestino.Name = "lblDestino";
             this.lblDestino.Size = new System.Drawing.Size(113, 15);
             this.lblDestino.TabIndex = 6;
-            this.lblDestino.Text = "* Ubicación Destino";
+            this.lblDestino.Text = "* UbicaciÃ³n Destino";
             // 
             // cboOrigen
             // 
@@ -309,7 +309,7 @@ namespace LogiPharm.Presentacion
             this.lblOrigen.Name = "lblOrigen";
             this.lblOrigen.Size = new System.Drawing.Size(107, 15);
             this.lblOrigen.TabIndex = 4;
-            this.lblOrigen.Text = "* Ubicación Origen";
+            this.lblOrigen.Text = "* UbicaciÃ³n Origen";
             // 
             // cboMotivo
             // 

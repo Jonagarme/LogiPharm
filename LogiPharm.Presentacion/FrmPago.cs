@@ -1,10 +1,10 @@
-using LogiPharm.Entidades;
+﻿using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 
 namespace LogiPharm.Presentacion
 {
@@ -112,8 +112,7 @@ namespace LogiPharm.Presentacion
             try
             {
                 // ✅ 1. LEER LOS DATOS DE LA EMPRESA DESDE LA BASE DE DATOS
-                DEmpresa d_empresa = new DEmpresa();
-                EEmpresa empresa = d_empresa.ObtenerDatosEmpresa();
+                EEmpresa empresa = NEmpresa.ObtenerDatosEmpresa();
 
                 if (empresa == null)
                 {
@@ -126,8 +125,7 @@ namespace LogiPharm.Presentacion
                 string ptoEmi = "001"; 
 
                 // --- (El resto de tu lógica para obtener el secuencial no cambia) ---
-                var datosSecuencial = new LogiPharm.Datos.DGenerarSecuancial();
-                string numeroFacturaCompleto = datosSecuencial.ObtenerSiguienteSecuencial(estab, ptoEmi);
+                string numeroFacturaCompleto = NSecuencia.ObtenerSiguienteSecuencial(estab, ptoEmi);
                 string secuencial = numeroFacturaCompleto.Split('-')[2];
 
 				// 🧱 Construir JSON para el nuevo endpoint
@@ -146,7 +144,7 @@ namespace LogiPharm.Presentacion
 				RespuestaFacturaApi r = null;
                 if (!_esEntrega)
                 {
-                    r = await new DFacturacion().ProcesarFacturaApiAsync(request);
+                    r = await NFacturacion.ProcesarFacturaApiAsync(request);
                     this.NumeroAutorizacion = r.numeroAutorizacion ?? "";
                     this.ClaveAcceso = r.claveAcceso ?? "";
                     this.EstadoAutorizacion = r.estadoFinal ?? "";
@@ -162,16 +160,14 @@ namespace LogiPharm.Presentacion
 
                 try
                 {
-                    DCierreCaja d_cierre = new DCierreCaja();
                     // Asume que tienes una forma de obtener el ID de la caja actual (ej: "1")
-                    var apertura = d_cierre.ObtenerDatosAperturaAbierta(1);
+                    var apertura = NCierreCaja.ObtenerDatosAperturaAbierta(1);
                     if (apertura == null) throw new Exception("No se pudo encontrar la sesión de caja abierta.");
 
                     int idCierreCaja = Convert.ToInt32(apertura["id"]);
                     int idUsuario = SesionActual.IdUsuario; // De tu clase de sesión
 
-                    DFacturaVenta d_factura = new DFacturaVenta();
-                    d_factura.GuardarFactura(_cliente, _productos, numeroFacturaCompleto, idCierreCaja, idUsuario, this.NumeroAutorizacion, SesionActual.IdEmpresa, _esEntrega, this.EstadoAutorizacion);
+                    NVenta.GuardarFactura(_cliente, _productos, numeroFacturaCompleto, idCierreCaja, idUsuario, this.NumeroAutorizacion, SesionActual.IdEmpresa, _esEntrega, this.EstadoAutorizacion, SesionActual.IdUbicacion);
                 }
                 catch (Exception dbEx)
                 {

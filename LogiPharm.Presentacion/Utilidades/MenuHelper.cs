@@ -596,10 +596,14 @@ namespace LogiPharm.Presentacion.Utilidades
             ToolStripMenuItem mGestion = new ToolStripMenuItem("Gestión de Sucursales");
             mGestion.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmSucursales>(formulario);
 
+            ToolStripMenuItem mBodegas = new ToolStripMenuItem("Gestionar Bodegas/Ubicaciones");
+            mBodegas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmUbicaciones>(formulario);
+
             ToolStripMenuItem mTransferencias = new ToolStripMenuItem("Transferencias internas");
             mTransferencias.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmTransferencias>(formulario);
 
             sucursales.DropDownItems.Add(mGestion);
+            sucursales.DropDownItems.Add(mBodegas);
             sucursales.DropDownItems.Add(mTransferencias);
             return sucursales;
         }

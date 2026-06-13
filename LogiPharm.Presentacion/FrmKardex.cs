@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
@@ -37,7 +37,7 @@ namespace LogiPharm.Presentacion
             dgvKardex.Columns["colSaldo"].DataPropertyName = "Saldo";
 
             // Auditoría: VISUALIZAR
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Kardex", "VISUALIZAR", "kardex", null, "Abrir Kardex", null, Environment.MachineName, "UI"); } catch { }
+            try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Kardex", "VISUALIZAR", "kardex", null, "Abrir Kardex", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void txtProducto_KeyDown(object sender, KeyEventArgs e)
@@ -76,8 +76,7 @@ namespace LogiPharm.Presentacion
 
             try
             {
-                DProductos d_Productos = new DProductos();
-                List<EProducto> productosEncontrados = d_Productos.BuscarProductosActivos(textoBuscado);
+                List<EProducto> productosEncontrados = NProductos.BuscarProductosActivos(textoBuscado);
 
                 if (productosEncontrados.Count == 0)
                 {
@@ -123,12 +122,11 @@ namespace LogiPharm.Presentacion
             // 2. Cargar los movimientos del Kardex
             try
             {
-                DKardex d_Kardex = new DKardex();
-                dgvKardex.DataSource = d_Kardex.ObtenerMovimientos((int)_productoSeleccionado.Id, dtpFechaInicio.Value, dtpFechaFin.Value);
+                dgvKardex.DataSource = NKardex.ObtenerMovimientos((int)_productoSeleccionado.Id, dtpFechaInicio.Value, dtpFechaFin.Value);
                 EstilizarGrid();
 
                 // Auditoría: VISUALIZAR kardex de producto
-                try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Kardex", "VISUALIZAR", "kardex", _productoSeleccionado.Id, $"Ver kardex de {_productoSeleccionado.Nombre}", null, Environment.MachineName, "UI"); } catch { }
+                try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Kardex", "VISUALIZAR", "kardex", _productoSeleccionado.Id, $"Ver kardex de {_productoSeleccionado.Nombre}", null, Environment.MachineName, "UI"); } catch { }
             }
             catch (Exception ex)
             {

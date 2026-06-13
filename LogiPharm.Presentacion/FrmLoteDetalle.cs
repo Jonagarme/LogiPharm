@@ -1,5 +1,5 @@
-using LogiPharm.Datos;
-using LogiPharm.Entidades;
+ï»¿using LogiPharm.Entidades;
+using LogiPharm.Negocio;
 using System;
 using System.Data;
 using System.Windows.Forms;
@@ -8,8 +8,6 @@ namespace LogiPharm.Presentacion
 {
     public partial class FrmLoteDetalle : Form
     {
-        private readonly DUbicaciones _dUbicaciones = new DUbicaciones();
-        private readonly DInventarioLotes _dInventarioLotes = new DInventarioLotes();
         private long? _idProductoSeleccionado;
         private int? _idLoteEditar;
 
@@ -41,7 +39,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                DataTable tabla = _dUbicaciones.ListarUbicacionesActivas();
+                DataTable tabla = NUbicaciones.ListarUbicacionesActivas();
                 cboUbicacion.DataSource = tabla;
                 cboUbicacion.DisplayMember = "nombre";
                 cboUbicacion.ValueMember = "id";
@@ -57,10 +55,10 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                var lote = _dInventarioLotes.ObtenerLotePorId(_idLoteEditar.Value);
+                var lote = NInventarioLote.ObtenerLotePorId(_idLoteEditar.Value);
                 if (lote == null)
                 {
-                    MessageBox.Show("No se encontró el lote especificado.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("No se encontrÃ³ el lote especificado.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Close();
                     return;
                 }
@@ -77,7 +75,7 @@ namespace LogiPharm.Presentacion
                 dtpFechaIngreso.Value = lote.FechaIngreso;
                 dtpFechaCaducidad.Value = lote.FechaCaducidad;
                 
-                // La cantidad inicial no se puede modificar en edición
+                // La cantidad inicial no se puede modificar en ediciÃ³n
                 numCantidadInicial.Value = lote.StockTotal;
                 numCantidadInicial.Enabled = false;
                 
@@ -128,21 +126,21 @@ namespace LogiPharm.Presentacion
         {
             if (!_idProductoSeleccionado.HasValue)
             {
-                MessageBox.Show("Debe seleccionar un producto.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe seleccionar un producto.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 btnBuscarProducto.Focus();
                 return false;
             }
 
             if (cboUbicacion.SelectedValue == null)
             {
-                MessageBox.Show("Debe seleccionar una ubicación.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe seleccionar una ubicaciÃ³n.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cboUbicacion.Focus();
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(txtNumeroLote.Text))
             {
-                MessageBox.Show("Debe ingresar el número de lote.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe ingresar el nÃºmero de lote.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtNumeroLote.Focus();
                 return false;
             }
@@ -150,14 +148,14 @@ namespace LogiPharm.Presentacion
             // Solo validar cantidad inicial si es un lote nuevo
             if (!_idLoteEditar.HasValue && numCantidadInicial.Value <= 0)
             {
-                MessageBox.Show("La cantidad inicial debe ser mayor a cero.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("La cantidad inicial debe ser mayor a cero.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 numCantidadInicial.Focus();
                 return false;
             }
 
             if (dtpFechaCaducidad.Value.Date < dtpFechaIngreso.Value.Date)
             {
-                MessageBox.Show("La fecha de caducidad no puede ser anterior a la fecha de ingreso.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("La fecha de caducidad no puede ser anterior a la fecha de ingreso.", "ValidaciÃ³n", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 dtpFechaCaducidad.Focus();
                 return false;
             }
@@ -167,7 +165,7 @@ namespace LogiPharm.Presentacion
 
         private void InsertarNuevoLote()
         {
-            bool resultado = _dInventarioLotes.InsertarLote(
+            bool resultado = NInventarioLote.InsertarLote(
                 productoId: (int)_idProductoSeleccionado.Value,
                 ubicacionId: Convert.ToInt32(cboUbicacion.SelectedValue),
                 numeroLote: txtNumeroLote.Text.Trim(),
@@ -183,7 +181,7 @@ namespace LogiPharm.Presentacion
 
             if (resultado)
             {
-                MessageBox.Show("Lote guardado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Lote guardado exitosamente.", "Ã‰xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
@@ -195,7 +193,7 @@ namespace LogiPharm.Presentacion
 
         private void ActualizarLoteExistente()
         {
-            bool resultado = _dInventarioLotes.ActualizarLote(
+            bool resultado = NInventarioLote.ActualizarLote(
                 idLote: _idLoteEditar.Value,
                 numeroLote: txtNumeroLote.Text.Trim(),
                 fechaIngreso: dtpFechaIngreso.Value.Date,
@@ -209,7 +207,7 @@ namespace LogiPharm.Presentacion
 
             if (resultado)
             {
-                MessageBox.Show("Lote actualizado exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Lote actualizado exitosamente.", "Ã‰xito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

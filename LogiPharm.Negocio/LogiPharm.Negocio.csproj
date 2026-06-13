@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -55,7 +55,32 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NBitacora.cs" />
+    <Compile Include="NCaja.cs" />
+    <Compile Include="NCierreCaja.cs" />
+    <Compile Include="NClientes.cs" />
+    <Compile Include="NEmpresa.cs" />
+    <Compile Include="NEstablecimiento.cs" />
+    <Compile Include="NFacturasCompra.cs" />
+    <Compile Include="NInventarioLote.cs" />
+    <Compile Include="NKardex.cs" />
+    <Compile Include="NLaboratorios.cs" />
+    <Compile Include="NOrdenCompra.cs" />
+    <Compile Include="NPerchas.cs" />
+    <Compile Include="NProductos.cs" />
+    <Compile Include="NProveedores.cs" />
+    <Compile Include="NPuntoEmision.cs" />
+    <Compile Include="NRecepcionProductos.cs" />
+    <Compile Include="NSecuencia.cs" />
+    <Compile Include="NTransferencia.cs" />
+    <Compile Include="NUbicaciones.cs" />
     <Compile Include="NUsuario.cs" />
+    <Compile Include="NUsuariosLookup.cs" />
+    <Compile Include="NFacturacion.cs" />
+    <Compile Include="NVenta.cs" />
+    <Compile Include="NFacturaElectronica.cs" />
+    <Compile Include="NCotizacion.cs" />
+    <Compile Include="NHistorialVentas.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

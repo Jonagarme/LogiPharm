@@ -1,4 +1,4 @@
-using LogiPharm.Datos;
+ï»¿using LogiPharm.Datos;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
 using System;
@@ -31,9 +31,9 @@ namespace LogiPharm.Presentacion
             dgvSucursales.Columns.Clear();
 
             dgvSucursales.Columns.Add(new DataGridViewTextBoxColumn { Name = "colId", HeaderText = "ID", DataPropertyName = "id", Visible = false });
-            dgvSucursales.Columns.Add(new DataGridViewTextBoxColumn { Name = "colCodigo", HeaderText = "CÓDIGO", DataPropertyName = "codigo", Width = 90, ReadOnly = true });
+            dgvSucursales.Columns.Add(new DataGridViewTextBoxColumn { Name = "colCodigo", HeaderText = "CÃ“DIGO", DataPropertyName = "codigo", Width = 90, ReadOnly = true });
             dgvSucursales.Columns.Add(new DataGridViewTextBoxColumn { Name = "colNombre", HeaderText = "NOMBRE COMERCIAL", DataPropertyName = "nombre_comercial", AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, ReadOnly = true });
-            dgvSucursales.Columns.Add(new DataGridViewTextBoxColumn { Name = "colDireccion", HeaderText = "DIRECCIÓN", DataPropertyName = "direccion", Width = 220, ReadOnly = true });
+            dgvSucursales.Columns.Add(new DataGridViewTextBoxColumn { Name = "colDireccion", HeaderText = "DIRECCIÃ“N", DataPropertyName = "direccion", Width = 220, ReadOnly = true });
             dgvSucursales.Columns.Add(new DataGridViewTextBoxColumn { Name = "colEstado", HeaderText = "ESTADO", DataPropertyName = "estado", Width = 90, ReadOnly = true });
             dgvSucursales.Columns.Add(new DataGridViewTextBoxColumn { Name = "colCreado", HeaderText = "CREADO", DataPropertyName = "creado_en", Width = 110, DefaultCellStyle = { Format = "dd/MM/yyyy" }, ReadOnly = true });
 
@@ -151,7 +151,7 @@ namespace LogiPharm.Presentacion
                 return;
             }
 
-            if (MessageBox.Show("¿Desea eliminar esta sucursal?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+            if (MessageBox.Show("Â¿Desea eliminar esta sucursal?", "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
                 return;
 
             try

@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing; // Necesario para los colores
 using System.Windows.Forms;
-using LogiPharm.Datos;
 using LogiPharm.Entidades;
+using LogiPharm.Negocio;
+using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
 {
@@ -80,10 +81,9 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                DProductos d_Productos = new DProductos();
                 // **RECOMENDACIÓN:** Asegúrate de que `BuscarProductosActivos` devuelva List<EProducto>
                 // para simplificar el código y evitar conversiones manuales.
-                dgvProductos.DataSource = d_Productos.BuscarProductosActivos(txtBuscar.Text);
+                dgvProductos.DataSource = NProductos.BuscarProductosActivos(txtBuscar.Text, SesionActual.IdUbicacion);
             }
             catch (Exception ex)
             {

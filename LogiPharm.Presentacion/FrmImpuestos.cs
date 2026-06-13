@@ -1,4 +1,4 @@
-using System;
+锘縰sing System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
@@ -24,7 +24,7 @@ namespace LogiPharm.Presentacion
         private void FrmImpuestos_Load(object sender, EventArgs e)
         {
             CargarImpuestos();
-            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci髇", "VISUALIZAR", "impuestos", null, "Abrir Impuestos", null, Environment.MachineName, "UI"); } catch { }
+            try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci贸n", "VISUALIZAR", "impuestos", null, "Abrir Impuestos", null, Environment.MachineName, "UI"); } catch { }
         }
 
         private void CargarImpuestos()
@@ -37,13 +37,13 @@ namespace LogiPharm.Presentacion
                 if (dgvImpuestos.Columns.Contains("id")) dgvImpuestos.Columns["id"].Visible = false;
 
                 // Ajuste de encabezados
-                if (dgvImpuestos.Columns.Contains("codigo")) dgvImpuestos.Columns["codigo"].HeaderText = "C骴igo";
+                if (dgvImpuestos.Columns.Contains("codigo")) dgvImpuestos.Columns["codigo"].HeaderText = "C贸digo";
                 if (dgvImpuestos.Columns.Contains("nombre")) dgvImpuestos.Columns["nombre"].HeaderText = "Nombre";
                 if (dgvImpuestos.Columns.Contains("porcentaje")) dgvImpuestos.Columns["porcentaje"].HeaderText = "%";
                 if (dgvImpuestos.Columns.Contains("vigenteDesde")) dgvImpuestos.Columns["vigenteDesde"].HeaderText = "Desde";
                 if (dgvImpuestos.Columns.Contains("vigenteHasta")) dgvImpuestos.Columns["vigenteHasta"].HeaderText = "Hasta";
                 if (dgvImpuestos.Columns.Contains("activo")) dgvImpuestos.Columns["activo"].HeaderText = "Activo";
-                if (dgvImpuestos.Columns.Contains("descripcion")) dgvImpuestos.Columns["descripcion"].HeaderText = "Descripci髇";
+                if (dgvImpuestos.Columns.Contains("descripcion")) dgvImpuestos.Columns["descripcion"].HeaderText = "Descripci贸n";
 
                 dgvImpuestos.AutoResizeColumns();
             }
@@ -117,7 +117,7 @@ namespace LogiPharm.Presentacion
             {
                 if (string.IsNullOrWhiteSpace(txtCodigo.Text))
                 {
-                    MessageBox.Show("El c骴igo es obligatorio.");
+                    MessageBox.Show("El c贸digo es obligatorio.");
                     txtCodigo.Focus();
                     return;
                 }
@@ -143,12 +143,12 @@ namespace LogiPharm.Presentacion
                 if (_idEditando.HasValue && _idEditando.Value > 0)
                 {
                     d.ActualizarImpuesto(imp);
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci髇", "EDITAR", "impuestos", imp.Id, $"Actualizar impuesto {imp.Codigo} {imp.Porcentaje:P2}", null, Environment.MachineName, "UI"); } catch { }
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci贸n", "EDITAR", "impuestos", imp.Id, $"Actualizar impuesto {imp.Codigo} {imp.Porcentaje:P2}", null, Environment.MachineName, "UI"); } catch { }
                 }
                 else
                 {
                     d.GuardarImpuesto(imp);
-                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci髇", "CREAR", "impuestos", null, $"Guardar impuesto {imp.Codigo} {imp.Porcentaje:P2}", null, Environment.MachineName, "UI"); } catch { }
+                    try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Configuraci贸n", "CREAR", "impuestos", null, $"Guardar impuesto {imp.Codigo} {imp.Porcentaje:P2}", null, Environment.MachineName, "UI"); } catch { }
                 }
 
                 ImpuestoProvider.Invalidate();

@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmArqueoCaja
     {
@@ -290,7 +290,7 @@ namespace LogiPharm.Presentacion
             this.labelSaldoTeorico.ForeColor = System.Drawing.Color.Black;
             this.labelSaldoTeorico.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.labelSaldoTeorico.Location = new System.Drawing.Point(30, 85);
-            this.labelSaldoTeorico.Text = "Saldo Teórico:";
+            this.labelSaldoTeorico.Text = "Saldo TeÃ³rico:";
 
             this.lblSaldoTeoricoResumen.AutoSize = true;
             this.lblSaldoTeoricoResumen.ForeColor = System.Drawing.Color.Black;
@@ -351,7 +351,7 @@ namespace LogiPharm.Presentacion
             FrmArqueoCaja.ConfigureKpi(this.labelSaldoInicial, "Saldo Inicial:", this.lblSaldoInicial, 30, 55);
             FrmArqueoCaja.ConfigureKpi(this.labelIngresos, "Total Ingresos:", this.lblTotalIngresos, 30, 85);
             FrmArqueoCaja.ConfigureKpi(this.labelEgresos, "Total Egresos:", this.lblTotalEgresos, 30, 115);
-            FrmArqueoCaja.ConfigureKpi(this.labelSaldoTeorico2, "Saldo Teórico:", this.lblSaldoTeorico, 30, 145);
+            FrmArqueoCaja.ConfigureKpi(this.labelSaldoTeorico2, "Saldo TeÃ³rico:", this.lblSaldoTeorico, 30, 145);
             FrmArqueoCaja.ConfigureKpi(this.labelTotalContado2, "Total Contado:", this.lblTotalContado, 30, 175);
 
             // 
@@ -388,10 +388,10 @@ namespace LogiPharm.Presentacion
             this.panelBottom.Size = new System.Drawing.Size(1200, 70);
             this.panelBottom.TabIndex = 3;
 
-            FrmArqueoCaja.ConfigureButton(this.btnGuardar, "?? Guardar", 680, 15, System.Drawing.Color.FromArgb(0, 192, 0), this.btnGuardar_Click);
-            FrmArqueoCaja.ConfigureButton(this.btnImprimir, "?? Imprimir", 820, 15, System.Drawing.Color.FromArgb(94, 148, 255), this.btnImprimir_Click);
-            FrmArqueoCaja.ConfigureButton(this.btnLimpiar, "?? Limpiar", 960, 15, System.Drawing.Color.FromArgb(255, 193, 7), this.btnLimpiar_Click);
-            FrmArqueoCaja.ConfigureButton(this.btnCerrar, "? Cerrar", 1100, 15, System.Drawing.Color.Gray, this.btnCerrar_Click);
+            FrmArqueoCaja.ConfigureButton(this.btnGuardar, "Guardar", 680, 15, System.Drawing.Color.FromArgb(0, 192, 0), this.btnGuardar_Click);
+            FrmArqueoCaja.ConfigureButton(this.btnImprimir, "Imprimir", 820, 15, System.Drawing.Color.FromArgb(94, 148, 255), this.btnImprimir_Click);
+            FrmArqueoCaja.ConfigureButton(this.btnLimpiar, "Limpiar", 960, 15, System.Drawing.Color.FromArgb(255, 193, 7), this.btnLimpiar_Click);
+            FrmArqueoCaja.ConfigureButton(this.btnCerrar, "Cerrar", 1100, 15, System.Drawing.Color.Gray, this.btnCerrar_Click);
 
             // 
             // FrmArqueoCaja

@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmConfigProductoTransferencia
     {
@@ -120,7 +120,7 @@ namespace LogiPharm.Presentacion
             this.lblProductoCodigo.Name = "lblProductoCodigo";
             this.lblProductoCodigo.Size = new System.Drawing.Size(52, 15);
             this.lblProductoCodigo.TabIndex = 3;
-            this.lblProductoCodigo.Text = "Código: -";
+            this.lblProductoCodigo.Text = "CÃ³digo: -";
             // 
             // lblProductoNombre
             // 
@@ -213,7 +213,7 @@ namespace LogiPharm.Presentacion
             this.txtBuscarProducto.Location = new System.Drawing.Point(153, 20);
             this.txtBuscarProducto.Name = "txtBuscarProducto";
             this.txtBuscarProducto.PasswordChar = '\0';
-            this.txtBuscarProducto.PlaceholderText = "Ingrese código o nombre del producto...";
+            this.txtBuscarProducto.PlaceholderText = "Ingrese cÃ³digo o nombre del producto...";
             this.txtBuscarProducto.SelectedText = "";
             this.txtBuscarProducto.Size = new System.Drawing.Size(476, 36);
             this.txtBuscarProducto.TabIndex = 1;

@@ -1,8 +1,8 @@
-using System;
+ï»¿using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using LogiPharm.Datos;
+using LogiPharm.Negocio;
 using LogiPharm.Presentacion.Utilidades;
 
 namespace LogiPharm.Presentacion
@@ -18,23 +18,19 @@ namespace LogiPharm.Presentacion
 
         private void FrmReporteCierres_Load(object sender, EventArgs e)
         {
-            // Auditoría
-            try
-            {
-                new DBitacora().Registrar(
-                    SesionActual.IdUsuario,
-                    SesionActual.NombreUsuario,
-                    "Caja",
-                    "VISUALIZAR",
-                    "cierres_caja",
-                    null,
-                    "Abrir Reporte de Cierres",
-                    null,
-                    Environment.MachineName,
-                    "UI"
-                );
-            }
-            catch { }
+            // AuditorÃ­a
+            NBitacora.Registrar(
+                SesionActual.IdUsuario,
+                SesionActual.NombreUsuario,
+                "Caja",
+                "VISUALIZAR",
+                "cierres_caja",
+                null,
+                "Abrir Reporte de Cierres",
+                null,
+                Environment.MachineName,
+                "UI"
+            );
 
             ConfigurarControles();
             CargarReporteDiario();
@@ -50,13 +46,13 @@ namespace LogiPharm.Presentacion
             cboTipoReporte.Items.AddRange(new object[] { "Diario", "Mensual", "Anual" });
             cboTipoReporte.SelectedIndex = 0;
 
-            // Configurar años disponibles
-            int añoActual = DateTime.Now.Year;
-            for (int i = añoActual; i >= añoActual - 5; i--)
+            // Configurar aÃ±os disponibles
+            int aÃ±oActual = DateTime.Now.Year;
+            for (int i = aÃ±oActual; i >= aÃ±oActual - 5; i--)
             {
-                cboAño.Items.Add(i);
+                cboAÃ±o.Items.Add(i);
             }
-            cboAño.SelectedItem = añoActual;
+            cboAÃ±o.SelectedItem = aÃ±oActual;
 
             // Configurar meses
             cboMes.Items.AddRange(new object[] {
@@ -86,20 +82,20 @@ namespace LogiPharm.Presentacion
                 case 0: // Diario
                     _tipoReporteActual = "DIARIO";
                     pnlFechas.Visible = true;
-                    pnlMesAño.Visible = false;
-                    pnlAño.Visible = false;
+                    pnlMesAÃ±o.Visible = false;
+                    pnlAÃ±o.Visible = false;
                     break;
                 case 1: // Mensual
                     _tipoReporteActual = "MENSUAL";
                     pnlFechas.Visible = false;
-                    pnlMesAño.Visible = true;
-                    pnlAño.Visible = false;
+                    pnlMesAÃ±o.Visible = true;
+                    pnlAÃ±o.Visible = false;
                     break;
                 case 2: // Anual
                     _tipoReporteActual = "ANUAL";
                     pnlFechas.Visible = false;
-                    pnlMesAño.Visible = false;
-                    pnlAño.Visible = true;
+                    pnlMesAÃ±o.Visible = false;
+                    pnlAÃ±o.Visible = true;
                     break;
             }
         }
@@ -123,23 +119,19 @@ namespace LogiPharm.Presentacion
                         break;
                 }
 
-                // Auditoría
-                try
-                {
-                    new DBitacora().Registrar(
-                        SesionActual.IdUsuario,
-                        SesionActual.NombreUsuario,
-                        "Caja",
-                        "CONSULTAR",
-                        "cierres_caja",
-                        null,
-                        $"Generó reporte {_tipoReporteActual}",
-                        null,
-                        Environment.MachineName,
-                        "UI"
-                    );
-                }
-                catch { }
+                // AuditorÃ­a
+                NBitacora.Registrar(
+                    SesionActual.IdUsuario,
+                    SesionActual.NombreUsuario,
+                    "Caja",
+                    "CONSULTAR",
+                    "cierres_caja",
+                    null,
+                    $"GenerÃ³ reporte {_tipoReporteActual}",
+                    null,
+                    Environment.MachineName,
+                    "UI"
+                );
             }
             catch (Exception ex)
             {
@@ -158,8 +150,7 @@ namespace LogiPharm.Presentacion
 
         private void CargarReporteDiario()
         {
-            DCierreCaja d_Cierre = new DCierreCaja();
-            var cierres = d_Cierre.ObtenerCierresPorRango(
+            var cierres = NCierreCaja.ObtenerCierresPorRango(
                 dtpFechaInicio.Value.Date,
                 dtpFechaFin.Value.Date.AddDays(1).AddSeconds(-1)
             );
@@ -174,11 +165,10 @@ namespace LogiPharm.Presentacion
 
         private void CargarReporteMensual()
         {
-            DCierreCaja d_Cierre = new DCierreCaja();
-            int año = Convert.ToInt32(cboAño.SelectedItem);
+            int aÃ±o = Convert.ToInt32(cboAÃ±o.SelectedItem);
             int mes = cboMes.SelectedIndex + 1;
 
-            DataTable tabla = d_Cierre.ObtenerResumenCierresMes(año, mes);
+            DataTable tabla = NCierreCaja.ObtenerResumenCierresMes(aÃ±o, mes);
             dgvCierres.DataSource = tabla;
 
             PersonalizarColumnasMensual();
@@ -188,10 +178,9 @@ namespace LogiPharm.Presentacion
 
         private void CargarReporteAnual()
         {
-            DCierreCaja d_Cierre = new DCierreCaja();
-            int año = Convert.ToInt32(cboAño.SelectedItem);
+            int aÃ±o = Convert.ToInt32(cboAÃ±o.SelectedItem);
 
-            DataTable tabla = d_Cierre.ObtenerResumenCierresAño(año);
+            DataTable tabla = NCierreCaja.ObtenerResumenCierresAÃ±o(aÃ±o);
             dgvCierres.DataSource = tabla;
 
             PersonalizarColumnasAnual();
@@ -230,7 +219,7 @@ namespace LogiPharm.Presentacion
             ConfigurarEncabezado("SaldoInicial", "Saldo Inicial");
             ConfigurarEncabezado("TotalIngresosSistema", "Ingresos");
             ConfigurarEncabezado("TotalEgresosSistema", "Egresos");
-            ConfigurarEncabezado("SaldoTeoricoSistema", "Saldo Teórico");
+            ConfigurarEncabezado("SaldoTeoricoSistema", "Saldo TeÃ³rico");
             ConfigurarEncabezado("TotalContadoFisico", "Contado");
             ConfigurarEncabezado("NombreUsuarioApertura", "Usuario Apertura");
             ConfigurarEncabezado("NombreUsuarioCierre", "Usuario Cierre");
@@ -295,7 +284,7 @@ namespace LogiPharm.Presentacion
             lblTotalEgresos.Text = totalEgresos.ToString("C2");
             lblTotalDiferencia.Text = totalDiferencia.ToString("C2");
 
-            // Color según diferencia
+            // Color segÃºn diferencia
             lblTotalDiferencia.ForeColor = totalDiferencia >= 0 ? Color.Green : Color.Red;
         }
 
@@ -322,18 +311,17 @@ namespace LogiPharm.Presentacion
 
         private void CalcularTotalesAnual(DataTable tabla)
         {
-            CalcularTotalesMensual(tabla); // Mismo cálculo
+            CalcularTotalesMensual(tabla); // Mismo cÃ¡lculo
         }
 
         private void ActualizarEstadisticas()
         {
             try
             {
-                DCierreCaja d_Cierre = new DCierreCaja();
                 DateTime? fechaInicio = _tipoReporteActual == "DIARIO" ? (DateTime?)dtpFechaInicio.Value : null;
                 DateTime? fechaFin = _tipoReporteActual == "DIARIO" ? (DateTime?)dtpFechaFin.Value : null;
 
-                var stats = d_Cierre.ObtenerEstadisticasCaja(null, fechaInicio, fechaFin);
+                var stats = NCierreCaja.ObtenerEstadisticasCaja(null, fechaInicio, fechaFin);
 
                 lblTotalCierres.Text = stats.ContainsKey("TotalCierres") ? stats["TotalCierres"].ToString("N0") : "0";
                 lblPromedioDiferencia.Text = stats.ContainsKey("DiferenciaPromedio") ? stats["DiferenciaPromedio"].ToString("C2") : "$0.00";
@@ -357,10 +345,10 @@ namespace LogiPharm.Presentacion
 
                 if (saveDialog.ShowDialog() == DialogResult.OK)
                 {
-                    // Aquí implementarías la exportación según el tipo de archivo
+                    // AquÃ­ implementarÃ­as la exportaciÃ³n segÃºn el tipo de archivo
                     MessageBox.Show(
-                        "Funcionalidad de exportación pendiente de implementar",
-                        "Información",
+                        "Funcionalidad de exportaciÃ³n pendiente de implementar",
+                        "InformaciÃ³n",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information
                     );
@@ -407,7 +395,7 @@ namespace LogiPharm.Presentacion
             }
         }
 
-        private void cboAño_SelectedIndexChanged(object sender, EventArgs e)
+        private void cboAÃ±o_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

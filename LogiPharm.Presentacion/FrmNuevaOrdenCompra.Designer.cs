@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+ï»¿namespace LogiPharm.Presentacion
 {
     partial class FrmNuevaOrdenCompra
     {
@@ -164,7 +164,7 @@ namespace LogiPharm.Presentacion
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(116, 17);
             this.label4.TabIndex = 8;
-            this.label4.Text = "Fecha de Emisión:";
+            this.label4.Text = "Fecha de EmisiÃ³n:";
             // 
             // txtObservaciones
             // 
@@ -210,7 +210,7 @@ namespace LogiPharm.Presentacion
             this.btnBuscarProveedor.Name = "btnBuscarProveedor";
             this.btnBuscarProveedor.Size = new System.Drawing.Size(36, 36);
             this.btnBuscarProveedor.TabIndex = 3;
-            this.btnBuscarProveedor.Text = "??";
+            this.btnBuscarProveedor.Text = "...";
             this.btnBuscarProveedor.Click += new System.EventHandler(this.btnBuscarProveedor_Click);
             // 
             // cboProveedor
@@ -269,7 +269,7 @@ namespace LogiPharm.Presentacion
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(59, 17);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Número:";
+            this.label1.Text = "NÃºmero:";
             // 
             // panelDetalle
             // 
@@ -353,7 +353,7 @@ namespace LogiPharm.Presentacion
             // 
             // colCodigo
             // 
-            this.colCodigo.HeaderText = "Código";
+            this.colCodigo.HeaderText = "CÃ³digo";
             this.colCodigo.Name = "colCodigo";
             this.colCodigo.ReadOnly = true;
             this.colCodigo.Width = 90;
@@ -437,7 +437,7 @@ namespace LogiPharm.Presentacion
             this.btnAgregarProducto.Name = "btnAgregarProducto";
             this.btnAgregarProducto.Size = new System.Drawing.Size(150, 36);
             this.btnAgregarProducto.TabIndex = 0;
-            this.btnAgregarProducto.Text = "? Agregar Producto";
+            this.btnAgregarProducto.Text = "Agregar Producto";
             this.btnAgregarProducto.Click += new System.EventHandler(this.btnAgregarProducto_Click);
             // 
             // panelTotales
@@ -593,7 +593,7 @@ namespace LogiPharm.Presentacion
             this.btnGuardar.Name = "btnGuardar";
             this.btnGuardar.Size = new System.Drawing.Size(120, 36);
             this.btnGuardar.TabIndex = 0;
-            this.btnGuardar.Text = "?? Guardar";
+            this.btnGuardar.Text = "Guardar";
             this.btnGuardar.Click += new System.EventHandler(this.btnGuardar_Click);
             // 
             // FrmNuevaOrdenCompra

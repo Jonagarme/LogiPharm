@@ -1,4 +1,4 @@
-namespace LogiPharm.Presentacion
+锘縩amespace LogiPharm.Presentacion
 {
     partial class FrmGestionCajas
     {
@@ -114,7 +114,7 @@ namespace LogiPharm.Presentacion
             this.lblTitulo.Name = "lblTitulo";
             this.lblTitulo.Size = new System.Drawing.Size(192, 25);
             this.lblTitulo.TabIndex = 0;
-            this.lblTitulo.Text = "Gesti髇 de Cajas";
+            this.lblTitulo.Text = "Gesti贸n de Cajas";
             // 
             // btnCerrar
             // 
@@ -127,7 +127,7 @@ namespace LogiPharm.Presentacion
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(50, 30);
             this.btnCerrar.TabIndex = 1;
-            this.btnCerrar.Text = "?";
+            this.btnCerrar.Text = "X";
             this.btnCerrar.Click += new System.EventHandler(this.btnCerrar_Click);
             // 
             // gbListado
@@ -176,7 +176,7 @@ namespace LogiPharm.Presentacion
             this.txtBuscar.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.txtBuscar.Location = new System.Drawing.Point(70, 35);
             this.txtBuscar.Name = "txtBuscar";
-            this.txtBuscar.PlaceholderText = "C骴igo o nombre...";
+            this.txtBuscar.PlaceholderText = "C贸digo o nombre...";
             this.txtBuscar.Size = new System.Drawing.Size(320, 36);
             this.txtBuscar.TabIndex = 2;
             this.txtBuscar.TextChanged += new System.EventHandler(this.txtBuscar_TextChanged);
@@ -246,9 +246,9 @@ namespace LogiPharm.Presentacion
             // 
             // colCodigo
             // 
-            this.colCodigo.DataPropertyName = "C骴igo";
-            this.colCodigo.HeaderText = "C骴igo";
-            this.colCodigo.Name = "C骴igo";
+            this.colCodigo.DataPropertyName = "C贸digo";
+            this.colCodigo.HeaderText = "C贸digo";
+            this.colCodigo.Name = "C贸digo";
             this.colCodigo.ReadOnly = true;
             this.colCodigo.Width = 110;
             // 
@@ -262,9 +262,9 @@ namespace LogiPharm.Presentacion
             // 
             // colDescripcion
             // 
-            this.colDescripcion.DataPropertyName = "Descripci髇";
-            this.colDescripcion.HeaderText = "Descripci髇";
-            this.colDescripcion.Name = "Descripci髇";
+            this.colDescripcion.DataPropertyName = "Descripci贸n";
+            this.colDescripcion.HeaderText = "Descripci贸n";
+            this.colDescripcion.Name = "Descripci贸n";
             this.colDescripcion.ReadOnly = true;
             this.colDescripcion.Width = 240;
             // 
@@ -332,7 +332,7 @@ namespace LogiPharm.Presentacion
             this.labelDescripcion.Name = "labelDescripcion";
             this.labelDescripcion.Size = new System.Drawing.Size(69, 15);
             this.labelDescripcion.TabIndex = 4;
-            this.labelDescripcion.Text = "Descripci髇";
+            this.labelDescripcion.Text = "Descripci贸n";
             // 
             // txtDescripcion
             // 
@@ -376,7 +376,7 @@ namespace LogiPharm.Presentacion
             this.labelCodigo.Name = "labelCodigo";
             this.labelCodigo.Size = new System.Drawing.Size(43, 15);
             this.labelCodigo.TabIndex = 0;
-            this.labelCodigo.Text = "C骴igo";
+            this.labelCodigo.Text = "C贸digo";
             // 
             // txtCodigo
             // 
@@ -580,7 +580,7 @@ namespace LogiPharm.Presentacion
             this.lblDescripcionLabel.Name = "lblDescripcionLabel";
             this.lblDescripcionLabel.Size = new System.Drawing.Size(69, 15);
             this.lblDescripcionLabel.TabIndex = 2;
-            this.lblDescripcionLabel.Text = "Descripci髇";
+            this.lblDescripcionLabel.Text = "Descripci贸n";
             // 
             // lblNombreLabel
             // 
@@ -600,7 +600,7 @@ namespace LogiPharm.Presentacion
             this.lblCodigoLabel.Name = "lblCodigoLabel";
             this.lblCodigoLabel.Size = new System.Drawing.Size(43, 15);
             this.lblCodigoLabel.TabIndex = 0;
-            this.lblCodigoLabel.Text = "C骴igo";
+            this.lblCodigoLabel.Text = "C贸digo";
             // 
             // pnlAperturaActiva
             // 
@@ -697,7 +697,7 @@ namespace LogiPharm.Presentacion
             this.gbStats.Name = "gbStats";
             this.gbStats.Size = new System.Drawing.Size(470, 52);
             this.gbStats.TabIndex = 5;
-            this.gbStats.Text = "Estad韘ticas";
+            this.gbStats.Text = "Estad铆sticas";
             // 
             // labelCierres
             // 
@@ -794,7 +794,7 @@ namespace LogiPharm.Presentacion
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FrmGestionCajas";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Gesti髇 de Cajas";
+            this.Text = "Gesti贸n de Cajas";
             this.Load += new System.EventHandler(this.FrmGestionCajas_Load);
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();

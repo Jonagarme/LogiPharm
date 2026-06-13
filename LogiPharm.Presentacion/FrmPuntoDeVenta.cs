@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using LogiPharm.Datos;
 using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
+using LogiPharm.Negocio;
 using System.Drawing.Drawing2D;
 using System.Drawing;
 
@@ -1766,8 +1767,7 @@ namespace LogiPharm.Presentacion
         {
             try
             {
-                DProductos d_Productos = new DProductos();
-                List<EProducto> productos = d_Productos.BuscarProductosActivos(terminoBusqueda);
+                List<EProducto> productos = NProductos.BuscarProductosActivos(terminoBusqueda, SesionActual.IdUbicacion);
 
                 if (productos.Count == 1)
                 {
