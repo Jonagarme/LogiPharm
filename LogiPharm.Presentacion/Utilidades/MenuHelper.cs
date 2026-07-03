@@ -1,4 +1,4 @@
-﻿using LogiPharm.Datos; 
+using LogiPharm.Datos; 
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -465,12 +465,30 @@ namespace LogiPharm.Presentacion.Utilidades
             transferencias.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmTransferencias>(formulario);
             inventario.DropDownItems.Add(transferencias);
             
-            inventario.DropDownItems.Add("Alertas de stock mínimo");
-            inventario.DropDownItems.Add("Principios activos");
-            inventario.DropDownItems.Add("Presentaciones");
-            inventario.DropDownItems.Add("Medicamentos controlados");
-            inventario.DropDownItems.Add("Código de barras");
-            inventario.DropDownItems.Add("Vademécum");
+            var mAlertas = new ToolStripMenuItem("Alertas de stock mínimo");
+            mAlertas.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmAlertasStock>(formulario);
+            inventario.DropDownItems.Add(mAlertas);
+
+            var mPrincipios = new ToolStripMenuItem("Principios activos");
+            mPrincipios.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmPrincipiosActivos>(formulario);
+            inventario.DropDownItems.Add(mPrincipios);
+
+            var mPresentaciones = new ToolStripMenuItem("Presentaciones");
+            mPresentaciones.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmPresentaciones>(formulario);
+            inventario.DropDownItems.Add(mPresentaciones);
+
+            var mControlados = new ToolStripMenuItem("Medicamentos controlados");
+            mControlados.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmMedicamentosControlados>(formulario);
+            inventario.DropDownItems.Add(mControlados);
+
+            var mBarra = new ToolStripMenuItem("Código de barras");
+            mBarra.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmBarcodeGenerator>(formulario);
+            inventario.DropDownItems.Add(mBarra);
+
+            var mVademecum = new ToolStripMenuItem("Vademécum");
+            mVademecum.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmVademecum>(formulario);
+            inventario.DropDownItems.Add(mVademecum);
+
             return inventario;
         }
 
@@ -508,7 +526,9 @@ namespace LogiPharm.Presentacion.Utilidades
             ToolStripMenuItem gestionClientes = new ToolStripMenuItem("Gestión de Clientes");
             gestionClientes.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmClientes>(formulario);
             clientes.DropDownItems.Add(gestionClientes);
-            clientes.DropDownItems.Add("Historial de compras");
+            var mHistorialComprasCliente = new ToolStripMenuItem("Historial de compras");
+            mHistorialComprasCliente.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmHistorialComprasCliente>(formulario);
+            clientes.DropDownItems.Add(mHistorialComprasCliente);
             clientes.DropDownItems.Add("Créditos / puntos");
             return clientes;
         }
@@ -525,8 +545,15 @@ namespace LogiPharm.Presentacion.Utilidades
             finanzas.DropDownItems.Add("Libro diario / mayor");
             finanzas.DropDownItems.Add("Conciliaciones");
             finanzas.DropDownItems.Add(Reporteventas);
-            finanzas.DropDownItems.Add("Reporte de inventario");
-            finanzas.DropDownItems.Add("Reporte de compras");
+            
+            var mRepInventario = new ToolStripMenuItem("Reporte de inventario");
+            mRepInventario.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmReporteInventario>(formulario);
+            finanzas.DropDownItems.Add(mRepInventario);
+
+            var mRepCompras = new ToolStripMenuItem("Reporte de compras");
+            mRepCompras.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmReporteCompras>(formulario);
+            finanzas.DropDownItems.Add(mRepCompras);
+
             finanzas.DropDownItems.Add("Reportes financieros");
             return finanzas;
         }
@@ -581,7 +608,11 @@ namespace LogiPharm.Presentacion.Utilidades
             secuencias.DropDownItems.Add(puntosEmision);
 
             configuracion.DropDownItems.Add(secuencias);
-            configuracion.DropDownItems.Add("Firma electrónica");
+            
+            var mFirma = new ToolStripMenuItem("Firma electrónica");
+            mFirma.Click += (s, e) => FormulariosHelper.AbrirFormulario<FrmFirmaElectronica>(formulario);
+            configuracion.DropDownItems.Add(mFirma);
+
             configuracion.DropDownItems.Add("Integraciones");
             return configuracion;
         }

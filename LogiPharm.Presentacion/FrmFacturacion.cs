@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Windows.Forms;
 using LogiPharm.Negocio;
@@ -257,8 +257,17 @@ namespace LogiPharm.Presentacion
                     btnReenviarSRI.Text = "Ya Autorizado";
                 }
 
-                // (opcional) otros labels:
-                // lblTipoDoc.Text = "FACTURA"; lblAmbiente.Text = "..."; etc.
+                lblNoInterno.Text = Convert.ToString(res.Encabezado["id"] ?? "...");
+                lblCajeroDetalle.Text = Convert.ToString(res.Encabezado["Cajero"] ?? "...");
+                lblCajaDetalle.Text = Convert.ToString(res.Encabezado["Caja"] ?? "...");
+                lblAmbiente.Text = Convert.ToString(res.Encabezado["Ambiente"] ?? "...");
+                lblTipoDoc.Text = "FACTURA";
+
+                // ===== Totales =====
+                lblResumenSubtotal.Text = Convert.ToDecimal(res.Encabezado["SubtotalFactura"]).ToString("C2");
+                lblResumenDescuento.Text = Convert.ToDecimal(res.Encabezado["DescuentoFactura"]).ToString("C2");
+                lblResumenIva.Text = Convert.ToDecimal(res.Encabezado["IvaFactura"]).ToString("C2");
+                lblResumenTotal.Text = Convert.ToDecimal(res.Encabezado["TotalFactura"]).ToString("C2");
 
                 // ===== Detalle =====
                 // Tus columnas ya están configuradas con estos DataPropertyName:
@@ -332,6 +341,13 @@ namespace LogiPharm.Presentacion
                     lblFecha.Text = detalleFactura.Resumen?.FechaEmision ?? "...";
                     lblAutorizacion.Text = detalleFactura.NumeroAutorizacion ?? "...";
 
+                    // Otros labels
+                    lblNoInterno.Text = "...";
+                    lblCajeroDetalle.Text = "...";
+                    lblCajaDetalle.Text = "...";
+                    lblAmbiente.Text = "...";
+                    lblTipoDoc.Text = "FACTURA";
+
                     // Estado SRI de la respuesta
                     var estado = (detalleFactura.Estado ?? "").Trim().ToUpperInvariant();
                     if (estado == "AUTORIZADO")
@@ -343,6 +359,7 @@ namespace LogiPharm.Presentacion
 
                     // Detalle
                     LlenarDetalleDesdeXML(detalleFactura.ComprobanteXml);
+                    CalcularTotalesDesdeGrid();
                 }
                 else
                 {
@@ -506,6 +523,11 @@ namespace LogiPharm.Presentacion
             lblTipoDoc.Text = "...";
             lblCajeroDetalle.Text = "...";
             lblCajaDetalle.Text = "...";
+            lblNoInterno.Text = "...";
+            lblResumenSubtotal.Text = "$0.00";
+            lblResumenDescuento.Text = "$0.00";
+            lblResumenIva.Text = "$0.00";
+            lblResumenTotal.Text = "$0.00";
             dgvDetalleFactura.Rows.Clear();
         }
 
@@ -679,6 +701,49 @@ namespace LogiPharm.Presentacion
                 this.Cursor = Cursors.Default;
                 btnReenviarSRI.Enabled = true;
             }
+        }
+
+        private void CalcularTotalesDesdeGrid()
+        {
+            decimal subtotal = 0;
+            decimal descuento = 0;
+            decimal iva = 0;
+            decimal total = 0;
+
+            foreach (DataGridViewRow row in dgvDetalleFactura.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                decimal cant = 0;
+                decimal pUnit = 0;
+                decimal desc = 0;
+                decimal valorIva = 0;
+                decimal sub = 0;
+
+                if (row.Cells["Cantidad"].Value != null)
+                    decimal.TryParse(row.Cells["Cantidad"].Value.ToString(), out cant);
+                if (row.Cells["PrecioUnitario"].Value != null)
+                    decimal.TryParse(row.Cells["PrecioUnitario"].Value.ToString(), out pUnit);
+                if (row.Cells["Descuento"].Value != null)
+                    decimal.TryParse(row.Cells["Descuento"].Value.ToString(), out desc);
+                if (row.Cells["Iva"].Value != null)
+                    decimal.TryParse(row.Cells["Iva"].Value.ToString(), out valorIva);
+                if (row.Cells["Subtotal"].Value != null)
+                    decimal.TryParse(row.Cells["Subtotal"].Value.ToString(), out sub);
+
+                subtotal += (cant * pUnit);
+                descuento += desc;
+                iva += valorIva;
+                total += sub;
+            }
+
+            decimal finalSubtotal = subtotal - descuento;
+            decimal finalTotal = finalSubtotal + iva;
+
+            lblResumenSubtotal.Text = finalSubtotal.ToString("C2");
+            lblResumenDescuento.Text = descuento.ToString("C2");
+            lblResumenIva.Text = iva.ToString("C2");
+            lblResumenTotal.Text = finalTotal.ToString("C2");
         }
 
     }

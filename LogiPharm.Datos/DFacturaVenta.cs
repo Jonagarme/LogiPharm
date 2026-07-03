@@ -9,7 +9,7 @@ namespace LogiPharm.Datos
 {
     public class DFacturaVenta
     {
-        public void GuardarFactura(ECliente cliente, List<ProductoVenta> productos, string numeroFactura, int idCierreCaja, int idUsuario, string numeroAutorizacion, int idEmpresa, bool esEntrega = false, string estadoFactura = "PENDIENTE", int? idUbicacion = null)
+        public void GuardarFactura(ECliente cliente, List<ProductoVenta> productos, string numeroFactura, int idCierreCaja, int idUsuario, string numeroAutorizacion, string claveAcceso, int idEmpresa, bool esEntrega = false, string estadoFactura = "PENDIENTE", int? idUbicacion = null)
         {
             using (var cn = new MySqlConnection(Conexion.cadena))
             {
@@ -33,11 +33,11 @@ namespace LogiPharm.Datos
 
                         // --- 2. Insertar el encabezado de la factura (facturas_venta) ---
                         string sqlFactura = @"INSERT INTO facturas_venta 
-                                            (idCliente, idUsuario, idCierreCaja, numeroFactura, numeroAutorizacion, fechaEmision, 
+                                            (idCliente, idUsuario, idCierreCaja, numeroFactura, numeroAutorizacion, claveAcceso, fechaEmision, 
                                             subtotal, descuento, iva, total, estado, creadoPor, creadoDate, anulado,
                                             es_entrega, estadoFactura, idEmpresa)
                                             VALUES
-                                            (@idCliente, @idUsuario, @idCierreCaja, @numeroFactura, @numeroAutorizacion, NOW(),
+                                            (@idCliente, @idUsuario, @idCierreCaja, @numeroFactura, @numeroAutorizacion, @claveAcceso, NOW(),
                                             @subtotal, @descuento, @iva, @total, 'PAGADA', @idUsuario, NOW(), 0,
                                             @es_entrega, @estadoFactura, @idEmpresa);
                                             SELECT LAST_INSERT_ID();";
@@ -49,7 +49,8 @@ namespace LogiPharm.Datos
                             cmdFactura.Parameters.AddWithValue("@idUsuario", idUsuario);
                             cmdFactura.Parameters.AddWithValue("@idCierreCaja", idCierreCaja);
                             cmdFactura.Parameters.AddWithValue("@numeroFactura", numeroFactura);
-                            cmdFactura.Parameters.AddWithValue("@numeroAutorizacion", numeroAutorizacion); // ✅ Se añade el nuevo parámetro
+                            cmdFactura.Parameters.AddWithValue("@numeroAutorizacion", numeroAutorizacion);
+                            cmdFactura.Parameters.AddWithValue("@claveAcceso", claveAcceso ?? "");
                             cmdFactura.Parameters.AddWithValue("@subtotal", subtotal);
                             cmdFactura.Parameters.AddWithValue("@descuento", descuento);
                             cmdFactura.Parameters.AddWithValue("@iva", iva);

@@ -1,4 +1,4 @@
-﻿using LogiPharm.Entidades;
+using LogiPharm.Entidades;
 using LogiPharm.Presentacion.Utilidades;
 using System;
 using System.Collections.Generic;
@@ -167,7 +167,7 @@ namespace LogiPharm.Presentacion
                     int idCierreCaja = Convert.ToInt32(apertura["id"]);
                     int idUsuario = SesionActual.IdUsuario; // De tu clase de sesión
 
-                    NVenta.GuardarFactura(_cliente, _productos, numeroFacturaCompleto, idCierreCaja, idUsuario, this.NumeroAutorizacion, SesionActual.IdEmpresa, _esEntrega, this.EstadoAutorizacion, SesionActual.IdUbicacion);
+                    NVenta.GuardarFactura(_cliente, _productos, numeroFacturaCompleto, idCierreCaja, idUsuario, this.NumeroAutorizacion, this.ClaveAcceso, SesionActual.IdEmpresa, _esEntrega, this.EstadoAutorizacion, SesionActual.IdUbicacion);
                 }
                 catch (Exception dbEx)
                 {

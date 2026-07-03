@@ -1,4 +1,4 @@
-﻿using CapaDatos;
+using CapaDatos;
 using LogiPharm.Entidades;
 using MySqlConnector;
 using System;
@@ -10,7 +10,7 @@ namespace LogiPharm.Datos
     public class DTransferencias
     {
         private const string TablaTransferencia = "inventario_transferenciastock";
-        private const string TablaTransferenciaDetalle = "inventario_transferenciastockdetalle";
+        private const string TablaTransferenciaDetalle = "inventario_detalletransferencia";
 
         // =====================
         // LISTAR TRANSFERENCIAS
@@ -329,7 +329,7 @@ namespace LogiPharm.Datos
                         {
                             foreach (var det in transferencia.Detalles)
                             {
-                                InsertarDetalleYReservarStock(cn, transaction, idTransferencia, transferencia.IdUbicacionOrigen, det);
+                                 InsertarDetalleTransferencia(cn, transaction, idTransferencia, transferencia.IdUbicacionOrigen, det);
                             }
                         }
 
@@ -345,7 +345,7 @@ namespace LogiPharm.Datos
             }
         }
 
-        private static void InsertarDetalleYReservarStock(MySqlConnection cn, MySqlTransaction tx, long idTransferencia, int idUbicacionOrigen, ETransferenciaDetalle det)
+        private static void InsertarDetalleTransferencia(MySqlConnection cn, MySqlTransaction tx, long idTransferencia, int idUbicacionOrigen, ETransferenciaDetalle det)
         {
             if (det == null)
                 throw new ArgumentNullException(nameof(det));
@@ -364,60 +364,60 @@ namespace LogiPharm.Datos
             {
                 cmdLote.Parameters.AddWithValue("@productoId", det.IdProducto);
                 cmdLote.Parameters.AddWithValue("@ubicacionId", idUbicacionOrigen);
-                cmdLote.Parameters.AddWithValue("@numeroLote", det.Lote ?? "");
+                cmdLote.Parameters.AddWithValue("@numeroLote", det.Lote ?? "GENERICO");
                 cmdLote.Parameters.AddWithValue("@fechaCaducidad", (object)det.FechaCaducidad ?? DBNull.Value);
 
                 object scalar = cmdLote.ExecuteScalar();
                 if (scalar == null || scalar == DBNull.Value)
-                    throw new Exception($"No se encontró el lote '{det.Lote}' para el producto ID {det.IdProducto} en la ubicación origen.");
-
-                idLoteOrigen = Convert.ToInt32(scalar);
+                {
+                    // Fallback to GENERICO lot
+                    using (var cmdGen = new MySqlCommand(@"
+                        SELECT id FROM inventario_loteproducto 
+                        WHERE producto_id = @productoId AND ubicacion_id = @ubicacionId AND numero_lote = 'GENERICO' LIMIT 1;", cn, tx))
+                    {
+                        cmdGen.Parameters.AddWithValue("@productoId", det.IdProducto);
+                        cmdGen.Parameters.AddWithValue("@ubicacionId", idUbicacionOrigen);
+                        object scalarGen = cmdGen.ExecuteScalar();
+                        if (scalarGen != null && scalarGen != DBNull.Value)
+                            idLoteOrigen = Convert.ToInt32(scalarGen);
+                        else
+                            throw new Exception($"No se encontró el lote '{det.Lote}' para el producto ID {det.IdProducto} en la ubicación origen.");
+                    }
+                }
+                else
+                {
+                    idLoteOrigen = Convert.ToInt32(scalar);
+                }
             }
 
-            // 2) Reservar stock del lote
-            using (var cmdReserva = new MySqlCommand(@"
-                UPDATE inventario_loteproducto
-                SET cantidad_disponible = cantidad_disponible - @cantidad,
-                    cantidad_reservada = cantidad_reservada + @cantidad
-                WHERE id = @idLote
-                  AND cantidad_disponible >= @cantidad;", cn, tx))
-            {
-                cmdReserva.Parameters.AddWithValue("@idLote", idLoteOrigen);
-                cmdReserva.Parameters.AddWithValue("@cantidad", det.CantidadSolicitada);
-
-                int rows = cmdReserva.ExecuteNonQuery();
-                if (rows == 0)
-                    throw new Exception($"Stock insuficiente para reservar el lote '{det.Lote}'.");
-            }
-
-            // 3) Insertar detalle
+            // 2) Insertar detalle (sin reservar stock en la base de datos)
             try
             {
                 using (var cmdDet = new MySqlCommand(@"
                     INSERT INTO " + TablaTransferenciaDetalle + @" (
-                        transferencia_id, producto_id, lote_origen_id,
-                        numero_lote, fecha_caducidad,
-                        cantidad_solicitada, cantidad_recibida, estado, creadoDate
+                        transferencia_id, producto_id, lote_id, cantidad, cantidad_recibida, 
+                        stock_origen_antes, stock_destino_antes, observaciones, 
+                        precio_origen, precio_destino, cambio_precio, 
+                        cantidad_cajas, cantidad_fracciones, unidades_por_caja
                     ) VALUES (
-                        @transferenciaId, @productoId, @loteOrigenId,
-                        @numeroLote, @fechaCaducidad,
-                        @cantidadSolicitada, 0, 'PENDIENTE', @creadoDate
+                        @transferenciaId, @productoId, @loteId, @cantidad, 0, 
+                        @stockOrigenAntes, 0, '', 
+                        0, 0, 0, 
+                        0, 0, 1
                     );", cn, tx))
                 {
                     cmdDet.Parameters.AddWithValue("@transferenciaId", idTransferencia);
                     cmdDet.Parameters.AddWithValue("@productoId", det.IdProducto);
-                    cmdDet.Parameters.AddWithValue("@loteOrigenId", idLoteOrigen);
-                    cmdDet.Parameters.AddWithValue("@numeroLote", det.Lote ?? "");
-                    cmdDet.Parameters.AddWithValue("@fechaCaducidad", (object)det.FechaCaducidad ?? DBNull.Value);
-                    cmdDet.Parameters.AddWithValue("@cantidadSolicitada", det.CantidadSolicitada);
-                    cmdDet.Parameters.AddWithValue("@creadoDate", DateTime.Now);
+                    cmdDet.Parameters.AddWithValue("@loteId", idLoteOrigen);
+                    cmdDet.Parameters.AddWithValue("@cantidad", det.CantidadSolicitada);
+                    cmdDet.Parameters.AddWithValue("@stockOrigenAntes", det.StockDisponibleOrigen);
                     cmdDet.ExecuteNonQuery();
                 }
             }
             catch (MySqlException ex)
             {
                 if (ex.Message != null && ex.Message.IndexOf("doesn't exist", StringComparison.OrdinalIgnoreCase) >= 0)
-                    throw new Exception("Falta la tabla de detalle de transferencias. Cree la tabla 'inventario_transferenciastockdetalle' para guardar productos/lotes de la transferencia.");
+                    throw new Exception("Falta la tabla de detalle de transferencias. Cree la tabla 'inventario_detalletransferencia' para guardar productos/lotes de la transferencia.");
                 throw;
             }
         }
@@ -453,6 +453,9 @@ namespace LogiPharm.Datos
                             throw new Exception("La transferencia no existe o ya fue procesada.");
                         }
 
+                        // Procesar el traspaso físico de inventarios y lotes
+                        ProcesarRecepcionStock(cn, transaction, idTransferencia, usuarioId);
+
                         transaction.Commit();
                         return true;
                     }
@@ -477,17 +480,6 @@ namespace LogiPharm.Datos
                 {
                     try
                     {
-                        // Liberar reservas de stock (si existe detalle)
-                        try
-                        {
-                            LiberarReservasStock(cn, transaction, idTransferencia);
-                        }
-                        catch (MySqlException ex)
-                        {
-                            if (ex.Message == null || ex.Message.IndexOf("doesn't exist", StringComparison.OrdinalIgnoreCase) < 0)
-                                throw;
-                        }
-
                         string query = @"
                             UPDATE " + TablaTransferencia + @" 
                             SET estado = 'CANCELADA',
@@ -519,50 +511,14 @@ namespace LogiPharm.Datos
             }
         }
 
-        private static void LiberarReservasStock(MySqlConnection cn, MySqlTransaction tx, long idTransferencia)
+        private static void ProcesarRecepcionStock(MySqlConnection cn, MySqlTransaction tx, long idTransferencia, int usuarioId)
         {
-            // Recuperar detalles y devolver stock reservado al disponible
-            using (var cmd = new MySqlCommand(@"
-                SELECT lote_origen_id, cantidad_solicitada
-                FROM " + TablaTransferenciaDetalle + @"
-                WHERE transferencia_id = @id;", cn, tx))
-            {
-                cmd.Parameters.AddWithValue("@id", idTransferencia);
-                using (var rd = cmd.ExecuteReader())
-                {
-                    var items = new List<Tuple<int, decimal>>();
-                    while (rd.Read())
-                    {
-                        int idLote = rd["lote_origen_id"] != DBNull.Value ? Convert.ToInt32(rd["lote_origen_id"]) : 0;
-                        decimal qty = rd["cantidad_solicitada"] != DBNull.Value ? Convert.ToDecimal(rd["cantidad_solicitada"]) : 0m;
-                        if (idLote > 0 && qty > 0) items.Add(Tuple.Create(idLote, qty));
-                    }
-                    rd.Close();
-
-                    foreach (var it in items)
-                    {
-                        using (var cmdUpd = new MySqlCommand(@"
-                            UPDATE inventario_loteproducto
-                            SET cantidad_disponible = cantidad_disponible + @cantidad,
-                                cantidad_reservada = cantidad_reservada - @cantidad
-                            WHERE id = @idLote;", cn, tx))
-                        {
-                            cmdUpd.Parameters.AddWithValue("@idLote", it.Item1);
-                            cmdUpd.Parameters.AddWithValue("@cantidad", it.Item2);
-                            cmdUpd.ExecuteNonQuery();
-                        }
-                    }
-                }
-            }
-        }
-
-        private static void ProcesarRecepcionStock(MySqlConnection cn, MySqlTransaction tx, long idTransferencia)
-        {
-            // Obtener ubicaciones
+            // Obtener ubicaciones y número de transferencia
             int idOrigen = 0;
             int idDestino = 0;
+            string numTransferencia = "";
             using (var cmdHead = new MySqlCommand(@"
-                SELECT ubicacion_origen_id, ubicacion_destino_id
+                SELECT ubicacion_origen_id, ubicacion_destino_id, numero_transferencia
                 FROM " + TablaTransferencia + @"
                 WHERE id = @id;", cn, tx))
             {
@@ -574,15 +530,32 @@ namespace LogiPharm.Datos
 
                     idOrigen = rd["ubicacion_origen_id"] != DBNull.Value ? Convert.ToInt32(rd["ubicacion_origen_id"]) : 0;
                     idDestino = rd["ubicacion_destino_id"] != DBNull.Value ? Convert.ToInt32(rd["ubicacion_destino_id"]) : 0;
+                    numTransferencia = rd["numero_transferencia"]?.ToString() ?? "";
                 }
+            }
+
+            // Obtener nombre del usuario
+            string nombreUsuario = "Usuario Sistema";
+            using (var cmdUser = new MySqlCommand("SELECT COALESCE(NULLIF(nombreCompleto, ''), nombreUsuario) FROM usuarios WHERE id = @idUsuario", cn, tx))
+            {
+                cmdUser.Parameters.AddWithValue("@idUsuario", usuarioId);
+                object uVal = cmdUser.ExecuteScalar();
+                if (uVal != null && uVal != DBNull.Value)
+                    nombreUsuario = Convert.ToString(uVal);
             }
 
             // Leer detalles
             var detalles = new List<Tuple<int, long, string, DateTime?, decimal>>();
             using (var cmdDet = new MySqlCommand(@"
-                SELECT lote_origen_id, producto_id, numero_lote, fecha_caducidad, cantidad_solicitada
-                FROM " + TablaTransferenciaDetalle + @"
-                WHERE transferencia_id = @id;", cn, tx))
+                SELECT 
+                    d.lote_id AS lote_origen_id, 
+                    d.producto_id, 
+                    COALESCE(l.numero_lote, 'GENERICO') AS numero_lote, 
+                    l.fecha_caducidad, 
+                    d.cantidad AS cantidad_solicitada
+                FROM " + TablaTransferenciaDetalle + @" d
+                LEFT JOIN inventario_loteproducto l ON d.lote_id = l.id
+                WHERE d.transferencia_id = @id;", cn, tx))
             {
                 cmdDet.Parameters.AddWithValue("@id", idTransferencia);
                 using (var rd = cmdDet.ExecuteReader())
@@ -608,18 +581,32 @@ namespace LogiPharm.Datos
                 DateTime? fechaCad = it.Item4;
                 decimal qty = it.Item5;
 
-                // 1) Descontar reservado del origen
+                // 1) Descontar stock disponible en origen
                 using (var cmdUpdOrigen = new MySqlCommand(@"
                     UPDATE inventario_loteproducto
-                    SET cantidad_reservada = cantidad_reservada - @cantidad
+                    SET cantidad_disponible = cantidad_disponible - @cantidad,
+                        fecha_actualizacion = NOW()
                     WHERE id = @idLote
-                      AND cantidad_reservada >= @cantidad;", cn, tx))
+                      AND cantidad_disponible >= @cantidad;", cn, tx))
                 {
                     cmdUpdOrigen.Parameters.AddWithValue("@idLote", loteOrigenId);
                     cmdUpdOrigen.Parameters.AddWithValue("@cantidad", qty);
                     int rows = cmdUpdOrigen.ExecuteNonQuery();
                     if (rows == 0)
-                        throw new Exception($"No hay reservado suficiente en el lote origen (ID {loteOrigenId}).");
+                        throw new Exception($"Stock insuficiente en el lote de origen (Lote ID {loteOrigenId}) para realizar la transferencia.");
+                }
+
+                // Descontar de inventario_stockubicacion (Origen)
+                using (var cmdStockOrig = new MySqlCommand(@"
+                    UPDATE inventario_stockubicacion 
+                    SET cantidad = cantidad - @cantidad, ultima_actualizacion = NOW() 
+                    WHERE producto_id = @productoId AND ubicacion_id = @ubicacionId AND idEmpresa = @idEmpresa;", cn, tx))
+                {
+                    cmdStockOrig.Parameters.AddWithValue("@cantidad", qty);
+                    cmdStockOrig.Parameters.AddWithValue("@productoId", productoId);
+                    cmdStockOrig.Parameters.AddWithValue("@ubicacionId", idOrigen);
+                    cmdStockOrig.Parameters.AddWithValue("@idEmpresa", Conexion.IdEmpresa);
+                    cmdStockOrig.ExecuteNonQuery();
                 }
 
                 // 2) Aumentar disponible en destino (si existe el lote), si no existe lo crea
@@ -627,11 +614,12 @@ namespace LogiPharm.Datos
                 using (var cmdUpdDest = new MySqlCommand(@"
                     UPDATE inventario_loteproducto
                     SET cantidad_disponible = cantidad_disponible + @cantidad,
-                        cantidad_inicial = cantidad_inicial + @cantidad
+                        fecha_actualizacion = NOW()
                     WHERE producto_id = @productoId
                       AND ubicacion_id = @ubicacionDestino
                       AND numero_lote = @numeroLote
                       AND (@fechaCaducidad IS NULL OR fecha_caducidad = @fechaCaducidad)
+                      AND activo = 1
                     LIMIT 1;", cn, tx))
                 {
                     cmdUpdDest.Parameters.AddWithValue("@cantidad", qty);
@@ -644,7 +632,7 @@ namespace LogiPharm.Datos
 
                 if (rowsDestino == 0)
                 {
-                    // Copiar costo unitario desde lote origen
+                    // Copiar costo unitario y fecha fabricacion desde lote origen
                     decimal costoUnitario = 0m;
                     DateTime fechaFab = DateTime.Today;
                     using (var cmdInfo = new MySqlCommand(@"
@@ -667,31 +655,133 @@ namespace LogiPharm.Datos
                         INSERT INTO inventario_loteproducto
                             (producto_id, ubicacion_id, numero_lote, fecha_ingreso, fecha_fabricacion, fecha_caducidad,
                              cantidad_inicial, cantidad_disponible, cantidad_reservada, costo_unitario, numero_factura,
-                             observaciones, activo, creadoDate)
+                             observaciones, activo, creadoDate, editadoDate, idEmpresa, fecha_creacion, fecha_actualizacion)
                         VALUES
-                            (@productoId, @ubicacionId, @numeroLote, @fechaIngreso, @fechaFabricacion, @fechaCaducidad,
+                            (@productoId, @ubicacionId, @numeroLote, CURDATE(), @fechaFabricacion, @fechaCaducidad,
                              @cantidad, @cantidad, 0, @costoUnitario, '',
-                             'Transferencia interna', 1, @creadoDate);", cn, tx))
+                             'Transferencia interna', 1, NOW(), NOW(), @idEmpresa, NOW(), NOW());", cn, tx))
                     {
                         cmdIns.Parameters.AddWithValue("@productoId", productoId);
                         cmdIns.Parameters.AddWithValue("@ubicacionId", idDestino);
                         cmdIns.Parameters.AddWithValue("@numeroLote", numeroLote);
-                        cmdIns.Parameters.AddWithValue("@fechaIngreso", DateTime.Now);
                         cmdIns.Parameters.AddWithValue("@fechaFabricacion", fechaFab);
                         cmdIns.Parameters.AddWithValue("@fechaCaducidad", (object)fechaCad ?? DBNull.Value);
                         cmdIns.Parameters.AddWithValue("@cantidad", qty);
                         cmdIns.Parameters.AddWithValue("@costoUnitario", costoUnitario);
-                        cmdIns.Parameters.AddWithValue("@creadoDate", DateTime.Now);
+                        cmdIns.Parameters.AddWithValue("@idEmpresa", Conexion.IdEmpresa);
                         cmdIns.ExecuteNonQuery();
                     }
                 }
+
+                // Registrar/Actualizar en inventario_stockubicacion (Destino)
+                long stockDestId = 0;
+                using (var cmdCheck = new MySqlCommand(@"
+                    SELECT id FROM inventario_stockubicacion 
+                    WHERE producto_id = @productoId AND ubicacion_id = @ubicacionId AND idEmpresa = @idEmpresa LIMIT 1;", cn, tx))
+                {
+                    cmdCheck.Parameters.AddWithValue("@productoId", productoId);
+                    cmdCheck.Parameters.AddWithValue("@ubicacionId", idDestino);
+                    cmdCheck.Parameters.AddWithValue("@idEmpresa", Conexion.IdEmpresa);
+                    object scalar = cmdCheck.ExecuteScalar();
+                    if (scalar != null && scalar != DBNull.Value)
+                        stockDestId = Convert.ToInt64(scalar);
+                }
+
+                if (stockDestId > 0)
+                {
+                    using (var cmdUpdDestStock = new MySqlCommand(@"
+                        UPDATE inventario_stockubicacion 
+                        SET cantidad = cantidad + @cantidad, ultima_actualizacion = NOW() 
+                        WHERE id = @id;", cn, tx))
+                    {
+                        cmdUpdDestStock.Parameters.AddWithValue("@cantidad", qty);
+                        cmdUpdDestStock.Parameters.AddWithValue("@id", stockDestId);
+                        cmdUpdDestStock.ExecuteNonQuery();
+                    }
+                }
+                else
+                {
+                    using (var cmdInsDestStock = new MySqlCommand(@"
+                        INSERT INTO inventario_stockubicacion 
+                        (cantidad, stock_minimo, stock_maximo, punto_reorden, creadoDate, editadoDate, producto_id, ubicacion_id, idEmpresa, ultima_actualizacion) 
+                        VALUES (@cantidad, 0.00, 0.00, 0.00, NOW(), NOW(), @productoId, @ubicacionId, @idEmpresa, NOW());", cn, tx))
+                    {
+                        cmdInsDestStock.Parameters.AddWithValue("@cantidad", qty);
+                        cmdInsDestStock.Parameters.AddWithValue("@productoId", productoId);
+                        cmdInsDestStock.Parameters.AddWithValue("@ubicacionId", idDestino);
+                        cmdInsDestStock.Parameters.AddWithValue("@idEmpresa", Conexion.IdEmpresa);
+                        cmdInsDestStock.ExecuteNonQuery();
+                    }
+                }
+
+                // 3) Integrar con kardex_movimientos (EGRESO e INGRESO)
+                decimal globalStock = 0;
+                decimal unitCost = 0;
+                using (var cmdProd = new MySqlCommand(@"
+                    SELECT stock, COALESCE(costoUnidad, 0) FROM productos WHERE id = @idProducto;", cn, tx))
+                {
+                    cmdProd.Parameters.AddWithValue("@idProducto", productoId);
+                    using (var rdProd = cmdProd.ExecuteReader())
+                    {
+                        if (rdProd.Read())
+                        {
+                            globalStock = rdProd.GetDecimal(0);
+                            unitCost = rdProd.GetDecimal(1);
+                        }
+                    }
+                }
+
+                // 3.1) Kardex EGRESO
+                string insertKardexOrig = @"
+                    INSERT INTO kardex_movimientos (
+                        idProducto, fecha, tipoMovimiento, detalle, 
+                        ingreso, egreso, saldo, costo, costo_promedio, precio, usuario, numero_documento, idEmpresa, idUbicacion
+                    ) VALUES (
+                        @idProducto, NOW(), 'TRANSFERENCIA EGRESO', @detalle, 
+                        0.00, @egreso, @saldo, @costo, @costo, 0.00, @usuario, @numero_documento, @idEmpresa, @idUbicacion
+                    );";
+                using (var cmdKOrig = new MySqlCommand(insertKardexOrig, cn, tx))
+                {
+                    cmdKOrig.Parameters.AddWithValue("@idProducto", productoId);
+                    cmdKOrig.Parameters.AddWithValue("@detalle", "SALIDA POR TRANSFERENCIA STOCK HASTA UBICACION ID " + idDestino);
+                    cmdKOrig.Parameters.AddWithValue("@egreso", qty);
+                    cmdKOrig.Parameters.AddWithValue("@saldo", globalStock);
+                    cmdKOrig.Parameters.AddWithValue("@costo", unitCost);
+                    cmdKOrig.Parameters.AddWithValue("@usuario", nombreUsuario);
+                    cmdKOrig.Parameters.AddWithValue("@numero_documento", numTransferencia);
+                    cmdKOrig.Parameters.AddWithValue("@idEmpresa", Conexion.IdEmpresa);
+                    cmdKOrig.Parameters.AddWithValue("@idUbicacion", idOrigen);
+                    cmdKOrig.ExecuteNonQuery();
+                }
+
+                // 3.2) Kardex INGRESO
+                string insertKardexDest = @"
+                    INSERT INTO kardex_movimientos (
+                        idProducto, fecha, tipoMovimiento, detalle, 
+                        ingreso, egreso, saldo, costo, costo_promedio, precio, usuario, numero_documento, idEmpresa, idUbicacion
+                    ) VALUES (
+                        @idProducto, NOW(), 'TRANSFERENCIA INGRESO', @detalle, 
+                        @ingreso, 0.00, @saldo, @costo, @costo, 0.00, @usuario, @numero_documento, @idEmpresa, @idUbicacion
+                    );";
+                using (var cmdKDest = new MySqlCommand(insertKardexDest, cn, tx))
+                {
+                    cmdKDest.Parameters.AddWithValue("@idProducto", productoId);
+                    cmdKDest.Parameters.AddWithValue("@detalle", "INGRESO POR TRANSFERENCIA STOCK DESDE UBICACION ID " + idOrigen);
+                    cmdKDest.Parameters.AddWithValue("@ingreso", qty);
+                    cmdKDest.Parameters.AddWithValue("@saldo", globalStock);
+                    cmdKDest.Parameters.AddWithValue("@costo", unitCost);
+                    cmdKDest.Parameters.AddWithValue("@usuario", nombreUsuario);
+                    cmdKDest.Parameters.AddWithValue("@numero_documento", numTransferencia);
+                    cmdKDest.Parameters.AddWithValue("@idEmpresa", Conexion.IdEmpresa);
+                    cmdKDest.Parameters.AddWithValue("@idUbicacion", idDestino);
+                    cmdKDest.ExecuteNonQuery();
+                }
             }
 
-            // Marcar detalle como recibido
+            // Marcar detalle como recibido en la base de datos
             using (var cmdUpdDet = new MySqlCommand(@"
                 UPDATE " + TablaTransferenciaDetalle + @"
-                SET cantidad_recibida = cantidad_solicitada,
-                    estado = 'RECIBIDO_COMPLETO'
+                SET cantidad_recibida = cantidad
                 WHERE transferencia_id = @id;", cn, tx))
             {
                 cmdUpdDet.Parameters.AddWithValue("@id", idTransferencia);

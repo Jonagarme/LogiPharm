@@ -392,6 +392,13 @@ namespace LogiPharm.Datos
 			if (string.IsNullOrWhiteSpace(claveAcceso))
 				throw new ArgumentException("La clave de acceso no puede estar vacía.");
 
+			// Intentar primero obtener desde la base de datos remota de comprobantes (más rápido y evita bloqueos de la API)
+			var comprobanteRemoto = await TryGetRemoteComprobanteAsync(claveAcceso);
+			if (comprobanteRemoto != null)
+			{
+				return comprobanteRemoto;
+			}
+
 			string queryUrl = LogifactSriUrl + Uri.EscapeDataString(claveAcceso.Trim());
 
 			var cookieContainer = new CookieContainer();
@@ -567,15 +574,24 @@ namespace LogiPharm.Datos
                     c.cedula_ruc                     AS Identificacion,
                     COALESCE(NULLIF(c.razonSocial,''), TRIM(CONCAT(IFNULL(c.nombres,''),' ',IFNULL(c.apellidos,'')))) AS RazonSocial,
                     c.direccion                      AS Direccion,
-                    COALESCE(NULLIF(c.telefono,''), c.celular)              AS Telefono
+                    COALESCE(NULLIF(c.telefono,''), c.celular)              AS Telefono,
+
+                    u.nombreUsuario                  AS Cajero,
+                    cj.nombre                        AS Caja,
+                    emp.sri_ambiente                 AS Ambiente
                 FROM facturas_venta fv
                 JOIN clientes c ON c.id = fv.idCliente
+                LEFT JOIN usuarios u ON u.id = fv.idUsuario
+                LEFT JOIN cierres_caja cc ON cc.id = fv.idCierreCaja
+                LEFT JOIN cajas cj ON cj.id = cc.idCaja
+                LEFT JOIN empresas emp ON emp.id = @idEmpresa
                 WHERE fv.id = @id;";
 
                 var dtHeader = new DataTable();
                 using (var da = new MySqlDataAdapter(sqlHeader, cn))
                 {
                     da.SelectCommand.Parameters.AddWithValue("@id", idFactura);
+                    da.SelectCommand.Parameters.AddWithValue("@idEmpresa", Conexion.IdEmpresa);
                     da.Fill(dtHeader);
                 }
 
@@ -711,7 +727,9 @@ namespace LogiPharm.Datos
 			}
 			catch { }
 
-			return await ConsultarSriApiAsync(claveAcceso, esProd);
+			var consulta = await ConsultarSriApiAsync(claveAcceso, esProd);
+			ActualizarEstadoFacturaLocal(claveAcceso, consulta);
+			return consulta;
         }
 
         // Devuelve el último número de factura (más reciente por fechaEmision)
@@ -798,6 +816,7 @@ namespace LogiPharm.Datos
 				bool esProd = empresa != null && (empresa.AmbienteSRI == "2" || empresa.AmbienteSRI == "Producción");
 
 				var consulta = await ConsultarSriApiAsync(claveAcceso, esProd);
+				ActualizarEstadoFacturaLocal(claveAcceso, consulta);
 
 				return new RespuestaReenvioApi
 				{
@@ -813,6 +832,136 @@ namespace LogiPharm.Datos
 			{
 				throw new Exception($"Error al sincronizar/reenviar factura con el SRI: {ex.Message}");
 			}
+		}
+
+		private void ActualizarEstadoFacturaLocal(string claveAcceso, RespuestaConsultaApi consulta)
+		{
+			if (consulta == null || string.IsNullOrWhiteSpace(consulta.Estado)) return;
+
+			try
+			{
+				string estadoUpper = consulta.Estado.Trim().ToUpperInvariant();
+				using (var cn = new MySqlConnection(Conexion.cadena))
+				{
+					cn.Open();
+					if (estadoUpper == "AUTORIZADO" || estadoUpper == "AUTORIZADA")
+					{
+						string sqlUpdate = @"
+							UPDATE facturas_venta 
+							SET estadoFactura = 'AUTORIZADA',
+								numeroAutorizacion = @numAuth,
+								fechaAutorizacion = @fechaAuth,
+								respuesta_sri = @respuestaSri,
+								error_sri = NULL
+							WHERE claveAcceso = @clave OR numeroAutorizacion = @clave;";
+						using (var cmd = new MySqlCommand(sqlUpdate, cn))
+						{
+							string numAuth = string.IsNullOrWhiteSpace(consulta.NumeroAutorizacion) ? claveAcceso : consulta.NumeroAutorizacion;
+							DateTime fechaAuth = DateTime.Now;
+							if (!string.IsNullOrWhiteSpace(consulta.FechaAutorizacion))
+							{
+								if (DateTime.TryParseExact(consulta.FechaAutorizacion, "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime pFecha))
+									fechaAuth = pFecha;
+							}
+
+							cmd.Parameters.AddWithValue("@numAuth", numAuth);
+							cmd.Parameters.AddWithValue("@fechaAuth", fechaAuth);
+							cmd.Parameters.AddWithValue("@respuestaSri", JsonConvert.SerializeObject(consulta));
+							cmd.Parameters.AddWithValue("@clave", claveAcceso);
+							cmd.ExecuteNonQuery();
+						}
+					}
+					else if (estadoUpper == "PROCESANDO" || estadoUpper == "RECIBIDA" || estadoUpper == "PENDIENTE")
+					{
+						string sqlUpdate = @"
+							UPDATE facturas_venta 
+							SET estadoFactura = 'PROCESANDO',
+								error_sri = NULL
+							WHERE claveAcceso = @clave OR numeroAutorizacion = @clave;";
+						using (var cmd = new MySqlCommand(sqlUpdate, cn))
+						{
+							cmd.Parameters.AddWithValue("@clave", claveAcceso);
+							cmd.ExecuteNonQuery();
+						}
+					}
+					else if (estadoUpper == "RECHAZADO" || estadoUpper == "NO AUTORIZADO" || estadoUpper == "ERROR" || estadoUpper == "DEVUELTA")
+					{
+						string errorMsg = consulta.Mensajes != null ? JsonConvert.SerializeObject(consulta.Mensajes) : "Rechazado por el SRI";
+						string sqlUpdate = @"
+							UPDATE facturas_venta 
+							SET estadoFactura = @estado,
+								error_sri = @errorMsg,
+								respuesta_sri = @respuestaSri
+							WHERE claveAcceso = @clave OR numeroAutorizacion = @clave;";
+						using (var cmd = new MySqlCommand(sqlUpdate, cn))
+						{
+							cmd.Parameters.AddWithValue("@estado", estadoUpper);
+							cmd.Parameters.AddWithValue("@errorMsg", errorMsg);
+							cmd.Parameters.AddWithValue("@respuestaSri", JsonConvert.SerializeObject(consulta));
+							cmd.Parameters.AddWithValue("@clave", claveAcceso);
+							cmd.ExecuteNonQuery();
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine("Error al actualizar estado local de factura: " + ex.Message);
+			}
+		}
+
+		private async Task<RespuestaConsultaApi> TryGetRemoteComprobanteAsync(string claveAcceso)
+		{
+			if (string.IsNullOrWhiteSpace(claveAcceso) || claveAcceso.Length < 40) return null;
+
+			try
+			{
+				var builder = new MySqlConnectionStringBuilder(Conexion.cadena)
+				{
+					Database = "nexusfact_db"
+				};
+
+				using (var cn = new MySqlConnection(builder.ConnectionString))
+				{
+					await cn.OpenAsync();
+					string sql = @"
+						SELECT numero_autorizacion, fecha_autorizacion, clave_acceso, comprobante
+						FROM comprobantes
+						WHERE TRIM(clave_acceso) = @clave
+						ORDER BY fecha_autorizacion DESC
+						LIMIT 1;";
+					
+					using (var cmd = new MySqlCommand(sql, cn))
+					{
+						cmd.Parameters.AddWithValue("@clave", claveAcceso.Trim());
+						using (var rd = await cmd.ExecuteReaderAsync())
+						{
+							if (await rd.ReadAsync())
+							{
+								string auth = rd["numero_autorizacion"]?.ToString() ?? "";
+								string fecha = rd["fecha_autorizacion"]?.ToString() ?? "";
+								string xml = rd["comprobante"]?.ToString() ?? "";
+								
+								return new RespuestaConsultaApi
+								{
+									ClaveAcceso = claveAcceso,
+									Estado = "AUTORIZADO",
+									NumeroAutorizacion = auth,
+									FechaAutorizacion = fecha,
+									XmlAutorizado = xml,
+									ComprobanteXml = xml
+								};
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine("Error al consultar comprobante remoto: " + ex.Message);
+			}
+
+			return null;
 		}
 
 		public async Task<RespuestaFacturaApi> EnviarNotaCreditoApiAsync(NotaCreditoPayload payload)

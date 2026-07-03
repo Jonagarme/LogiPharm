@@ -101,6 +101,26 @@ namespace LogiPharm.Negocio
             return new DProductos().ListarCategorias();
         }
 
+        public static DataTable ListarTiposProducto()
+        {
+            return new DProductos().ListarTiposProducto();
+        }
+
+        public static DataTable ListarClasesProducto()
+        {
+            return new DProductos().ListarClasesProducto();
+        }
+
+        public static DataTable ListarSubcategorias()
+        {
+            return new DProductos().ListarSubcategorias();
+        }
+
+        public static DataTable ListarMarcas()
+        {
+            return new DProductos().ListarMarcas();
+        }
+
         public static DataTable ListarProductosFiltradoPaginado(string criterio, int? idCategoria, int? idLaboratorio, int offset, int limit)
         {
             return new DProductos().ListarProductosFiltradoPaginado(criterio, idCategoria, idLaboratorio, offset, limit);

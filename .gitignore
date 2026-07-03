@@ -1,7 +1,7 @@
-## Visual Studio / C# gitignore template
-## Source: https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
+## Visual Studio / C# (.NET / Windows Forms) gitignore
+## Basado en el estándar de GitHub con correcciones
 
-## Build results
+# --- Resultados de Compilación ---
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -16,47 +16,46 @@ bld/
 [Log]s/
 [Ff]eedback/
 
-## Visual Studio cache and settings
+# --- Caché y Configuración de Visual Studio ---
 .vs/
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
 
-## User-specific files
-*.rsuser
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
+# --- Archivos específicos del usuario ---
 *.userprefs
+*.rsuser
 
-## Mono Auto Generated Files
-mono_crash.*
-
-## Nested VS Projects
-*[Cc]roj.user
-*[Cc]sproj.user
-*[Vv]bproj.user
-*[Vv]dproj.user
-*[Nn]dproj.user
+# --- Extensiones de proyectos (Corrección de typos) ---
+*.csproj.user
+*.vbproj.user
+*.ndproj.user
+*.vdproj.user
 *.dbmdl
 *.jfm
 
-## NuGet Packages
+# --- Paquetes NuGet ---
 *.nupkg
-# The packages folder can be ignored because NuGet restores it
 **/packages/*
-# except build/, because it might be required by MSBuild
 !**/packages/build/
-# uncomment if using NuGet packages
-# !packages/
 
-## SQL Server files
+# --- Respaldos y archivos temporales de VS ---
+*.bak
+*.cache
+*.ilk
+*.pbd
+*.pdb
+*.rsp
+*.tlog
+
+# --- Bases de datos locales (opcional, por si usas SQL LocalDB en el proyecto) ---
 *.mdf
 *.ldf
 *.ndf
 
-## Directory-specific overrides
+# --- Directorios temporales ---
 [Tt]emp/
-[Tt]mp/
+
+[Pp]ublish/
+*.deploy

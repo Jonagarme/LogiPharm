@@ -1,4 +1,4 @@
-﻿﻿using System;
+using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
@@ -19,6 +19,10 @@ namespace LogiPharm.Presentacion
 
         private void FrmDashboard_Load(object sender, EventArgs e)
         {
+            // Cambiar etiquetas dinámicamente para parecerse más al de PHP
+            label9.Text = "Nuevos Clientes";
+            label11.Text = "Stock Bajo";
+
             // Auditoría: VISUALIZAR
             try { new DBitacora().Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Dashboard", "VISUALIZAR", "dashboard", null, "Abrir Dashboard", null, Environment.MachineName, "UI"); } catch { }
 
@@ -33,14 +37,14 @@ namespace LogiPharm.Presentacion
             try
             {
                 DDashboard d_Dashboard = new DDashboard();
-                DataTable dt = d_Dashboard.ObtenerKPIs();
+                DataTable dt = d_Dashboard.ObtenerKPIs(SesionActual.IdEmpresa);
 
                 if (dt.Rows.Count > 0)
                 {
                     DataRow row = dt.Rows[0];
                     lblVentasHoy.Text = Convert.ToDecimal(row["VentasHoy"]).ToString("C2"); // Formato de moneda
                     lblTotalClientes.Text = row["TotalClientes"].ToString();
-                    lblProductosStock.Text = Convert.ToDecimal(row["ProductosStock"]).ToString("N2");
+                    lblProductosStock.Text = Convert.ToInt32(row["ProductosStock"]).ToString("N0"); // Formato entero (cantidad)
                     lblProveedores.Text = row["TotalProveedores"].ToString();
                 }
             }
@@ -55,7 +59,7 @@ namespace LogiPharm.Presentacion
             try
             {
                 DDashboard d_Dashboard = new DDashboard();
-                DataTable dt = d_Dashboard.ObtenerVentasUltimoMes();
+                DataTable dt = d_Dashboard.ObtenerVentasUltimoMes(SesionActual.IdEmpresa);
 
                 chartVentasMes.Datasets.Clear();
                 var dataset = new Guna.Charts.WinForms.GunaLineDataset();
@@ -83,7 +87,7 @@ namespace LogiPharm.Presentacion
             try
             {
                 DDashboard d_Dashboard = new DDashboard();
-                DataTable dt = d_Dashboard.ObtenerTopProductos();
+                DataTable dt = d_Dashboard.ObtenerTopProductos(SesionActual.IdEmpresa);
 
                 chartTopProductos.Datasets.Clear();
                 var dataset = new Guna.Charts.WinForms.GunaBarDataset();

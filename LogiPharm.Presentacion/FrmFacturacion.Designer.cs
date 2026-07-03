@@ -1,4 +1,4 @@
-﻿﻿namespace LogiPharm.Presentacion
+namespace LogiPharm.Presentacion
 {
     partial class FrmFacturacion
     {
@@ -80,6 +80,15 @@
             this.lblNoInterno = new System.Windows.Forms.Label();
             this.lblNumeroFactura = new System.Windows.Forms.Label();
             this.btnReenviarSRI = new Guna.UI2.WinForms.Guna2Button();
+            this.panelTotales = new Guna.UI2.WinForms.Guna2Panel();
+            this.lblSubtotalTitulo = new System.Windows.Forms.Label();
+            this.lblResumenSubtotal = new System.Windows.Forms.Label();
+            this.lblDescuentoTitulo = new System.Windows.Forms.Label();
+            this.lblResumenDescuento = new System.Windows.Forms.Label();
+            this.lblIvaTitulo = new System.Windows.Forms.Label();
+            this.lblResumenIva = new System.Windows.Forms.Label();
+            this.lblTotalTitulo = new System.Windows.Forms.Label();
+            this.lblResumenTotal = new System.Windows.Forms.Label();
             this.panelFiltros.SuspendLayout();
             this.panelLista.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvListaFacturas)).BeginInit();
@@ -498,6 +507,7 @@
             // 
             // panelDetalle
             // 
+            this.panelDetalle.Controls.Add(this.panelTotales);
             this.panelDetalle.Controls.Add(this.dgvDetalleFactura);
             this.panelDetalle.Controls.Add(this.guna2GroupBox1);
             this.panelDetalle.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -539,7 +549,7 @@
             this.dgvDetalleFactura.Name = "dgvDetalleFactura";
             this.dgvDetalleFactura.ReadOnly = true;
             this.dgvDetalleFactura.RowHeadersVisible = false;
-            this.dgvDetalleFactura.Size = new System.Drawing.Size(890, 301);
+            this.dgvDetalleFactura.Size = new System.Drawing.Size(890, 214);
             this.dgvDetalleFactura.TabIndex = 1;
             this.dgvDetalleFactura.ThemeStyle.AlternatingRowsStyle.BackColor = System.Drawing.Color.White;
             this.dgvDetalleFactura.ThemeStyle.AlternatingRowsStyle.Font = null;
@@ -904,6 +914,126 @@
             this.panelLista.ResumeLayout(false);
             this.panelLista.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvListaFacturas)).EndInit();
+            // 
+            // panelTotales
+            // 
+            this.panelTotales.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panelTotales.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.panelTotales.BorderColor = System.Drawing.Color.LightGray;
+            this.panelTotales.BorderRadius = 6;
+            this.panelTotales.BorderThickness = 1;
+            this.panelTotales.Controls.Add(this.lblResumenTotal);
+            this.panelTotales.Controls.Add(this.lblTotalTitulo);
+            this.panelTotales.Controls.Add(this.lblResumenIva);
+            this.panelTotales.Controls.Add(this.lblIvaTitulo);
+            this.panelTotales.Controls.Add(this.lblResumenDescuento);
+            this.panelTotales.Controls.Add(this.lblDescuentoTitulo);
+            this.panelTotales.Controls.Add(this.lblResumenSubtotal);
+            this.panelTotales.Controls.Add(this.lblSubtotalTitulo);
+            this.panelTotales.Location = new System.Drawing.Point(5, 450);
+            this.panelTotales.Name = "panelTotales";
+            this.panelTotales.Size = new System.Drawing.Size(890, 80);
+            this.panelTotales.TabIndex = 2;
+            // 
+            // lblSubtotalTitulo
+            // 
+            this.lblSubtotalTitulo.AutoSize = true;
+            this.lblSubtotalTitulo.BackColor = System.Drawing.Color.Transparent;
+            this.lblSubtotalTitulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblSubtotalTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblSubtotalTitulo.Location = new System.Drawing.Point(20, 32);
+            this.lblSubtotalTitulo.Name = "lblSubtotalTitulo";
+            this.lblSubtotalTitulo.Size = new System.Drawing.Size(59, 15);
+            this.lblSubtotalTitulo.TabIndex = 0;
+            this.lblSubtotalTitulo.Text = "Subtotal:";
+            // 
+            // lblResumenSubtotal
+            // 
+            this.lblResumenSubtotal.AutoSize = true;
+            this.lblResumenSubtotal.BackColor = System.Drawing.Color.Transparent;
+            this.lblResumenSubtotal.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.lblResumenSubtotal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblResumenSubtotal.Location = new System.Drawing.Point(85, 30);
+            this.lblResumenSubtotal.Name = "lblResumenSubtotal";
+            this.lblResumenSubtotal.Size = new System.Drawing.Size(38, 17);
+            this.lblResumenSubtotal.TabIndex = 1;
+            this.lblResumenSubtotal.Text = "$0.00";
+            // 
+            // lblDescuentoTitulo
+            // 
+            this.lblDescuentoTitulo.AutoSize = true;
+            this.lblDescuentoTitulo.BackColor = System.Drawing.Color.Transparent;
+            this.lblDescuentoTitulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblDescuentoTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblDescuentoTitulo.Location = new System.Drawing.Point(180, 32);
+            this.lblDescuentoTitulo.Name = "lblDescuentoTitulo";
+            this.lblDescuentoTitulo.Size = new System.Drawing.Size(70, 15);
+            this.lblDescuentoTitulo.TabIndex = 2;
+            this.lblDescuentoTitulo.Text = "Descuento:";
+            // 
+            // lblResumenDescuento
+            // 
+            this.lblResumenDescuento.AutoSize = true;
+            this.lblResumenDescuento.BackColor = System.Drawing.Color.Transparent;
+            this.lblResumenDescuento.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.lblResumenDescuento.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblResumenDescuento.Location = new System.Drawing.Point(255, 30);
+            this.lblResumenDescuento.Name = "lblResumenDescuento";
+            this.lblResumenDescuento.Size = new System.Drawing.Size(38, 17);
+            this.lblResumenDescuento.TabIndex = 3;
+            this.lblResumenDescuento.Text = "$0.00";
+            // 
+            // lblIvaTitulo
+            // 
+            this.lblIvaTitulo.AutoSize = true;
+            this.lblIvaTitulo.BackColor = System.Drawing.Color.Transparent;
+            this.lblIvaTitulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblIvaTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblIvaTitulo.Location = new System.Drawing.Point(350, 32);
+            this.lblIvaTitulo.Name = "lblIvaTitulo";
+            this.lblIvaTitulo.Size = new System.Drawing.Size(30, 15);
+            this.lblIvaTitulo.TabIndex = 4;
+            this.lblIvaTitulo.Text = "IVA:";
+            // 
+            // lblResumenIva
+            // 
+            this.lblResumenIva.AutoSize = true;
+            this.lblResumenIva.BackColor = System.Drawing.Color.Transparent;
+            this.lblResumenIva.Font = new System.Drawing.Font("Segoe UI", 9.75F);
+            this.lblResumenIva.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.lblResumenIva.Location = new System.Drawing.Point(385, 30);
+            this.lblResumenIva.Name = "lblResumenIva";
+            this.lblResumenIva.Size = new System.Drawing.Size(38, 17);
+            this.lblResumenIva.TabIndex = 5;
+            this.lblResumenIva.Text = "$0.00";
+            // 
+            // lblTotalTitulo
+            // 
+            this.lblTotalTitulo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblTotalTitulo.AutoSize = true;
+            this.lblTotalTitulo.BackColor = System.Drawing.Color.Transparent;
+            this.lblTotalTitulo.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblTotalTitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+            this.lblTotalTitulo.Location = new System.Drawing.Point(650, 29);
+            this.lblTotalTitulo.Name = "lblTotalTitulo";
+            this.lblTotalTitulo.Size = new System.Drawing.Size(64, 21);
+            this.lblTotalTitulo.TabIndex = 6;
+            this.lblTotalTitulo.Text = "TOTAL:";
+            // 
+            // lblResumenTotal
+            // 
+            this.lblResumenTotal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblResumenTotal.AutoSize = true;
+            this.lblResumenTotal.BackColor = System.Drawing.Color.Transparent;
+            this.lblResumenTotal.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.lblResumenTotal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+            this.lblResumenTotal.Location = new System.Drawing.Point(715, 26);
+            this.lblResumenTotal.Name = "lblResumenTotal";
+            this.lblResumenTotal.Size = new System.Drawing.Size(60, 25);
+            this.lblResumenTotal.TabIndex = 7;
+            this.lblResumenTotal.Text = "$0.00";
+            // 
             this.panelDetalle.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvDetalleFactura)).EndInit();
             this.guna2GroupBox1.ResumeLayout(false);
@@ -964,6 +1094,15 @@
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label lblAutorizacion;
         private System.Windows.Forms.Label label22;
+        private Guna.UI2.WinForms.Guna2Panel panelTotales;
+        private System.Windows.Forms.Label lblSubtotalTitulo;
+        private System.Windows.Forms.Label lblResumenSubtotal;
+        private System.Windows.Forms.Label lblDescuentoTitulo;
+        private System.Windows.Forms.Label lblResumenDescuento;
+        private System.Windows.Forms.Label lblIvaTitulo;
+        private System.Windows.Forms.Label lblResumenIva;
+        private System.Windows.Forms.Label lblTotalTitulo;
+        private System.Windows.Forms.Label lblResumenTotal;
 
         // ✨ Declaraciones de columnas
        // private System.Windows.Forms.DataGridViewTextBoxColumn colNoDoc;

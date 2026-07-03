@@ -1,7 +1,8 @@
-﻿using MySqlConnector;
+using MySqlConnector;
 using System;
 using System.Data;
 using LogiPharm.Entidades;
+using CapaDatos;
 
 namespace LogiPharm.Datos
 {
@@ -75,6 +76,13 @@ namespace LogiPharm.Datos
 
                     long idFacturaCompra = Convert.ToInt64(cmdFactura.ExecuteScalar());
 
+                    // Obtener nombre del usuario que registra para el Kardex
+                    string userQuery = "SELECT COALESCE(NULLIF(nombreCompleto, ''), nombreUsuario) FROM usuarios WHERE id = @idUsuario";
+                    MySqlCommand cmdUser = new MySqlCommand(userQuery, cn, transaction);
+                    cmdUser.Parameters.AddWithValue("@idUsuario", factura.IdUsuario);
+                    string nombreUsuario = Convert.ToString(cmdUser.ExecuteScalar());
+                    if (string.IsNullOrEmpty(nombreUsuario)) nombreUsuario = "Usuario Sistema";
+
                     // 4. RECORRER LOS DETALLES, GUARDARLOS Y ACTUALIZAR EL STOCK
                     foreach (var detalle in factura.Detalles)
                     {
@@ -142,18 +150,39 @@ namespace LogiPharm.Datos
                         cmdStock.Parameters.AddWithValue("@idProducto", detalle.IdProducto);
                         cmdStock.ExecuteNonQuery();
 
-                        // Insertar en movimientos_inventario
-                        string insertMovimientoQuery = @"
-                        INSERT INTO movimientos_inventario 
-                        (idProducto, tipoMovimiento, cantidad, costoUnitario, idDocumentoReferencia, creadoPor, creadoDate)
-                        VALUES (@idProducto, 'ENTRADA_COMPRA', @cantidad, @costo, @idFactura, @creadoPor, NOW());";
-                        MySqlCommand cmdMovimiento = new MySqlCommand(insertMovimientoQuery, cn, transaction);
-                        cmdMovimiento.Parameters.AddWithValue("@idProducto", detalle.IdProducto);
-                        cmdMovimiento.Parameters.AddWithValue("@cantidad", detalle.Cantidad);
-                        cmdMovimiento.Parameters.AddWithValue("@costo", detalle.CostoUnitario);
-                        cmdMovimiento.Parameters.AddWithValue("@idFactura", idFacturaCompra);
-                        cmdMovimiento.Parameters.AddWithValue("@creadoPor", factura.IdUsuario);
-                        cmdMovimiento.ExecuteNonQuery();
+                        // Obtener el saldo de stock resultante para el movimiento de Kardex
+                        string getStockQuery = "SELECT stock FROM productos WHERE id = @idProducto;";
+                        MySqlCommand cmdGetStock = new MySqlCommand(getStockQuery, cn, transaction);
+                        cmdGetStock.Parameters.AddWithValue("@idProducto", detalle.IdProducto);
+                        decimal saldoActual = Convert.ToDecimal(cmdGetStock.ExecuteScalar());
+
+                        // Obtener precio de venta actual del producto
+                        string getPriceQuery = "SELECT COALESCE(precioVenta, 0) FROM productos WHERE id = @idProducto;";
+                        MySqlCommand cmdGetPrice = new MySqlCommand(getPriceQuery, cn, transaction);
+                        cmdGetPrice.Parameters.AddWithValue("@idProducto", detalle.IdProducto);
+                        decimal precioVenta = Convert.ToDecimal(cmdGetPrice.ExecuteScalar());
+
+                        // Insertar en kardex_movimientos
+                        string insertKardexQuery = @"
+                            INSERT INTO kardex_movimientos (
+                                idProducto, fecha, tipoMovimiento, detalle, 
+                                ingreso, egreso, saldo, costo, costo_promedio, precio, usuario, numero_documento, idEmpresa
+                            ) VALUES (
+                                @idProducto, NOW(), 'INGRESO', @detalleKardex, 
+                                @ingreso, 0, @saldo, @costo, @costo_promedio, @precio, @usuario, @numero_documento, @idEmpresa
+                            );";
+                        MySqlCommand cmdKardex = new MySqlCommand(insertKardexQuery, cn, transaction);
+                        cmdKardex.Parameters.AddWithValue("@idProducto", detalle.IdProducto);
+                        cmdKardex.Parameters.AddWithValue("@detalleKardex", "COMPRA DE PRODUCTOS NRO. FACTURA: " + factura.NumeroFactura);
+                        cmdKardex.Parameters.AddWithValue("@ingreso", detalle.Cantidad);
+                        cmdKardex.Parameters.AddWithValue("@saldo", saldoActual);
+                        cmdKardex.Parameters.AddWithValue("@costo", detalle.CostoUnitario);
+                        cmdKardex.Parameters.AddWithValue("@costo_promedio", detalle.CostoUnitario);
+                        cmdKardex.Parameters.AddWithValue("@precio", precioVenta);
+                        cmdKardex.Parameters.AddWithValue("@usuario", nombreUsuario);
+                        cmdKardex.Parameters.AddWithValue("@numero_documento", factura.NumeroFactura);
+                        cmdKardex.Parameters.AddWithValue("@idEmpresa", Conexion.IdEmpresa);
+                        cmdKardex.ExecuteNonQuery();
                     }
 
                     transaction.Commit();

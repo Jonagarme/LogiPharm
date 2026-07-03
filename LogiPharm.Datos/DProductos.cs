@@ -43,11 +43,17 @@ namespace LogiPharm.Datos
                             activo as 'Activo',
                             id AS 'ID' 
                         FROM productos 
-                        WHERE anulado = 0 
+                        WHERE anulado = 0 AND idEmpresa = @idEmpresa
                         ORDER BY nombre ASC;";
 
-                    MySqlDataAdapter da = new MySqlDataAdapter(query, cn);
-                    da.Fill(tabla);
+                    using (var cmd = new MySqlCommand(query, cn))
+                    {
+                        cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
+                        using (var da = new MySqlDataAdapter(cmd))
+                        {
+                            da.Fill(tabla);
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -76,12 +82,13 @@ namespace LogiPharm.Datos
                             activo as 'Activo',
                             id AS 'ID' 
                         FROM productos 
-                        WHERE anulado = 0 
+                        WHERE anulado = 0 AND idEmpresa = @idEmpresa
                         ORDER BY nombre ASC
                         LIMIT @limit OFFSET @offset;";
 
                     using (var cmd = new MySqlCommand(query, cn))
                     {
+                        cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                         cmd.Parameters.Add("@limit", MySqlDbType.Int32).Value = limit;
                         cmd.Parameters.Add("@offset", MySqlDbType.Int32).Value = offset;
                         using (var da = new MySqlDataAdapter(cmd))
@@ -114,11 +121,12 @@ namespace LogiPharm.Datos
                             precioVenta AS 'PVP',
                             id AS 'ID'
                         FROM productos
-                        WHERE anulado = 0 AND activo = 1
+                        WHERE anulado = 0 AND activo = 1 AND idEmpresa = @idEmpresa
                           AND (codigoPrincipal LIKE @criterio OR nombre LIKE @criterio)
                         ORDER BY nombre ASC;";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
+                    cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                     cmd.Parameters.AddWithValue("@criterio", $"%{criterio}%");
 
                     MySqlDataAdapter da = new MySqlDataAdapter(cmd);
@@ -142,11 +150,12 @@ namespace LogiPharm.Datos
                     SELECT id, codigoPrincipal, nombre, precioVenta, stock, activo as 'activo', aplicaIva
                     FROM productos
                     WHERE (codigoPrincipal = @texto OR codigoAuxiliar = @texto OR nombre LIKE CONCAT('%', @texto, '%'))
-                      AND anulado = 0 AND activo = 1
+                      AND anulado = 0 AND activo = 1 AND idEmpresa = @idEmpresa
                     LIMIT 1;";
 
                 MySqlCommand cmd = new MySqlCommand(query, cn);
                 cmd.Parameters.AddWithValue("@texto", texto);
+                cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
 
                 using (MySqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -175,10 +184,12 @@ namespace LogiPharm.Datos
             {
                 conn.Open();
                 string sql = @"
-                    SELECT p.*, pe1.Nombre AS Ubicacion 
+                    SELECT p.*, pe1.Nombre AS Ubicacion, pa.nombre AS NombrePrincipioActivo, pr.nombre AS NombrePresentacion
                     FROM productos p
                     LEFT JOIN productos_ubicacionproducto pe ON p.id = pe.producto_id
                     LEFT JOIN productos_percha pe1 ON pe.percha_id = pe1.id 
+                    LEFT JOIN principios_activos pa ON p.idPrincipioActivo = pa.id
+                    LEFT JOIN presentaciones pr ON p.idPresentacion = pr.id
                     WHERE p.id = @id";
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
@@ -198,10 +209,10 @@ namespace LogiPharm.Datos
                                 RegistroSanitario = GetStringSafe(dr, "registroSanitario"),
                                 IdTipoProducto = Convert.ToInt32(dr["idTipoProducto"]),
                                 IdClaseProducto = Convert.ToInt32(dr["idClaseProducto"]),
-                                IdCategoria = Convert.ToInt32(dr["idCategoria"]),
-                                IdSubcategoria = Convert.ToInt32(dr["idSubcategoria"]),
+                                IdCategoria = GetInt32Nullable(dr, "idCategoria"),
+                                IdSubcategoria = GetInt32Nullable(dr, "idSubcategoria"),
                                 IdSubnivel = GetInt32Nullable(dr, "idSubnivel"),
-                                IdMarca = Convert.ToInt32(dr["idMarca"]),
+                                IdMarca = GetInt32Nullable(dr, "idMarca"),
                                 IdLaboratorio = GetInt32Nullable(dr, "idLaboratorio"),
                                 Stock = GetDecimalSafe(dr, "stock"),
                                 StockMinimo = GetDecimalSafe(dr, "stockMinimo"),
@@ -220,7 +231,11 @@ namespace LogiPharm.Datos
                                 CalculoABCManual = GetBoolSafe(dr, "calculoABCManual"),
                                 ClasificacionABC = GetStringSafe(dr, "clasificacionABC"),
                                 Activo = GetBoolSafe(dr, "activo"),
-                                AplicaIva = GetBoolSafe(dr, "aplicaIva")
+                                AplicaIva = GetBoolSafe(dr, "aplicaIva"),
+                                IdPrincipioActivo = GetInt32Nullable(dr, "idPrincipioActivo"),
+                                IdPresentacion = GetInt32Nullable(dr, "idPresentacion"),
+                                NombrePrincipioActivo = GetStringSafe(dr, "NombrePrincipioActivo"),
+                                NombrePresentacion = GetStringSafe(dr, "NombrePresentacion")
                             };
                         }
                     }
@@ -266,11 +281,12 @@ namespace LogiPharm.Datos
                         LEFT JOIN productos_ubicacionproducto pe ON p.id = pe.producto_id
                         LEFT JOIN productos_percha pe1 ON pe.percha_id = pe1.id
                         WHERE (p.codigoPrincipal LIKE @criterio OR p.nombre LIKE @criterio) 
-                          AND p.anulado = 0 AND p.activo = 1 
+                          AND p.anulado = 0 AND p.activo = 1 AND p.idEmpresa = @idEmpresa
                         ORDER BY p.nombre ASC;";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
                     cmd.Parameters.AddWithValue("@criterio", "%" + criterio + "%");
+                    cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                     if (idUbicacion.HasValue)
                     {
                         cmd.Parameters.AddWithValue("@idUbicacion", idUbicacion.Value);
@@ -324,11 +340,12 @@ namespace LogiPharm.Datos
                         SELECT *
                         FROM productos 
                         WHERE (codigoPrincipal = @texto OR codigoAuxiliar = @texto OR nombre LIKE CONCAT('%', @texto, '%')) 
-                          AND anulado = 0 AND activo = 1
+                          AND anulado = 0 AND activo = 1 AND idEmpresa = @idEmpresa
                         LIMIT 1;";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
                     cmd.Parameters.AddWithValue("@texto", texto);
+                    cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
 
                     using (MySqlDataReader dr = cmd.ExecuteReader())
                     {
@@ -376,14 +393,14 @@ namespace LogiPharm.Datos
                             stock, stockMinimo, stockMaximo,
                             costoUnidad, costoCaja, pvpUnidad, precioVenta,
                             esDivisible, esPsicotropico, requiereCadenaFrio, requiereSeguimiento, calculoABCManual,
-                            clasificacionABC, activo, creadoPor, creadoDate, aplicaIva
+                            clasificacionABC, activo, creadoPor, creadoDate, aplicaIva, idPrincipioActivo, idPresentacion
                         ) VALUES (
                             @nombre, @codigoPrincipal, @codigoAuxiliar, @descripcion, @observaciones, @registroSanitario,
                             @idTipoProducto, @idClaseProducto, @idCategoria, @idSubcategoria, @idSubnivel, @idMarca, @idLaboratorio,
                             @stock, @stockMinimo, @stockMaximo,
                             @costoUnidad, @costoCaja, @pvpUnidad, @precioVenta,
                             @esDivisible, @esPsicotropico, @requiereCadenaFrio, @requiereSeguimiento, @calculoABCManual,
-                            @clasificacionABC, @activo, @creadoPor, @creadoDate, @aplicaIva
+                            @clasificacionABC, @activo, @creadoPor, @creadoDate, @aplicaIva, @idPrincipioActivo, @idPresentacion
                         );";
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
@@ -396,10 +413,10 @@ namespace LogiPharm.Datos
                     cmd.Parameters.AddWithValue("@registroSanitario", (object)producto.RegistroSanitario ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@idTipoProducto", producto.IdTipoProducto);
                     cmd.Parameters.AddWithValue("@idClaseProducto", producto.IdClaseProducto);
-                    cmd.Parameters.AddWithValue("@idCategoria", producto.IdCategoria);
-                    cmd.Parameters.AddWithValue("@idSubcategoria", producto.IdSubcategoria);
+                    cmd.Parameters.AddWithValue("@idCategoria", (object)producto.IdCategoria ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@idSubcategoria", (object)producto.IdSubcategoria ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@idSubnivel", (object)producto.IdSubnivel ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@idMarca", producto.IdMarca);
+                    cmd.Parameters.AddWithValue("@idMarca", (object)producto.IdMarca ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@idLaboratorio", (object)producto.IdLaboratorio ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@stock", producto.Stock);
                     cmd.Parameters.AddWithValue("@stockMinimo", producto.StockMinimo);
@@ -423,6 +440,8 @@ namespace LogiPharm.Datos
                     cmd.Parameters.AddWithValue("@creadoPor", producto.CreadoPor);
                     cmd.Parameters.AddWithValue("@creadoDate", DateTime.Now);
                     cmd.Parameters.AddWithValue("@aplicaIva", producto.AplicaIva);
+                    cmd.Parameters.AddWithValue("@idPrincipioActivo", (object)producto.IdPrincipioActivo ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@idPresentacion", (object)producto.IdPresentacion ?? DBNull.Value);
 
                     filasAfectadas = cmd.ExecuteNonQuery();
                 }
@@ -552,6 +571,8 @@ namespace LogiPharm.Datos
                             clasificacionABC = @clasificacionABC,
                             activo = @activo,
                             aplicaIva = @aplicaIva,
+                            idPrincipioActivo = @idPrincipioActivo,
+                            idPresentacion = @idPresentacion,
                             editadoPor = @editadoPor,
                             editadoDate = @editadoDate
                         WHERE id = @id;";
@@ -567,10 +588,10 @@ namespace LogiPharm.Datos
                     cmd.Parameters.AddWithValue("@registroSanitario", (object)producto.RegistroSanitario ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@idTipoProducto", producto.IdTipoProducto);
                     cmd.Parameters.AddWithValue("@idClaseProducto", producto.IdClaseProducto);
-                    cmd.Parameters.AddWithValue("@idCategoria", producto.IdCategoria);
-                    cmd.Parameters.AddWithValue("@idSubcategoria", producto.IdSubcategoria);
+                    cmd.Parameters.AddWithValue("@idCategoria", (object)producto.IdCategoria ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@idSubcategoria", (object)producto.IdSubcategoria ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@idSubnivel", (object)producto.IdSubnivel ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@idMarca", producto.IdMarca);
+                    cmd.Parameters.AddWithValue("@idMarca", (object)producto.IdMarca ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@idLaboratorio", (object)producto.IdLaboratorio ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@stock", producto.Stock);
                     cmd.Parameters.AddWithValue("@stockMinimo", producto.StockMinimo);
@@ -592,6 +613,8 @@ namespace LogiPharm.Datos
 
                     cmd.Parameters.AddWithValue("@editadoPor", producto.EditadoPor);
                     cmd.Parameters.AddWithValue("@aplicaIva", producto.AplicaIva);
+                    cmd.Parameters.AddWithValue("@idPrincipioActivo", (object)producto.IdPrincipioActivo ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@idPresentacion", (object)producto.IdPresentacion ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@editadoDate", DateTime.Now);
 
                     filasAfectadas = cmd.ExecuteNonQuery();
@@ -679,9 +702,10 @@ namespace LogiPharm.Datos
             using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
             {
                 cn.Open();
-                const string sql = @"SELECT COUNT(*) FROM productos WHERE anulado = 0";
+                const string sql = @"SELECT COUNT(*) FROM productos WHERE anulado = 0 AND idEmpresa = @idEmpresa";
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
+                    cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                     var obj = cmd.ExecuteScalar();
                     return Convert.ToInt32(obj);
                 }
@@ -697,9 +721,10 @@ namespace LogiPharm.Datos
                 const string sql = @"
                     SELECT COUNT(*)
                     FROM productos
-                    WHERE anulado = 0 AND (codigoPrincipal LIKE @c OR nombre LIKE @c);";
+                    WHERE anulado = 0 AND idEmpresa = @idEmpresa AND (codigoPrincipal LIKE @c OR nombre LIKE @c);";
                 using (var cmd = new MySqlCommand(sql, cn))
                 {
+                    cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                     cmd.Parameters.AddWithValue("@c", $"%{criterio}%");
                     var obj = cmd.ExecuteScalar();
                     return Convert.ToInt32(obj);
@@ -778,11 +803,12 @@ namespace LogiPharm.Datos
                     string query = @"
                         SELECT id, codigoPrincipal, nombre, stock, precioVenta 
                         FROM productos 
-                        WHERE anulado = 0 AND activo = 1
+                        WHERE anulado = 0 AND activo = 1 AND idEmpresa = @idEmpresa
                         ORDER BY nombre ASC
                         LIMIT 500;"; // Limitamos para no sobrecargar
 
                     MySqlCommand cmd = new MySqlCommand(query, cn);
+                    cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
@@ -855,26 +881,30 @@ namespace LogiPharm.Datos
                     cn.Open();
                     
                     // 1. Total productos
-                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM productos WHERE anulado = 0", cn))
+                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM productos WHERE anulado = 0 AND idEmpresa = @idEmpresa", cn))
                     {
+                        cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                         total = Convert.ToInt32(cmd.ExecuteScalar());
                     }
                     
                     // 2. En Stock
-                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM productos WHERE anulado = 0 AND stock > 0", cn))
+                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM productos WHERE anulado = 0 AND stock > 0 AND idEmpresa = @idEmpresa", cn))
                     {
+                        cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                         enStock = Convert.ToInt32(cmd.ExecuteScalar());
                     }
                     
                     // 3. Stock Bajo
-                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM productos WHERE anulado = 0 AND stock <= stockMinimo", cn))
+                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM productos WHERE anulado = 0 AND stock <= stockMinimo AND idEmpresa = @idEmpresa", cn))
                     {
+                        cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                         stockBajo = Convert.ToInt32(cmd.ExecuteScalar());
                     }
 
                     // 4. Total Categorías
-                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM categorias", cn))
+                    using (var cmd = new MySqlCommand("SELECT COUNT(*) FROM categorias WHERE idEmpresa = @idEmpresa", cn))
                     {
+                        cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                         totalCategorias = Convert.ToInt32(cmd.ExecuteScalar());
                     }
                 }
@@ -893,10 +923,14 @@ namespace LogiPharm.Datos
                 try
                 {
                     cn.Open();
-                    const string query = "SELECT id, nombre FROM categorias ORDER BY nombre ASC";
-                    using (var da = new MySqlDataAdapter(query, cn))
+                    const string query = "SELECT id, nombre FROM categorias WHERE idEmpresa = @idEmpresa ORDER BY nombre ASC";
+                    using (var cmd = new MySqlCommand(query, cn))
                     {
-                        da.Fill(tabla);
+                        cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
+                        using (var da = new MySqlDataAdapter(cmd))
+                        {
+                            da.Fill(tabla);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -925,7 +959,7 @@ namespace LogiPharm.Datos
                             activo as 'Activo',
                             id AS 'ID' 
                         FROM productos 
-                        WHERE anulado = 0";
+                        WHERE anulado = 0 AND idEmpresa = @idEmpresa";
 
                     if (!string.IsNullOrWhiteSpace(criterio))
                     {
@@ -944,6 +978,7 @@ namespace LogiPharm.Datos
 
                     using (var cmd = new MySqlCommand(query, cn))
                     {
+                        cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                         if (!string.IsNullOrWhiteSpace(criterio))
                         {
                             cmd.Parameters.AddWithValue("@criterio", $"%{criterio}%");
@@ -980,7 +1015,7 @@ namespace LogiPharm.Datos
                 try
                 {
                     cn.Open();
-                    string sql = "SELECT COUNT(*) FROM productos WHERE anulado = 0";
+                    string sql = "SELECT COUNT(*) FROM productos WHERE anulado = 0 AND idEmpresa = @idEmpresa";
                     if (!string.IsNullOrWhiteSpace(criterio))
                     {
                         sql += " AND (codigoPrincipal LIKE @c OR nombre LIKE @c OR descripcion LIKE @c)";
@@ -996,6 +1031,7 @@ namespace LogiPharm.Datos
 
                     using (var cmd = new MySqlCommand(sql, cn))
                     {
+                        cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
                         if (!string.IsNullOrWhiteSpace(criterio))
                         {
                             cmd.Parameters.AddWithValue("@c", $"%{criterio}%");
@@ -1018,6 +1054,78 @@ namespace LogiPharm.Datos
                     return 0;
                 }
             }
+        }
+
+        public DataTable ListarTiposProducto()
+        {
+            DataTable dt = new DataTable();
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                cn.Open();
+                string sql = "SELECT id, nombre FROM tipos_producto WHERE idEmpresa = @idEmpresa ORDER BY nombre ASC;";
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
+                    using (var da = new MySqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public DataTable ListarClasesProducto()
+        {
+            DataTable dt = new DataTable();
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                cn.Open();
+                string sql = "SELECT id, nombre FROM clases_producto ORDER BY nombre ASC;";
+                using (var da = new MySqlDataAdapter(sql, cn))
+                {
+                    da.Fill(dt);
+                }
+            }
+            return dt;
+        }
+
+        public DataTable ListarSubcategorias()
+        {
+            DataTable dt = new DataTable();
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                cn.Open();
+                string sql = "SELECT s.id, s.nombre FROM subcategorias s INNER JOIN categorias c ON s.idCategoria = c.id WHERE c.idEmpresa = @idEmpresa ORDER BY s.nombre ASC;";
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
+                    using (var da = new MySqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                }
+            }
+            return dt;
+        }
+
+        public DataTable ListarMarcas()
+        {
+            DataTable dt = new DataTable();
+            using (var cn = new MySqlConnection(CapaDatos.Conexion.cadena))
+            {
+                cn.Open();
+                string sql = "SELECT id, nombre FROM marcas WHERE anulado = 0 AND idEmpresa = @idEmpresa ORDER BY nombre ASC;";
+                using (var cmd = new MySqlCommand(sql, cn))
+                {
+                    cmd.Parameters.AddWithValue("@idEmpresa", CapaDatos.Conexion.IdEmpresa);
+                    using (var da = new MySqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                }
+            }
+            return dt;
         }
     }
 }

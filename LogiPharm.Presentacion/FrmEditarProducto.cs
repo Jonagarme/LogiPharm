@@ -1,4 +1,4 @@
-﻿using LogiPharm.Entidades; // <-- importa tu entidad
+using LogiPharm.Entidades; // <-- importa tu entidad
 using LogiPharm.Negocio;
 using System;
 using System.Data;
@@ -62,6 +62,7 @@ namespace LogiPharm.Presentacion
         private void FrmEditarProducto_Load(object sender, EventArgs e)
         {
             ConfigurarTablas();
+            CargarCombos();
 
             // Cambiar título según modo
             this.Text = _esNuevo ? "Crear Nuevo Producto" : "Editar Producto";
@@ -968,5 +969,50 @@ namespace LogiPharm.Presentacion
             _lblPvpUnidad.Text = pvp.ToString($"F{DECIMALES}");
         }
 
+        private void CargarCombos()
+        {
+            try
+            {
+                // 1. Tipo de Producto
+                cboTipo.DataSource = NProductos.ListarTiposProducto();
+                cboTipo.DisplayMember = "nombre";
+                cboTipo.ValueMember = "id";
+                cboTipo.SelectedIndex = -1;
+
+                // 2. Clase de Producto
+                cboClase.DataSource = NProductos.ListarClasesProducto();
+                cboClase.DisplayMember = "nombre";
+                cboClase.ValueMember = "id";
+                cboClase.SelectedIndex = -1;
+
+                // 3. Categoría
+                cboCategoria.DataSource = NProductos.ListarCategorias();
+                cboCategoria.DisplayMember = "nombre";
+                cboCategoria.ValueMember = "id";
+                cboCategoria.SelectedIndex = -1;
+
+                // 4. Subcategoría
+                cboSubcategoria.DataSource = NProductos.ListarSubcategorias();
+                cboSubcategoria.DisplayMember = "nombre";
+                cboSubcategoria.ValueMember = "id";
+                cboSubcategoria.SelectedIndex = -1;
+
+                // 5. Marca
+                cboMarca.DataSource = NProductos.ListarMarcas();
+                cboMarca.DisplayMember = "nombre";
+                cboMarca.ValueMember = "id";
+                cboMarca.SelectedIndex = -1;
+
+                // 6. Laboratorio
+                cboLaboratorio.DataSource = NLaboratorios.Listar();
+                cboLaboratorio.DisplayMember = "nombre";
+                cboLaboratorio.ValueMember = "id";
+                cboLaboratorio.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar los catálogos del producto: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

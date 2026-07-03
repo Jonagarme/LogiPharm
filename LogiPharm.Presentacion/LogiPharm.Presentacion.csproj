@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -22,10 +23,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>1</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -50,6 +51,18 @@
   <PropertyGroup>
     <ApplicationIcon>logo.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>650B048402F4D173A05A9D5918D3FD386A4AFE3C</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>LogiPharm.Presentacion_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FontAwesome.Sharp, Version=6.6.0.0, Culture=neutral, PublicKeyToken=d16d1e4e568ec10f, processorArchitecture=MSIL">
       <HintPath>..\packages\FontAwesome.Sharp.6.6.0\lib\net48\FontAwesome.Sharp.dll</HintPath>
@@ -58,10 +71,34 @@
       <HintPath>..\packages\Guna.Charts.WinForms.1.1.0\lib\net48\Guna.Charts.WinForms.dll</HintPath>
     </Reference>
     <Reference Include="Guna.UI">
-      <HintPath>E:\INSTALADORES\Visual Studio\Guna_UI_Framework_Ultimate_v2.0.0.1\Guna_UI_Framework_Ultimate_v2.0.0.1\Guna.UI-Framework-Lib-master\Guna.UI WinForms\.net 4.0\Guna.UI.dll</HintPath>
+      <HintPath>..\packages\Guna.UI.dll</HintPath>
     </Reference>
     <Reference Include="Guna.UI2, Version=2.0.4.7, Culture=neutral, PublicKeyToken=8b9d14aa5142e261, processorArchitecture=MSIL">
       <HintPath>..\packages\Guna.UI2.WinForms.2.0.4.7\lib\net48\Guna.UI2.dll</HintPath>
+    </Reference>
+    <Reference Include="MySqlConnector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=d33d3e53aa5f8c92, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySqlConnector.2.4.0\lib\net48\MySqlConnector.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=8.0.0.2, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.8.0.2\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=8.0.0.2, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.8.0.2\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=8.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.8.0.1\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ReportViewer.Common, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.Winforms.150.1652.0\lib\net40\Microsoft.ReportViewer.Common.dll</HintPath>
@@ -236,6 +273,66 @@
     </Compile>
     <Compile Include="FrmFacturasCompra.Designer.cs">
       <DependentUpon>FrmFacturasCompra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmAlertasStock.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmAlertasStock.Designer.cs">
+      <DependentUpon>FrmAlertasStock.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmBarcodeGenerator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmBarcodeGenerator.Designer.cs">
+      <DependentUpon>FrmBarcodeGenerator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmFirmaElectronica.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmFirmaElectronica.Designer.cs">
+      <DependentUpon>FrmFirmaElectronica.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmHistorialComprasCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmHistorialComprasCliente.Designer.cs">
+      <DependentUpon>FrmHistorialComprasCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmMedicamentosControlados.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmMedicamentosControlados.Designer.cs">
+      <DependentUpon>FrmMedicamentosControlados.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmPresentaciones.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmPresentaciones.Designer.cs">
+      <DependentUpon>FrmPresentaciones.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmPrincipiosActivos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmPrincipiosActivos.Designer.cs">
+      <DependentUpon>FrmPrincipiosActivos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmReporteCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmReporteCompras.Designer.cs">
+      <DependentUpon>FrmReporteCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmReporteInventario.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmReporteInventario.Designer.cs">
+      <DependentUpon>FrmReporteInventario.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmVademecum.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmVademecum.Designer.cs">
+      <DependentUpon>FrmVademecum.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmFichaCliente.cs">
       <SubType>Form</SubType>
@@ -516,6 +613,9 @@
       <DependentUpon>FrmAsignarProductoPercha.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="FrmBarcodeGenerator.resx">
+      <DependentUpon>FrmBarcodeGenerator.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmEmitirResultado.resx">
       <DependentUpon>FrmEmitirResultado.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -626,6 +726,7 @@
     <None Include="dsFactura.xss">
       <DependentUpon>dsFactura.xsd</DependentUpon>
     </None>
+    <None Include="LogiPharm.Presentacion_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -58,6 +58,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EAjuste.cs" />
     <Compile Include="ECaja.cs" />
     <Compile Include="ECierreCaja.cs" />
     <Compile Include="ECliente.cs" />
@@ -79,6 +80,8 @@
     <Compile Include="EPaciente.cs" />
     <Compile Include="EPercha.cs" />
     <Compile Include="EProducto.cs" />
+    <Compile Include="EPrincipioActivo.cs" />
+    <Compile Include="EPresentacion.cs" />
     <Compile Include="EProveedor.cs" />
     <Compile Include="EPuntoEmision.cs" />
     <Compile Include="EReceta.cs" />

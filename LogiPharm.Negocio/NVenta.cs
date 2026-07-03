@@ -8,7 +8,7 @@ namespace LogiPharm.Negocio
     public static class NVenta
     {
         public static void GuardarFactura(ECliente cliente, List<ProductoVenta> productos, string numeroFactura, 
-            int idCierreCaja, int idUsuario, string numeroAutorizacion, int idEmpresa, 
+            int idCierreCaja, int idUsuario, string numeroAutorizacion, string claveAcceso, int idEmpresa, 
             bool esEntrega = false, string estadoFactura = "PENDIENTE", int? idUbicacion = null)
         {
             if (cliente == null) throw new ArgumentNullException(nameof(cliente));
@@ -17,7 +17,7 @@ namespace LogiPharm.Negocio
             if (idCierreCaja <= 0) throw new ArgumentException("Debe existir una caja abierta para guardar la factura.");
             if (idUsuario <= 0) throw new ArgumentException("El usuario cajero no es válido.");
 
-            new DFacturaVenta().GuardarFactura(cliente, productos, numeroFactura, idCierreCaja, idUsuario, numeroAutorizacion, idEmpresa, esEntrega, estadoFactura, idUbicacion);
+            new DFacturaVenta().GuardarFactura(cliente, productos, numeroFactura, idCierreCaja, idUsuario, numeroAutorizacion, claveAcceso, idEmpresa, esEntrega, estadoFactura, idUbicacion);
         }
     }
 }

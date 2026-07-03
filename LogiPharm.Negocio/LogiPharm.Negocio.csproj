@@ -55,6 +55,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NAjustes.cs" />
     <Compile Include="NBitacora.cs" />
     <Compile Include="NCaja.cs" />
     <Compile Include="NCierreCaja.cs" />
@@ -68,6 +69,10 @@
     <Compile Include="NOrdenCompra.cs" />
     <Compile Include="NPerchas.cs" />
     <Compile Include="NProductos.cs" />
+    <Compile Include="NPrincipioActivo.cs" />
+    <Compile Include="NPresentacion.cs" />
+    <Compile Include="NHistorialComprasCliente.cs" />
+    <Compile Include="NReportesInventarioCompras.cs" />
     <Compile Include="NProveedores.cs" />
     <Compile Include="NPuntoEmision.cs" />
     <Compile Include="NRecepcionProductos.cs" />

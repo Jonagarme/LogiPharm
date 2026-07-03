@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace LogiPharm.Entidades
 {
@@ -31,6 +31,12 @@ namespace LogiPharm.Entidades
         public string ClasificacionABC { get; set; }
         public bool Activo { get; set; }
         public bool AplicaIva { get; set; } = true;
+        
+        // Relaciones con principio activo y presentación
+        public int? IdPrincipioActivo { get; set; }
+        public int? IdPresentacion { get; set; }
+        public string NombrePrincipioActivo { get; set; }
+        public string NombrePresentacion { get; set; }
 
         // Campos de Auditoría (no se insertan directamente, se asignan en la capa de datos)
         public int CreadoPor { get; set; }

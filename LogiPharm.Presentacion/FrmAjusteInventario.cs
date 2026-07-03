@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing; // Necesario para los colores
 using System.Windows.Forms;
@@ -22,6 +22,19 @@ namespace LogiPharm.Presentacion
             ConfigurarEstadoFormulario(true);
             ConfigurarGridDetalle();
 
+            // Cargar bodegas/ubicaciones
+            try
+            {
+                cboBodega.DataSource = NUbicaciones.ListarUbicacionesActivas();
+                cboBodega.DisplayMember = "nombre";
+                cboBodega.ValueMember = "id";
+                cboBodega.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar bodegas: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
             // Auditoría: VISUALIZAR
             try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "VISUALIZAR", "ajuste_inventario", null, "Abrir Ajuste de Inventario", null, Environment.MachineName, "UI"); } catch { }
         }
@@ -44,6 +57,12 @@ namespace LogiPharm.Presentacion
             dgvDetalleAjuste.RowHeadersWidth = 25;
 
             // --- Definición de Columnas ---
+            dgvDetalleAjuste.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "colIdProducto",
+                Visible = false
+            });
+
             dgvDetalleAjuste.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "colCodigo",
@@ -236,6 +255,7 @@ namespace LogiPharm.Presentacion
             DataGridViewRow fila = dgvDetalleAjuste.Rows[rowIndex];
 
             // Rellenar las celdas con los datos del producto seleccionado
+            fila.Cells["colIdProducto"].Value = producto.Id;
             fila.Cells["colCodigo"].Value = producto.CodigoPrincipal;
             fila.Cells["colProducto"].Value = producto.Nombre;
             fila.Cells["colCosto"].Value = producto.PrecioVenta; // Usamos PVP como costo de ejemplo. ¡Ajustar si tienes costo real!
@@ -275,6 +295,94 @@ namespace LogiPharm.Presentacion
                 totalAjuste += Convert.ToDecimal(row.Cells["colTotal"].Value ?? 0);
             }
             lblTotalAjuste.Text = totalAjuste.ToString("C2");
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // 1. Validaciones básicas en la UI
+                if (cboBodega.SelectedValue == null)
+                {
+                    MessageBox.Show("Debe seleccionar una bodega o ubicación.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                if (cboTipoAjuste.SelectedItem == null)
+                {
+                    MessageBox.Show("Debe seleccionar el tipo de ajuste.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // 2. Crear objeto EAjuste
+                var ajuste = new EAjuste
+                {
+                    NumeroDocumento = txtNumeroDocumento.Text,
+                    Fecha = dtpFecha.Value,
+                    IdUbicacion = Convert.ToInt32(cboBodega.SelectedValue),
+                    TipoAjuste = cboTipoAjuste.SelectedItem.ToString(),
+                    Observaciones = txtObservaciones.Text,
+                    IdUsuario = SesionActual.IdUsuario,
+                    IdEmpresa = CapaDatos.Conexion.IdEmpresa
+                };
+
+                // 3. Recopilar detalles del Grid
+                decimal totalAjuste = 0;
+                foreach (DataGridViewRow row in dgvDetalleAjuste.Rows)
+                {
+                    if (row.IsNewRow) continue;
+
+                    // Si alguna celda de código o producto está vacía, saltar
+                    if (row.Cells["colIdProducto"].Value == null || row.Cells["colCantidad"].Value == null)
+                        continue;
+
+                    var det = new EAjusteDetalle
+                    {
+                        IdProducto = Convert.ToInt32(row.Cells["colIdProducto"].Value),
+                        Cantidad = Convert.ToDecimal(row.Cells["colCantidad"].Value),
+                        Costo = Convert.ToDecimal(row.Cells["colCosto"].Value ?? 0),
+                        Total = Convert.ToDecimal(row.Cells["colTotal"].Value ?? 0)
+                    };
+
+                    totalAjuste += det.Total;
+                    ajuste.Detalles.Add(det);
+                }
+
+                if (ajuste.Detalles.Count == 0)
+                {
+                    MessageBox.Show("Debe agregar al menos un producto válido al detalle del ajuste.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                ajuste.Total = totalAjuste;
+
+                // 4. Guardar ajuste llamando a la capa de negocio
+                bool exito = NAjustes.GuardarAjuste(ajuste);
+
+                if (exito)
+                {
+                    MessageBox.Show("El ajuste de inventario se guardó correctamente con el Nro: " + ajuste.NumeroDocumento, "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    
+                    // Registrar auditoría
+                    try { NBitacora.Registrar(SesionActual.IdUsuario, SesionActual.NombreUsuario, "Inventario", "REGISTRAR", "ajuste_inventario", null, $"Guardar ajuste de inventario nro {ajuste.NumeroDocumento}", null, Environment.MachineName, "UI"); } catch { }
+
+                    LimpiarFormulario();
+                    ConfigurarEstadoFormulario(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al guardar el ajuste: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnAnular_Click(object sender, EventArgs e)
+        {
+            var confirm = MessageBox.Show("¿Está seguro de que desea cancelar la creación del ajuste actual?", "Confirmar cancelación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (confirm == DialogResult.Yes)
+            {
+                LimpiarFormulario();
+                ConfigurarEstadoFormulario(false);
+            }
         }
     }
 }

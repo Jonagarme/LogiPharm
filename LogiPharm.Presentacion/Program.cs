@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +16,10 @@ namespace LogiPharm.Presentacion
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            
+            // Inicializar la base de datos de forma automática (crear catálogos faltantes si no existen)
+            CapaDatos.Conexion.InicializarBaseDatos();
+
             Application.Run(new FrmLogin());
         }
     }

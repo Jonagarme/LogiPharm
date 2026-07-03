@@ -1,4 +1,4 @@
-﻿using CapaDatos;
+using CapaDatos;
 using MySqlConnector;
 using System;
 using System.Data;
@@ -7,25 +7,29 @@ namespace LogiPharm.Datos
 {
     public class DDashboard
     {
-        public DataTable ObtenerKPIs()
+        public DataTable ObtenerKPIs(int idEmpresa)
         {
             DataTable dt = new DataTable();
 
             string query = @"
             SELECT
-              (SELECT IFNULL(SUM(total), 0) FROM facturas_venta WHERE DATE(fechaEmision) = CURDATE()) AS VentasHoy,
-                (SELECT COUNT(*) FROM clientes) AS TotalClientes,
-                (SELECT SUM(id) FROM productos) AS ProductosStock,
-                (SELECT COUNT(*) FROM proveedores) AS TotalProveedores;
-        ";
+                (SELECT IFNULL(SUM(total), 0) FROM facturas_venta WHERE DATE(fechaEmision) = @hoy AND anulado = 0 AND idEmpresa = @idEmpresa) AS VentasHoy,
+                (SELECT COUNT(*) FROM clientes WHERE creadoDate >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND anulado = 0 AND idEmpresa = @idEmpresa) AS TotalClientes,
+                (SELECT COUNT(*) FROM productos WHERE stock <= stockMinimo AND anulado = 0 AND idEmpresa = @idEmpresa) AS ProductosStock,
+                (SELECT COUNT(*) FROM proveedores WHERE anulado = 0 AND idEmpresa = @idEmpresa) AS TotalProveedores;
+            ";
 
             using (var conn = new MySqlConnection(CapaDatos.Conexion.cadena))
             {
                 conn.Open();
                 using (var cmd = new MySqlCommand(query, conn))
-                using (var adapter = new MySqlDataAdapter(cmd))
                 {
-                    adapter.Fill(dt);
+                    cmd.Parameters.AddWithValue("@idEmpresa", idEmpresa);
+                    cmd.Parameters.AddWithValue("@hoy", DateTime.Today.Date);
+                    using (var adapter = new MySqlDataAdapter(cmd))
+                    {
+                        adapter.Fill(dt);
+                    }
                 }
             }
 
@@ -34,7 +38,7 @@ namespace LogiPharm.Datos
 
         // Simula la obtención de ventas de los últimos 30 días.
         // === Ventas por día últimos 30 días (devuelve TODOS los días, incluso los que no tienen ventas) ===
-        public DataTable ObtenerVentasUltimoMes()
+        public DataTable ObtenerVentasUltimoMes(int idEmpresa)
         {
             // 1) Traemos lo que exista en BD
             var dtRaw = new DataTable();
@@ -42,6 +46,7 @@ namespace LogiPharm.Datos
                 SELECT DATE(fv.fechaEmision) AS Fecha, IFNULL(SUM(fv.total),0) AS TotalVentas
                   FROM facturas_venta fv
                  WHERE fv.anulado = 0
+                   AND fv.idEmpresa = @idEmpresa
                    AND DATE(fv.fechaEmision) BETWEEN @desde AND @hasta
               GROUP BY DATE(fv.fechaEmision)
               ORDER BY Fecha;
@@ -54,6 +59,7 @@ namespace LogiPharm.Datos
             using (var cmd = new MySqlCommand(sql, cn))
             using (var da = new MySqlDataAdapter(cmd))
             {
+                cmd.Parameters.AddWithValue("@idEmpresa", idEmpresa);
                 cmd.Parameters.AddWithValue("@desde", desde.Date);
                 cmd.Parameters.AddWithValue("@hasta", hasta.Date);
                 cn.Open();
@@ -83,7 +89,7 @@ namespace LogiPharm.Datos
         }
 
         // === Top 5 productos por unidades vendidas (últimos 30 días) ===
-        public DataTable ObtenerTopProductos()
+        public DataTable ObtenerTopProductos(int idEmpresa)
         {
             var dt = new DataTable();
 
@@ -95,6 +101,7 @@ namespace LogiPharm.Datos
                   JOIN facturas_venta fv ON fv.id = d.idFacturaVenta
                   LEFT JOIN productos p ON p.id = d.idProducto
                  WHERE fv.anulado = 0
+                   AND fv.idEmpresa = @idEmpresa
                    AND DATE(fv.fechaEmision) BETWEEN @desde AND @hasta
               GROUP BY Producto
               ORDER BY TotalVendido DESC
@@ -108,6 +115,7 @@ namespace LogiPharm.Datos
             using (var cmd = new MySqlCommand(sql, cn))
             using (var da = new MySqlDataAdapter(cmd))
             {
+                cmd.Parameters.AddWithValue("@idEmpresa", idEmpresa);
                 cmd.Parameters.AddWithValue("@desde", desde.Date);
                 cmd.Parameters.AddWithValue("@hasta", hasta.Date);
                 cn.Open();

@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conexion.cs" />
+    <Compile Include="DAjustes.cs" />
     <Compile Include="DAperturas.cs" />
     <Compile Include="DBitacora.cs" />
     <Compile Include="DCaja.cs" />
@@ -121,6 +122,10 @@
     <Compile Include="DPacientes.cs" />
     <Compile Include="DPerchas.cs" />
     <Compile Include="DProductos.cs" />
+    <Compile Include="DPrincipioActivo.cs" />
+    <Compile Include="DPresentacion.cs" />
+    <Compile Include="DHistorialComprasCliente.cs" />
+    <Compile Include="DReportesInventarioCompras.cs" />
     <Compile Include="DProveedores.cs" />
     <Compile Include="DPuntosEmision.cs" />
     <Compile Include="DRecepcionProductos.cs" />
